@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Película Compatível</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes blink {
+            0% { background-color: #facc15; }
+            50% { background-color: transparent; }
+            100% { background-color: #facc15; }
+        }
+        .highlight {
+            animation: blink 1s infinite;
+            padding: 2px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-style: italic;
+        }
+        body {
+            background-color: black;
+        }
+        .shake {
+            animation: shake 0.3s;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        .card-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: stretch;
+        }
+        .card {
+            width: 250px;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .blue-card {
+            background: linear-gradient(to right, #3b82f6, #1e3a8a);
+        }
+        .yellow-card {
+            background: linear-gradient(to right, #facc15, #d97706);
+        }
+        .button-size {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: block;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body class="text-gray-900">
+    <div class="max-w-lg mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow-lg">
+        <h1 class="text-center text-2xl font-bold text-white bg-yellow-500 p-3 rounded-lg">
+            Buscar Película Compatível
+        </h1>
+
+        <div id="loginSection">
+            <label class="block mt-4 text-sm font-medium text-gray-700">Digite seu e-mail para acessar</label>
+            <input type="email" id="email" placeholder="Digite seu e-mail" class="w-full mt-1 p-2 border border-gray-300 rounded-lg">
+            <button onclick="checkEmail()" class="w-full mt-4 bg-blue-500 text-white p-2 rounded-lg shadow-md hover:bg-blue-600 transition">
+                🔑 Entrar
+            </button>
+
+            <div class="card-container mt-6">
+                <div class="card blue-card">
+                    <h2 class="text-xl font-bold">Versão PRO</h2>
+                    <ul class="mt-4 text-sm">
+                        <li>✅ Acesso a todas as películas</li>
+                        <li>🔄 Atualizações semanais</li>
+                        <li>⚡ Suporte prioritário</li>
+                        <li>🚫 Sem propagandas</li>
+                    </ul>
+                    <p class="mt-4 text-2xl font-bold">R$ 9,90 <span class="text-sm">/mês</span></p>
+                    <button class="button-size bg-pink-500 text-white shadow-md hover:bg-pink-600 transition">
+                        💳 Assinar Agora
+                    </button>
+                </div>
+
+                <div class="card yellow-card">
+                    <h2 class="text-xl font-bold">Acervo de Esquemas</h2>
+                    <ul class="mt-4 text-sm">
+                        <li>📂 Mais de 1000 esquemas</li>
+                        <li>💾 Download ilimitado</li>
+                        <li>🛠 Acesso vitalício</li>
+                        <li>🚀 Sem mensalidades</li>
+                    </ul>
+                    <p class="mt-4 text-2xl font-bold">R$ 90,00 <span class="text-sm">único</span></p>
+                    <a href="https://www.esquemaeletrico.com/menu-principal" class="button-size bg-green-500 text-white shadow-md hover:bg-green-600 transition text-center block">
+                        📥 Comprar Agora
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="searchSection" class="hidden">
+            <div class="mt-4 p-4 bg-gray-200 text-center text-lg font-semibold rounded-lg shadow-md">
+                Bem-vindo(a)! Agora você pode buscar pelas películas compatíveis.
+            </div>
+
+            <label class="block mt-4 text-sm font-medium text-gray-700">Digite o modelo do celular</label>
+            <input type="text" id="searchModel" placeholder="Digite o modelo" class="w-full mt-1 p-2 border border-gray-300 rounded-lg">
+            
+            <div id="result" class="mt-4 p-3 bg-gray-200 rounded-lg shadow-md hidden font-bold"></div>
+
+            <a href="https://wa.me/utidatecnologia" target="_blank" class="w-full mt-4 bg-green-500 text-white p-2 rounded-lg shadow-md hover:bg-green-600 transition text-center block">
+                🧑‍💻 Suporte
+            </a>
+        </div>
+    </div>
+
+    <footer class="text-center mt-10 text-sm text-gray-400">
+        Copyright &copy; 2021 UTI Da Tecnologia - Todos os Direitos Reservados.<br>
+        Desenvolvido por <strong>Carla Vasconcelos</strong> (UTI Da Tecnologia).
+    </footer>
+
+    <script>
+        let data = [];
+
+        function checkEmail() {
+            const email = document.getElementById('email').value;
+            const loginSection = document.getElementById('loginSection');
+
+            fetch('https://script.google.com/macros/s/AKfycbxzqF6pTZC1m-krKC28anmV9viQgD7DKpK67rl8nKx1VCxLspBvQncE0rxXsvIchC0jYA/exec')
+                .then(response => response.json())
+                .then(emails => {
+                    if (emails.includes(email)) {
+                        alert('✅ Acesso permitido!');
+                        loginSection.classList.add('hidden');
+                        document.getElementById('searchSection').classList.remove('hidden');
+                        loadData();
+                    } else {
+                        loginSection.classList.add('shake');
+                        setTimeout(() => loginSection.classList.remove('shake'), 300);
+                        alert('❌ Acesso negado!');
+                    }
+                });
+        }
+
+        function loadData() {
+            fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
+                .then(response => response.json())
+                .then(jsonData => {
+                    data = jsonData.map(row => row[0].trim().toUpperCase().split(',').map(m => m.trim()));
+                });
+        }
+
+        function searchModel() {
+            const searchModel = document.getElementById('searchModel').value.toUpperCase().trim();
+            const resultElement = document.getElementById('result');
+
+            if (searchModel === "") {
+                resultElement.classList.add('hidden');
+                return;
+            }
+
+            let foundRows = data.flatMap(row =>
+                row.some(model => model.includes(searchModel)) ? 
+                [`Modelo Procurado: <strong>${searchModel}</strong> <br> Modelos Compatíveis: ${row.map(m => m.includes(searchModel) ? `<span class='highlight'>${m}</span>` : m).join(', ')}`] : []
+            );
+
+            resultElement.innerHTML = foundRows.length > 0 ? foundRows.join('<br><br>') : "<strong>Modelo não encontrado</strong>";
+            resultElement.classList.remove('hidden');
+        }
+
+        document.getElementById('searchModel').addEventListener('input', searchModel);
+    </script>
+</body>
+</html>
