@@ -73,9 +73,9 @@
         <div id="loginSection">
             <label class="block mt-4 text-sm font-medium text-gray-700">Digite seu e-mail para acessar</label>
             <input type="email" id="email" placeholder="Digite seu e-mail" class="w-full mt-1 p-2 border border-gray-300 rounded-lg">
-        <button onclick="enviarCodigoSupabase()" class="w-full mt-4 bg-blue-500 text-white p-2 rounded-lg shadow-md hover:bg-blue-600 transition">
-                🔑 Entrar
-            </button>
+       <button onclick="enviarCodigoSupabase()" class="w-full mt-4 bg-blue-500 text-white p-2 rounded-lg shadow-md hover:bg-blue-600 transition">
+    🔑 Entrar
+</button>
 
             <div class="card-container mt-6">
                 <div class="card blue-card">
@@ -182,49 +182,49 @@
     </script>
 <!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
     const supabaseUrl = 'https://chjdjfycylqhxtfrbdxm.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-async function enviarCodigoSupabase() {
-    const email = document.getElementById('email').value;
 
-    let { data, error } = await supabaseClient.auth.signInWithOtp({ email });
+    // Função que confirma login automaticamente
+    async function verificarSessao() {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-    if (error) {
-        alert('❌ Erro ao enviar código!');
-        console.error(error);
-    } else {
-        alert('✅ Código enviado ao seu e-mail! Verifique a caixa de entrada.');
+        if (session) {
+            // Confirmou login
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('searchSection').classList.remove('hidden');
+            loadData();
+            window.location.hash = ''; // Limpa a URL
+        } else {
+            console.log("Usuário ainda não está logado.");
+        }
     }
-}
-async function verificarSessao() {
-    // Primeiro, verifica se há token na URL (quando volta do e-mail do Supabase)
-    const { data, error } = await supabaseClient.auth.getSession();
 
-    if (data.session) {
-        // Login confirmado com sucesso
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('searchSection').classList.remove('hidden');
-        loadData();
-        alert('✅ Login automático efetuado com sucesso!');
-        window.location.hash = ''; // remove o token da URL após login
-    } else {
-        // Não autenticado ainda
-        console.log("Usuário ainda não está logado.");
+    // Detecta automaticamente o token na URL após redirecionamento
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN') {
+            verificarSessao();
+        }
+    });
+
+    // Checa a sessão automaticamente quando a página é aberta
+    window.addEventListener('load', verificarSessao);
+
+    // Função para enviar código de login por email
+    async function enviarCodigoSupabase() {
+        const email = document.getElementById('email').value;
+
+        const { error } = await supabaseClient.auth.signInWithOtp({ email });
+
+        if (error) {
+            alert('❌ Erro ao enviar código!');
+            console.error(error);
+        } else {
+            alert('✅ Código enviado ao seu e-mail! Verifique sua caixa de entrada.');
+        }
     }
-}
-
-// Detecta mudanças na sessão ao clicar no link do Supabase
-supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
-        verificarSessao();
-    }
-});
-
-// Verifica sempre ao carregar a página
-window.addEventListener('load', verificarSessao);
 </script>
 </body>
 </html>
