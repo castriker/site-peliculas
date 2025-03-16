@@ -187,65 +187,61 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Função que confirma login automaticamente
-async function enviarCodigoSupabase() {
-    const email = document.getElementById('email').value;
+    // Função que verifica login automaticamente ao entrar na página
+    async function verificarSessao() {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-    // consulta sua planilha Google Sheets ANTES de enviar ao Supabase
-    const resposta = await fetch('https://script.google.com/macros/s/AKfycbxzqF6pTZC1m-krKC28anmV9viQgD7DKpK67rl8nKx1VCxLspBvQncE0rxXsvIchC0jYA/exec');
-    const emailsPermitidos = await resposta.json();
+        if (session) {
+            const emailLogado = session.user.email;
 
-    if (emailsPermitidos.includes(email)) {
-        const { error } = await supabaseClient.auth.signInWithOtp({ email });
+            // Consulta planilha para confirmar acesso autorizado
+            const resposta = await fetch('https://script.google.com/macros/s/AKfycbxzqF6pTZC1m-krKC28anmV9viQgD7DKpK67rl8nKx1VCxLspBvQncE0rxXsvIchC0jYA/exec');
+            const emailsPermitidos = await resposta.json();
 
-        if (error) {
-            alert('❌ Erro ao enviar código!');
-            console.error(error);
+            if (emailsPermitidos.includes(emailLogado)) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('searchSection').classList.remove('hidden');
+                loadData();
+                window.location.hash = ''; // Limpa token da URL
+            } else {
+                alert('🚫 Seu e-mail não possui permissão.');
+                await supabaseClient.auth.signOut();
+            }
         } else {
-            alert('✅ Código enviado ao seu e-mail autorizado!');
+            console.log("Usuário ainda não está logado.");
         }
-    } else {
-        alert('❌ Seu e-mail não está autorizado para acessar o sistema.');
     }
-}
-        });
 
-    } else {
-        console.log("Usuário ainda não está logado.");
-    }
-}
+    // Detecta automaticamente o token na URL após login Supabase
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN') {
+            verificarSessao();
+        }
+    });
 
-// Detecta automaticamente o token na URL após redirecionamento
-supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
-        verificarSessao();
-    }
-});
+    // Checa a sessão automaticamente quando a página é aberta
+    window.addEventListener('load', verificarSessao);
 
-// Checa a sessão automaticamente quando a página é aberta
-window.addEventListener('load', verificarSessao);
+    // Função correta e única para enviar código por email (consulta a planilha antes)
+    async function enviarCodigoSupabase() {
+        const email = document.getElementById('email').value;
 
-// Função para enviar código de login por email (com verificação antes de enviar)
-async function enviarCodigoSupabase() {
-    const email = document.getElementById('email').value;
+        const resposta = await fetch('https://script.google.com/macros/s/AKfycbxzqF6pTZC1m-krKC28anmV9viQgD7DKpK67rl8nKx1VCxLspBvQncE0rxXsvIchC0jYA/exec');
+        const emailsPermitidos = await resposta.json();
 
-    const resposta = await fetch('https://script.google.com/macros/s/AKfycbxzqF6pTZC1m-krKC28anmV9viQgD7DKpK67rl8nKx1VCxLspBvQncE0rxXsvIchC0jYA/exec');
-    const emailsPermitidos = await resposta.json();
+        if (emailsPermitidos.includes(email)) {
+            const { error } = await supabaseClient.auth.signInWithOtp({ email });
 
-    if (emailsPermitidos.includes(email)) {
-        const { error } = await supabaseClient.auth.signInWithOtp({ email });
-
-        if (error) {
-            alert('❌ Erro ao enviar código!');
-            console.error(error);
+            if (error) {
+                alert('❌ Erro ao enviar código!');
+                console.error(error);
+            } else {
+                alert('✅ Código enviado ao seu e-mail autorizado!');
+            }
         } else {
-            alert('✅ Código enviado ao seu e-mail! Confira a caixa de entrada.');
+            alert('❌ Seu e-mail não está autorizado!');
         }
-    } else {
-        alert('❌ Seu e-mail não está autorizado para acessar este conteúdo!');
     }
-}
-
 </script>
 </body>
 </html>
