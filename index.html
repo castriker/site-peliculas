@@ -229,22 +229,21 @@ window.addEventListener('load', verificarSessao);
 async function enviarCodigoSupabase() {
     const email = document.getElementById('email').value;
 
-    fetch('https://script.google.com/macros/s/AKfycbxzqF6pTZC1m-krKC28anmV9viQgD7DKpK67rl8nKx1VCxLspBvQncE0rxXsvIchC0jYA/exec')
-        .then(response => response.json())
-        .then(async (emails) => {
-            if (emails.includes(email)) {
-                const { error } = await supabaseClient.auth.signInWithOtp({ email });
+    const resposta = await fetch('https://script.google.com/macros/s/AKfycbxzqF6pTZC1m-krKC28anmV9viQgD7DKpK67rl8nKx1VCxLspBvQncE0rxXsvIchC0jYA/exec');
+    const emailsPermitidos = await resposta.json();
 
-                if (error) {
-                    alert('❌ Erro ao enviar código!');
-                    console.error(error);
-                } else {
-                    alert('✅ Código enviado ao seu e-mail! Confira a caixa de entrada.');
-                }
-            } else {
-                alert('❌ Acesso negado! Este e-mail não possui assinatura ativa.');
-            }
-        });
+    if (emailsPermitidos.includes(email)) {
+        const { error } = await supabaseClient.auth.signInWithOtp({ email });
+
+        if (error) {
+            alert('❌ Erro ao enviar código!');
+            console.error(error);
+        } else {
+            alert('✅ Código enviado ao seu e-mail! Confira a caixa de entrada.');
+        }
+    } else {
+        alert('❌ Seu e-mail não está autorizado para acessar este conteúdo!');
+    }
 }
 
 </script>
