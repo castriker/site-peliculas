@@ -200,19 +200,30 @@ async function enviarCodigoSupabase() {
     }
 }
 async function verificarSessao() {
-    const { data: { session }, error } = await supabaseClient.auth.getSession();
+    // Primeiro, verifica se há token na URL (quando volta do e-mail do Supabase)
+    const { data, error } = await supabaseClient.auth.getSession();
 
-    if (session) {
-        // Usuário já está logado!
+    if (data.session) {
+        // Login confirmado com sucesso
         document.getElementById('loginSection').classList.add('hidden');
         document.getElementById('searchSection').classList.remove('hidden');
         loadData();
+        alert('✅ Login automático efetuado com sucesso!');
+        window.location.hash = ''; // remove o token da URL após login
     } else {
         // Não autenticado ainda
         console.log("Usuário ainda não está logado.");
     }
 }
 
+// Detecta mudanças na sessão ao clicar no link do Supabase
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+        verificarSessao();
+    }
+});
+
+// Verifica sempre ao carregar a página
 window.addEventListener('load', verificarSessao);
 </script>
 </body>
