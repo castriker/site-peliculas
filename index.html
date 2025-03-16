@@ -200,17 +200,20 @@ async function enviarCodigoSupabase() {
     }
 }
 async function verificarSessao() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
 
     if (session) {
+        // Usuário já está logado!
         document.getElementById('loginSection').classList.add('hidden');
         document.getElementById('searchSection').classList.remove('hidden');
         loadData();
-        alert('✅ Usuário logado com sucesso!');
+    } else {
+        // Não autenticado ainda
+        console.log("Usuário ainda não está logado.");
     }
 }
 
-window.onload = verificarSessao;
+window.addEventListener('load', verificarSessao);
 </script>
 </body>
 </html>
