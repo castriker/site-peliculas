@@ -188,57 +188,64 @@
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
     // Função que confirma login automaticamente
-   async function verificarSessao() {
+async function verificarSessao() {
     const { data: { session }, error } = await supabaseClient.auth.getSession();
 
     if (session) {
-        const emailAutorizado = session.user.email;
+        const emailLogado = session.user.email;
 
-        // Lista de e-mails autorizados (adicione todos aqui)
-        const emailsPermitidos = [
-            "email1@gmail.com",
-            "email2@gmail.com",
-            "email3@gmail.com"
-        ];
-
-        if (emailsPermitidos.includes(emailAutorizado)) {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('searchSection').classList.remove('hidden');
-            loadData();
-            window.location.hash = ''; // limpa token da URL
-        } else {
-            alert('🚫 Seu e-mail não possui permissão para acessar este conteúdo.');
-            await supabaseClient.auth.signOut();
-        }
+        // Verifica na sua planilha do Google Sheets automaticamente
+        fetch('https://script.google.com/macros/s/AKfycbxzqF6pTZC1m-krKC28anmV9viQgD7DKpK67rl8nKx1VCxLspBvQncE0rxXsvIchC0jYA/exec')
+        .then(response => response.json())
+        .then(async (emails) => {
+            if (emails.includes(emailLogado)) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('searchSection').classList.remove('hidden');
+                loadData();
+                window.location.hash = ''; // limpa token da URL
+            } else {
+                alert('🚫 Seu e-mail não possui permissão para acessar este conteúdo.');
+                await supabaseClient.auth.signOut();
+            }
+        });
 
     } else {
         console.log("Usuário ainda não está logado.");
     }
 }
 
-    // Detecta automaticamente o token na URL após redirecionamento
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN') {
-            verificarSessao();
-        }
-    });
-
-    // Checa a sessão automaticamente quando a página é aberta
-    window.addEventListener('load', verificarSessao);
-
-    // Função para enviar código de login por email
-    async function enviarCodigoSupabase() {
-        const email = document.getElementById('email').value;
-
-        const { error } = await supabaseClient.auth.signInWithOtp({ email });
-
-        if (error) {
-            alert('❌ Erro ao enviar código!');
-            console.error(error);
-        } else {
-            alert('✅ Código enviado ao seu e-mail! Verifique sua caixa de entrada.');
-        }
+// Detecta automaticamente o token na URL após redirecionamento
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+        verificarSessao();
     }
+});
+
+// Checa a sessão automaticamente quando a página é aberta
+window.addEventListener('load', verificarSessao);
+
+// Função para enviar código de login por email (com verificação antes de enviar)
+async function enviarCodigoSupabase() {
+    const email = document.getElementById('email').value;
+
+    fetch('https://script.google.com/macros/s/AKfycbxzqF6pTZC1m-krKC28anmV9viQgD7DKpK67rl8nKx1VCxLspBvQncE0rxXsvIchC0jYA/exec')
+        .then(response => response.json())
+        .then(async (emails) => {
+            if (emails.includes(email)) {
+                const { error } = await supabaseClient.auth.signInWithOtp({ email });
+
+                if (error) {
+                    alert('❌ Erro ao enviar código!');
+                    console.error(error);
+                } else {
+                    alert('✅ Código enviado ao seu e-mail! Confira a caixa de entrada.');
+                }
+            } else {
+                alert('❌ Acesso negado! Este e-mail não possui assinatura ativa.');
+            }
+        });
+}
+
 </script>
 </body>
 </html>
