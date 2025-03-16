@@ -199,6 +199,18 @@ async function enviarCodigoSupabase() {
         alert('✅ Código enviado ao seu e-mail! Verifique a caixa de entrada.');
     }
 }
+async function verificarSessao() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    if (session) {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('searchSection').classList.remove('hidden');
+        loadData();
+        alert('✅ Usuário logado com sucesso!');
+    }
+}
+
+window.onload = verificarSessao;
 </script>
 </body>
 </html>
