@@ -194,6 +194,7 @@
       return;
     }
 
+    // Marca o usuário como ativo
     await fetch(`${supabaseUrl}/rest/v1/usuarios_ativos?email=eq.${email}`, {
       method: "PATCH",
       headers: {
@@ -204,8 +205,10 @@
       body: JSON.stringify({ ativa: true })
     });
 
+    // Salva o e-mail na sessão
     sessionStorage.setItem("user_email", email);
 
+    // Exibe a área de busca
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('planosSection').style.display = 'none';
     document.getElementById('loginArea').classList.add('hidden');
@@ -215,7 +218,7 @@
     document.getElementById('menuLogin').innerText = 'Sair';
     document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
 
-    loadData();
+    loadData(); // carrega os modelos
   }
 
   function togglePlanos() {
