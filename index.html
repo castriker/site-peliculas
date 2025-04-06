@@ -254,7 +254,10 @@ async function checkEmail() {
     }
 
 const sessao = result[0];
-
+if (sessao.ativa === true) {
+  alert("⚠️ Este e-mail já está sendo usado em outro dispositivo.");
+  return;
+}
 // Verifica se já está expirado
 const hoje = new Date();
 const expira = new Date(sessao.data_expiracao);
@@ -286,10 +289,7 @@ if (hoje > expira) {
 }
 
 
-if (sessao.ativa === true) {
-  alert("⚠️ Este e-mail já está sendo usado em outro dispositivo.");
-  return;
-}
+
 
 
     // Atualiza os dados da sessão
