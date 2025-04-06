@@ -175,8 +175,8 @@
   if (!email) return alert('Digite um e-mail válido.');
 
   const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+  
   try {
     const response = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
       method: "GET",
@@ -189,17 +189,26 @@
     });
 
     const result = await response.json();
-
     if (!result || result.length === 0) {
       alert("❌ E-mail não autorizado!");
       return;
     }
 
-    if (result[0].ativa === true) {
+    const user = result[0];
+
+    if (user.ativa === true) {
       alert("⚠️ Este e-mail já está sendo usado em outro dispositivo.");
       return;
     }
 
+    const hoje = new Date();
+    const expiracao = new Date(user.data_expiracao);
+    if (expiracao < hoje) {
+      alert("🔒 Seu plano expirou. Por favor, renove para continuar.");
+      return;
+    }
+
+    // Marca como ativo
     await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
       method: "PATCH",
       headers: {
@@ -211,8 +220,7 @@
     });
 
     localStorage.setItem("user_email", email);
-localStorage.setItem("login_date", new Date().toISOString());
-
+    localStorage.setItem("login_date", new Date().toISOString());
 
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('planosSection').style.display = 'none';
@@ -229,6 +237,7 @@ localStorage.setItem("login_date", new Date().toISOString());
     alert("❌ Ocorreu um erro ao verificar o e-mail.");
   }
 }
+
 
 
 
