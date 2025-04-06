@@ -53,7 +53,7 @@
       <p class="text-gray-300 text-lg mb-4">Você trabalha com celular e perde tempo testando películas ou pesquisando compatibilidades?<br>
       <span class="font-bold text-white">Esse site é pra você.</span></p>
 
-      <p class="text-gray-400 mb-4">Aqui você acessa uma <span class="text-yellow-400 font-bold">tabela completa e atualizada</span> com modelos compatíveis. <br>
+      <p class="text-gray-400 mb-4">Aqui você acessa uma <span class="text-yellow-400 font-bold">tabela completa e atualizada</span> com modelos compatíveis para películas de vidro.<br>
       Economize tempo, evite erros e <span class="text-yellow-400 font-bold">venda mais com segurança</span>.</p>
 
       <div class="flex flex-wrap justify-center lg:justify-start gap-3 mt-4">
@@ -466,10 +466,13 @@ function inicializarLogin() {
     document.getElementById('menuLogin').innerText = 'Sair';
     document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
 
-    const mensagem = `<strong>Bem-vindo(a)!</strong><br>
-    Você está usando o plano de <strong>${sessao.plano}</strong> 
-    (R$ ${sessao.valor}), válido até <strong>${new Date(sessao.data_expiracao).toLocaleDateString('pt-BR')}</strong>.`;
-    document.querySelector("#searchSection .bg-gray-800").innerHTML = mensagem;
+const mensagem = `
+  <strong>Bem-vindo(a), ${sessao.nome || 'usuário(a)'}!</strong><br>
+  Plano atual: <strong>${sessao.plano}</strong><br>
+  Data da compra: <strong>${new Date(sessao.data_compra).toLocaleDateString('pt-BR')}</strong><br>
+  Válido até: <strong>${new Date(sessao.data_expiracao).toLocaleDateString('pt-BR')}</strong>.
+`;
+document.querySelector("#searchSection .bg-gray-800").innerHTML = mensagem;
 
     loadData();
   })
