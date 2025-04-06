@@ -29,7 +29,6 @@
   </style>
 </head>
 <body>
-
   <!-- Cabeçalho -->
   <header class="bg-gradient-to-r from-[#0f172a] to-[#1e3a8a] p-6 shadow-md text-white">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
@@ -41,11 +40,41 @@
       </nav>
     </div>
   </header>
+
   <!-- Introdução -->
-  <section id="introSection" class="text-center py-12 bg-[#121212]">
-    <h2 class="text-4xl font-extrabold text-yellow-400">Escolha seu Plano</h2>
-    <p class="text-gray-300 mt-2">Acesse nossa tabela de películas compatíveis com desconto progressivo.</p>
-  </section>
+<section id="introSection" class="bg-[#0c1121] text-white py-12 px-4 sm:px-8">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+    <!-- IMAGEM -->
+    <div class="hidden md:block">
+      <img src="pelicua3d.png" alt="Películas 3D" class="w-full max-w-sm mx-auto drop-shadow-2xl">
+    </div>
+
+    <!-- TEXTO -->
+    <div class="text-center md:text-left">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-yellow-400 flex items-center justify-center md:justify-start gap-2">
+        <span>🧩</span> Encontre a película certa em segundos
+      </h2>
+      <p class="mt-4 text-lg text-gray-300">
+        Você trabalha com celular e perde tempo testando películas ou pesquisando compatibilidades?<br>
+        <strong class="text-white">Esse site é pra você.</strong>
+      </p>
+      <p class="mt-4 text-gray-400 text-sm sm:text-base">
+        Aqui você acessa uma <strong class="text-yellow-400">tabela completa e atualizada</strong> com modelos compatíveis para películas de vidro.<br>
+        Economize tempo, evite erros e <strong class="text-yellow-400">venda mais com segurança</strong>.
+      </p>
+      <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-6 text-sm">
+        <span class="bg-green-700 text-white px-4 py-2 rounded-full">✅ Fácil de usar</span>
+        <span class="bg-green-700 text-white px-4 py-2 rounded-full">✅ Sem propagandas</span>
+        <span class="bg-green-700 text-white px-4 py-2 rounded-full">✅ Atualizações automáticas</span>
+      </div>
+      <p class="mt-6 text-lg text-yellow-400 font-semibold">
+        A partir de R$ 12,00 por mês
+        <span class="text-white">, você transforma seu atendimento e ganha confiança no que oferece.</span>
+      </p>
+    </div>
+  </div>
+</section>
+
 
   <!-- Planos -->
   <section id="planosSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-8 max-w-7xl mx-auto">
