@@ -280,7 +280,7 @@
       body: JSON.stringify({ ativa: false })
     });
 
-    sessionStorage.removeItem("user_email");
+    localStorage.removeItem("user_email");
 
     document.getElementById('introSection').style.display = 'block';
     document.getElementById('planosSection').style.display = 'grid';
@@ -310,5 +310,42 @@ document.addEventListener('keydown', function(e) {
     e.preventDefault();
   }
 });
+
+// Verifica automaticamente se o usuário estava logado
+window.addEventListener('DOMContentLoaded', async () => {
+  const email = localStorage.getItem("user_email");
+  if (!email) return;
+
+  const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    const result = await res.json();
+    if (result.length > 0 && result[0].ativa === true) {
+      // Usuário ainda está ativo, mostrar busca
+      document.getElementById('introSection').style.display = 'none';
+      document.getElementById('planosSection').style.display = 'none';
+      document.getElementById('loginArea').classList.add('hidden');
+      document.getElementById('searchSection').classList.remove('hidden');
+      document.getElementById('menuPlanos').classList.add('hidden');
+      document.getElementById('planosToggle').classList.remove('hidden');
+      document.getElementById('menuLogin').innerText = 'Sair';
+      document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+
+      loadData();
+    }
+  } catch (err) {
+    console.error("Erro ao verificar sessão automática:", err);
+  }
+});
+
 
 </script>
