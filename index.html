@@ -254,11 +254,12 @@
     document.getElementById('planosSectionAfter').classList.add('hidden');
   }
 
-  async function logout() {
-    const email = sessionStorage.getItem("user_email");
-    const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+async function logout() {
+  const email = sessionStorage.getItem("user_email");
+  const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+  const supabaseKey = "SUA_CHAVE_AQUI";
 
+  try {
     await fetch(`${supabaseUrl}/rest/v1/usuarios_ativos?email=eq.${email}`, {
       method: "PATCH",
       headers: {
@@ -268,27 +269,37 @@
       },
       body: JSON.stringify({ ativa: false })
     });
-
-    sessionStorage.removeItem("user_email");
-
-    document.getElementById('introSection').style.display = 'block';
-    document.getElementById('planosSection').style.display = 'grid';
-    document.getElementById('loginArea').classList.add('hidden');
-    document.getElementById('searchSection').classList.add('hidden');
-    document.getElementById('menuPlanos').classList.remove('hidden');
-    document.getElementById('planosToggle').classList.add('hidden');
-    document.getElementById('planosSectionAfter').classList.add('hidden');
-    document.getElementById('menuLogin').innerText = 'Login';
-    document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
+  } catch (error) {
+    console.error("Erro ao liberar acesso:", error);
   }
+
+  sessionStorage.removeItem("user_email");
+
+  // Mostra a tela inicial de novo
+  document.getElementById('introSection').style.display = 'block';
+  document.getElementById('planosSection').style.display = 'grid';
+  document.getElementById('loginArea').classList.add('hidden');
+  document.getElementById('searchSection').classList.add('hidden');
+  document.getElementById('menuPlanos').classList.remove('hidden');
+  document.getElementById('planosToggle').classList.add('hidden');
+  document.getElementById('planosSectionAfter').classList.add('hidden');
+  document.getElementById('menuLogin').innerText = 'Login';
+  document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
+}
 
   window.addEventListener('beforeunload', async function () {
     const email = sessionStorage.getItem("user_email");
     if (!email) return;
 
     const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-    navigator.sendBeacon(`${supabaseUrl}/rest/v1/usuarios_ativos?email=eq.${email}`, JSON.stringify({ ativa: false }));
-  });
+const payload = JSON.stringify({ ativa: false });
+const blob = new Blob([payload], { type: 'application/json' });
+
+navigator.sendBeacon(
+  `${supabaseUrl}/rest/v1/usuarios_ativos?email=eq.${email}`,
+  blob
+);
+
 </script>
 
 
