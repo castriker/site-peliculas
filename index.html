@@ -211,6 +211,8 @@
     });
 
     localStorage.setItem("user_email", email);
+localStorage.setItem("login_date", new Date().toISOString());
+
 
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('planosSection').style.display = 'none';
@@ -329,19 +331,30 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
 
     const result = await res.json();
-    if (result.length > 0 && result[0].ativa === true) {
-      // Usuário ainda está ativo, mostrar busca
-      document.getElementById('introSection').style.display = 'none';
-      document.getElementById('planosSection').style.display = 'none';
-      document.getElementById('loginArea').classList.add('hidden');
-      document.getElementById('searchSection').classList.remove('hidden');
-      document.getElementById('menuPlanos').classList.add('hidden');
-      document.getElementById('planosToggle').classList.remove('hidden');
-      document.getElementById('menuLogin').innerText = 'Sair';
-      document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+if (result.length > 0 && result[0].ativa === true) {
+  const loginDate = new Date(localStorage.getItem("login_date"));
+  const now = new Date();
+  const diff = now - loginDate;
+  const oneDay = 24 * 60 * 60 * 1000;
 
-      loadData();
-    }
+  if (diff > oneDay) {
+    await logout();
+    return;
+  }
+
+  // Usuário ainda está ativo, mostrar busca
+  document.getElementById('introSection').style.display = 'none';
+  document.getElementById('planosSection').style.display = 'none';
+  document.getElementById('loginArea').classList.add('hidden');
+  document.getElementById('searchSection').classList.remove('hidden');
+  document.getElementById('menuPlanos').classList.add('hidden');
+  document.getElementById('planosToggle').classList.remove('hidden');
+  document.getElementById('menuLogin').innerText = 'Sair';
+  document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+
+  loadData();
+}
+
   } catch (err) {
     console.error("Erro ao verificar sessão automática:", err);
   }
