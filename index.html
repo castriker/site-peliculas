@@ -302,4 +302,21 @@
 
     navigator.sendBeacon(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, JSON.stringify({ ativa: false }));
   });
+// Bloqueia botão direito
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+// Bloqueia F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J
+document.addEventListener('keydown', function(e) {
+  if (
+    e.key === "F12" || 
+    (e.ctrlKey && e.shiftKey && e.key === "I") || 
+    (e.ctrlKey && e.key === "U") || 
+    (e.ctrlKey && e.shiftKey && e.key === "J")
+  ) {
+    e.preventDefault();
+  }
+});
+
 </script>
