@@ -309,8 +309,16 @@ if (sessao.ativa === true) {
       })
     });
 
-    localStorage.setItem("user_email", email);
-    localStorage.setItem("login_date", hoje.toISOString());
+    const mensagem = `
+  <strong>Bem-vindo(a)${result[0].nome ? `, ${result[0].nome}` : ''}!</strong><br>
+  Plano atual: <strong>${plano}</strong><br>
+  Data da compra: <strong>${new Date(dataCompra).toLocaleDateString('pt-BR')}</strong><br>
+  Válido até: <strong>${new Date(dataExpiracao).toLocaleDateString('pt-BR')}</strong>.
+`;
+document.querySelector("#searchSection .bg-gray-800").innerHTML = mensagem;
+
+localStorage.setItem("user_email", email);
+localStorage.setItem("login_date", hoje.toISOString());
 
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('planosSection').style.display = 'none';
@@ -369,13 +377,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('menuLogin').innerText = 'Sair';
     document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
 
-const mensagem = `
-  <strong>Bem-vindo(a), ${sessao.nome || 'usuário(a)'}!</strong><br>
-  Plano atual: <strong>${sessao.plano}</strong><br>
-  Data da compra: <strong>${new Date(sessao.data_compra).toLocaleDateString('pt-BR')}</strong><br>
-  Válido até: <strong>${new Date(sessao.data_expiracao).toLocaleDateString('pt-BR')}</strong>.
-`;
-document.querySelector("#searchSection .bg-gray-800").innerHTML = mensagem;
 
     loadData();
   } catch (err) {
