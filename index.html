@@ -210,7 +210,7 @@
       body: JSON.stringify({ ativa: true })
     });
 
-    sessionStorage.setItem("user_email", email);
+    localStorage.setItem("user_email", email);
 
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('planosSection').style.display = 'none';
@@ -264,7 +264,7 @@
   }
 
   async function logout() {
-    const email = sessionStorage.getItem("user_email");
+    const email = localStorage.getItem("user_email");
     if (!email) return;
 
     const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
