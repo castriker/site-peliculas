@@ -57,7 +57,7 @@
       Economize tempo, evite erros e <span class="text-yellow-400 font-bold">venda mais com segurança</span>.</p>
 
       <div class="flex flex-wrap justify-center lg:justify-start gap-3 mt-4">
-        <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Fácil de usar</span>
+        <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm"✔️ Fácil de usar</span>
         <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Sem propagandas</span>
         <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Atualizações automáticas</span>
       </div>
@@ -192,6 +192,15 @@
 <script>
   let data = [];
 
+function formatarData(dataString) {
+  const partes = dataString.split("-");
+  if (partes.length === 3) {
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+  return dataString;
+}
+
+
   function loadData() {
     fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
       .then(response => response.json())
@@ -320,6 +329,15 @@ if (sessao.ativa === true) {
     document.getElementById('planosToggle').classList.remove('hidden');
     document.getElementById('menuLogin').innerText = 'Sair';
     document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+
+    const mensagem = `
+      <strong>Bem-vindo(a), ${sessao.nome || 'usuário(a)'}!</strong><br>
+      Plano atual: <strong>${sessao.plano}</strong><br>
+      Data da compra: <strong>${formatarData(sessao.data_compra)}</strong><br>
+      Válido até: <strong>${formatarData(sessao.data_expiracao)}</strong>.
+    `;
+    document.querySelector("#searchSection .bg-gray-800").innerHTML = mensagem;
+
 
     loadData();
   } catch (err) {
@@ -505,6 +523,16 @@ if (result.length > 0 && result[0].ativa === true) {
   document.getElementById('planosToggle').classList.remove('hidden');
   document.getElementById('menuLogin').innerText = 'Sair';
   document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+
+let data = [];
+function formatarData(dataString) {
+  const partes = dataString.split("-");
+  if (partes.length === 3) {
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+  return dataString;
+}
+
 
   loadData();
 }
