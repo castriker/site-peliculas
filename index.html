@@ -234,16 +234,7 @@ async function checkEmail() {
 
   const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
   const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-
-  // Defina o plano padrão aqui
-  const plano = "3 meses";
-  const valor = 42;
-  const diasPlano = 90;
-
-  const hoje = new Date();
-  const dataCompra = hoje.toISOString();
-  const dataExpiracao = new Date(hoje.getTime() + (diasPlano * 24 * 60 * 60 * 1000)).toISOString();
-
+  
   try {
     const response = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
       method: "GET",
@@ -262,46 +253,44 @@ async function checkEmail() {
       return;
     }
 
-const sessao = result[0];
+    const sessao = result[0];
 
-// Verifica se já está expirado
-const hoje = new Date();
-const expira = new Date(sessao.data_expiracao);
-if (hoje > expira) {
-  const container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.top = '0';
-  container.style.left = '0';
-  container.style.width = '100vw';
-  container.style.height = '100vh';
-  container.style.backgroundColor = 'rgba(0,0,0,0.8)';
-  container.style.display = 'flex';
-  container.style.alignItems = 'center';
-  container.style.justifyContent = 'center';
-  container.style.zIndex = '9999';
+    const hoje = new Date();
+    const expira = new Date(sessao.data_expiracao);
 
-  container.innerHTML = `
-    <div style="background: white; color: black; padding: 2rem; border-radius: 1rem; max-width: 90%; text-align: center;">
-      <h2 style="font-size: 1.25rem; font-weight: bold;">⚠️ Plano Expirado</h2>
-      <p style="margin-top: 0.5rem;">Seu plano expirou. Faça um novo pagamento para continuar o acesso.</p>
-      <button onclick="document.body.removeChild(this.parentElement.parentElement); mostrarInicio();" style="margin-top: 1rem; padding: 0.5rem 1rem; background-color: #facc15; color: black; border: none; border-radius: 0.5rem; font-weight: bold;">
-        🔁 Renovar o plano
-      </button>
-    </div>
-  `;
+    if (hoje > expira) {
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.top = '0';
+      container.style.left = '0';
+      container.style.width = '100vw';
+      container.style.height = '100vh';
+      container.style.backgroundColor = 'rgba(0,0,0,0.8)';
+      container.style.display = 'flex';
+      container.style.alignItems = 'center';
+      container.style.justifyContent = 'center';
+      container.style.zIndex = '9999';
 
-  document.body.appendChild(container);
-  return;
-}
+      container.innerHTML = `
+        <div style="background: white; color: black; padding: 2rem; border-radius: 1rem; max-width: 90%; text-align: center;">
+          <h2 style="font-size: 1.25rem; font-weight: bold;">⚠️ Plano Expirado</h2>
+          <p style="margin-top: 0.5rem;">Seu plano expirou. Faça um novo pagamento para continuar o acesso.</p>
+          <button onclick="document.body.removeChild(this.parentElement.parentElement); mostrarInicio();" style="margin-top: 1rem; padding: 0.5rem 1rem; background-color: #facc15; color: black; border: none; border-radius: 0.5rem; font-weight: bold;">
+            🔁 Renovar o plano
+          </button>
+        </div>
+      `;
 
+      document.body.appendChild(container);
+      return;
+    }
 
-if (sessao.ativa === true) {
-  alert("⚠️ Este e-mail já está sendo usado em outro dispositivo.");
-  return;
-}
+    if (sessao.ativa === true) {
+      alert("⚠️ Este e-mail já está sendo usado em outro dispositivo.");
+      return;
+    }
 
-
-    // Atualiza os dados da sessão
+    // ✅ Atualiza apenas o campo `ativa: true`
     await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
       method: "PATCH",
       headers: {
@@ -309,13 +298,7 @@ if (sessao.ativa === true) {
         Authorization: `Bearer ${supabaseKey}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        ativa: true,
-        plano,
-        valor,
-        data_compra: dataCompra,
-        data_expiracao: dataExpiracao
-      })
+      body: JSON.stringify({ ativa: true })
     });
 
     localStorage.setItem("user_email", email);
@@ -330,6 +313,7 @@ if (sessao.ativa === true) {
     document.getElementById('menuLogin').innerText = 'Sair';
     document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
 
+    // Mensagem de boas-vindas
     const mensagem = `
       <strong>Bem-vindo(a), ${sessao.nome || 'usuário(a)'}!</strong><br>
       Plano atual: <strong>${sessao.plano}</strong><br>
@@ -338,14 +322,12 @@ if (sessao.ativa === true) {
     `;
     document.querySelector("#searchSection .bg-gray-800").innerHTML = mensagem;
 
-
     loadData();
   } catch (err) {
     console.error(err);
     alert("❌ Ocorreu um erro ao verificar o e-mail.");
   }
 }
-
 // Verificação automática ao abrir a página
 window.addEventListener('DOMContentLoaded', async () => {
   const email = localStorage.getItem("user_email");
@@ -540,6 +522,22 @@ function formatarData(dataString) {
   } catch (err) {
     console.error("Erro ao verificar sessão automática:", err);
   }
+});
+
+// Marca a sessão como inativa se a aba for fechada
+window.addEventListener("beforeunload", async () => {
+  const email = localStorage.getItem("user_email");
+  if (!email) return;
+
+  await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
+    method: "PATCH",
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ ativa: false })
+  });
 });
 
 
