@@ -232,7 +232,7 @@
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
     }
 
-    // Função de Login (checkEmail) – verificação de e-mail pago e limite de 2 dispositivos usando IP
+    // Função de Login (checkEmail) – verificação de e-mail pago e limite de acesso por IP
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       if (!email) {
@@ -273,6 +273,25 @@
         const ipData = await ipResp.json();
         const ipAddress = ipData.ip;
 
+        // Verifica se o campo allowed_ip está definido no registro (tabela "sessoes")
+        // Se não estiver definido, atualiza-o com o ip atual (primeiro acesso define o ip permitido)
+        if (!registro.allowed_ip) {
+          await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
+            method: "PATCH",
+            headers: {
+              apikey: supabaseKey,
+              Authorization: `Bearer ${supabaseKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ allowed_ip: ipAddress })
+          });
+        } else if (registro.allowed_ip !== ipAddress) {
+          // Se o ip atual for diferente do allowed_ip, bloqueia o acesso e exibe um botão para solicitar alteração via WhatsApp
+          alert("Seu acesso está restrito ao IP: " + registro.allowed_ip + ". Para solicitar remoção deste dispositivo, clique no botão.");
+          document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/utidatecnologia" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Alteração</a></p>';
+          return;
+        }
+
         // Consulta a tabela "login_sessions" para contar quantas sessões ativas já existem para o mesmo e-mail
         const resSessions = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&ativa=eq.true`, {
           method: "GET",
@@ -284,14 +303,9 @@
           }
         });
         const activeSessions = await resSessions.json();
-        // Cria um array com os IPs únicos já registrados
-        const existingIPs = activeSessions.map(session => session.ip_address);
-        const uniqueIPs = [...new Set(existingIPs)];
-        // Se houver 2 IPs diferentes e o novo IP não estiver entre eles, bloqueia o login
-        if (uniqueIPs.length >= 2 && !uniqueIPs.includes(ipAddress)) {
-          alert("Você já está logado em 2 dispositivos diferentes. Por favor, faça logout em um dos dispositivos para continuar.");
-          return;
-        }
+        // Se houver sessões ativas, verifica se o ip_address é compatível com o allowed_ip (já verificado acima)
+        // Aqui, permitimos quantas sessões forem originadas do mesmo IP.
+        // Se for o mesmo IP, permitimos. Se não, já foi bloqueado anteriormente.
 
         // Gera um token único e obtém informações do dispositivo
         const sessionToken = generateToken();
