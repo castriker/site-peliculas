@@ -32,7 +32,7 @@
     document.addEventListener('contextmenu', function(e) {
       e.preventDefault();
     });
-    // Bloqueia teclas de atalho para as DevTools: F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+    // Bloqueia teclas de atalho para devtools: F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
     document.addEventListener('keydown', function(e) {
       if (e.keyCode === 123 ||
          (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
@@ -51,11 +51,7 @@
         <a href="#introSection" onclick="mostrarInicio()" class="hover:text-yellow-400 transition">Início</a>
         <a href="#planosSection" onclick="mostrarPlanos()" class="hover:text-yellow-400 transition">Planos</a>
         <a href="https://wa.me/utidatecnologia" target="_blank" class="hover:text-yellow-400 transition">Contato</a>
-        <a href="#loginArea" onclick="goToLogin()" class="hover:text-yellow-400 transition">Login</a>
-<a href="#loginArea" id="menuLogin" onclick="goToLogin()" class="hover:text-yellow-400 transition">
-  Login
-</a>
-
+        <a href="#loginArea" id="menuLogin" onclick="goToLogin()" class="hover:text-yellow-400 transition">Login</a>
       </nav>
     </div>
   </header>
@@ -107,8 +103,7 @@
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')" 
-        class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
@@ -126,8 +121,7 @@
         <li>🔄 Atualizações automáticas</li>
         <li>🚫 Sem propagandas</li>
       </ul>
-      <button onclick="window.open('https://mpago.la/1DTP1fB', '_blank')" 
-        class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button onclick="window.open('https://mpago.la/1DTP1fB', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
@@ -145,8 +139,7 @@
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')" 
-        class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
@@ -164,8 +157,7 @@
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')" 
-        class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
@@ -174,10 +166,8 @@
   <!-- Área de Login (Oculta inicialmente) -->
   <section id="loginArea" class="max-w-4xl mx-auto p-4 sm:p-6 hidden">
     <label class="block mb-2 font-medium text-sm sm:text-base">Digite seu e-mail para acessar</label>
-    <input type="email" id="email" placeholder="Digite seu e-mail" 
-           class="w-full p-3 text-black rounded-lg mb-4 text-sm sm:text-base"/>
-    <button onclick="checkEmail()" 
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition text-sm sm:text-base">
+    <input type="email" id="email" placeholder="Digite seu e-mail" class="w-full p-3 text-black rounded-lg mb-4 text-sm sm:text-base"/>
+    <button onclick="checkEmail()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition text-sm sm:text-base">
       🔐 Entrar
     </button>
   </section>
@@ -188,8 +178,7 @@
       <strong>Bem-vindo(a)!</strong> Agora você tem acesso ao buscador de películas mais completo do Brasil!
     </div>
     <label class="block mb-2 text-sm font-medium">Digite o modelo do celular</label>
-    <input type="text" id="searchModel" placeholder="Digite o modelo" 
-           class="w-full p-3 text-black rounded-lg mb-4"/>
+    <input type="text" id="searchModel" placeholder="Digite o modelo" class="w-full p-3 text-black rounded-lg mb-4"/>
     <div id="result" class="p-4 bg-gray-700 rounded-lg hidden font-semibold"></div>
   </section>
 
@@ -201,7 +190,6 @@
 
   <script>
     let data = [];
-
     function formatarData(dataString) {
       const partes = dataString.split("-");
       if (partes.length === 3) {
@@ -209,8 +197,7 @@
       }
       return dataString;
     }
-
-    // Função para carregar dados (exemplo: da planilha)
+    // Função para carregar dados (ex: da planilha)
     function loadData() {
       fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
         .then(response => response.json())
@@ -220,7 +207,6 @@
           );
         });
     }
-
     function searchModel() {
       const searchModel = document.getElementById('searchModel').value.toUpperCase().trim();
       const resultElement = document.getElementById('result');
@@ -238,25 +224,20 @@
       resultElement.innerHTML = foundRows.length > 0 ? foundRows.join('<br><br>') : "<strong>Modelo não encontrado</strong>";
       resultElement.classList.remove('hidden');
     }
-
     document.getElementById('searchModel').addEventListener('input', searchModel);
-
     // Função para gerar um token de sessão único
     function generateToken() {
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
     }
-
-    // Função de Login (checkEmail) – verificação de e-mail pago, controle de IP e exibição do primeiro nome
+    // Função de Login (checkEmail) – verificação de e-mail pago, controle de IP (máx 2 IP distintos) e exibição do primeiro nome
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       if (!email) {
         alert('Digite um e-mail válido.');
         return;
       }
-
       const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
       const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-
       try {
         // Verifica a tabela "sessoes" para confirmar que o e-mail foi cadastrado (plano pago)
         const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
@@ -279,7 +260,7 @@
         const expira = new Date(registro.data_expiracao);
         if (hoje > expira) {
           alert("Seu plano expirou. Realize um novo pagamento para continuar o acesso.");
-          // Redireciona para a página de Planos
+          // Redireciona para a seção de Planos
           mostrarPlanos();
           return;
         }
@@ -287,24 +268,34 @@
         const ipResp = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipResp.json();
         const ipAddress = ipData.ip;
-        // Verifica se o campo allowed_ip está definido na tabela "sessoes"
-        if (!registro.allowed_ip) {
-          // Define allowed_ip com o IP atual no primeiro acesso
-          await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-            method: "PATCH",
-            headers: {
-              apikey: supabaseKey,
-              Authorization: `Bearer ${supabaseKey}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ allowed_ip: ipAddress })
-          });
-        } else if (registro.allowed_ip !== ipAddress) {
-          // Se o IP atual for diferente do allowed_ip, bloqueia o acesso
-          let whatsappMsg = encodeURIComponent(`Olá meu nome é ${registro.nome} e meu e-mail é ${email}, gostaria de excluir o meu IP cadastrado anteriormente. Estou ciente que somente posso fazer essa alteração uma única vez!`);
-          alert("Seu acesso está restrito ao IP: " + registro.allowed_ip + ". Para solicitar a alteração, clique no botão.");
-          document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/5537999625138?text=' + whatsappMsg + '" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Exclusão de IP</a></p>';
-          return;
+        // Lida com o campo allowed_ip (permitindo até 2 IPs distintos)
+        let allowedIPs = [];
+        if (registro.allowed_ip && registro.allowed_ip.trim() !== "") {
+          allowedIPs = registro.allowed_ip.split(",").map(ip => ip.trim());
+        }
+        if (allowedIPs.includes(ipAddress)) {
+          // IP já permitido, segue o fluxo
+        } else {
+          if (allowedIPs.length < 2) {
+            // Adiciona o IP atual à lista e atualiza no banco
+            allowedIPs.push(ipAddress);
+            let newAllowed = allowedIPs.join(", ");
+            await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
+              method: "PATCH",
+              headers: {
+                apikey: supabaseKey,
+                Authorization: `Bearer ${supabaseKey}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ allowed_ip: newAllowed })
+            });
+          } else {
+            // Já há 2 IPs distintos permitidos e o IP atual não está autorizado
+            let whatsappMsg = encodeURIComponent(`Olá meu nome é ${registro.nome} e meu e-mail é ${email}, gostaria de excluir o meu IP cadastrado anteriormente. Estou ciente que somente posso fazer essa alteração uma única vez!`);
+            alert("Excedido o limite de IPs permitidos. Você já está logado a partir dos IPs: " + allowedIPs.join(", ") + ". Para solicitar a alteração, clique no botão.");
+            document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/5537999625138?text=' + whatsappMsg + '" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Exclusão de IP</a></p>';
+            return;
+          }
         }
         // Consulta a tabela "login_sessions" para as sessões ativas para o mesmo e-mail
         const resSessions = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&ativa=eq.true`, {
@@ -317,11 +308,9 @@
           }
         });
         const activeSessions = await resSessions.json();
-        // Como o acesso é restrito ao IP definido, permitimos quantas sessões forem originadas do mesmo IP.
-        // Gera um token único e obtém informações do dispositivo
+        // Fluxo de login permitido para IP autorizados
         const sessionToken = generateToken();
         const deviceInfo = navigator.userAgent;
-        // Cria a nova sessão na tabela "login_sessions"
         const novaSessao = {
           email: email,
           session_token: sessionToken,
@@ -344,19 +333,17 @@
           alert("Erro ao criar sessão. Tente novamente.");
           return;
         }
-        // Salva os dados da sessão no localStorage
         localStorage.setItem("user_email", email);
         localStorage.setItem("login_date", new Date().toISOString());
         localStorage.setItem("session_token", sessionToken);
-        // Atualiza a interface: esconde a área de login e exibe a área de busca/conteúdo
+        // Atualiza a interface: oculta Login, exibe Área de Busca
         document.getElementById('introSection').style.display = 'none';
         document.getElementById('planosSection').classList.add('hidden');
         document.getElementById('loginArea').classList.add('hidden');
         document.getElementById('searchSection').classList.remove('hidden');
-        // Atualiza o botão de Login para "Sair"
         document.getElementById('menuLogin').innerText = 'Sair';
         document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-        // Exibe mensagem de boas-vindas utilizando o primeiro nome
+        // Exibe mensagem de boas-vindas com o primeiro nome
         document.querySelector("#searchSection .bg-gray-800").innerHTML = `<strong>Bem-vindo(a), ${registro.nome}!</strong>`;
         loadData();
       } catch (err) {
@@ -392,7 +379,6 @@
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
-      // Atualiza o botão de Login para "Login"
       document.getElementById('menuLogin').innerText = 'Login';
       document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
     }
@@ -420,9 +406,7 @@
         console.error("Erro na validação da sessão:", err);
       }
     }
-
     setInterval(validateSession, 60000);
-
     // Evento beforeunload: marca a sessão atual como inativa ao fechar a aba
     window.addEventListener("beforeunload", async () => {
       const sessionToken = localStorage.getItem("session_token");
@@ -443,7 +427,6 @@
         console.error("Erro no beforeunload:", err);
       }
     });
-
     // Verificação automática da sessão ao carregar a página
     window.addEventListener('DOMContentLoaded', async () => {
       const email = localStorage.getItem("user_email");
@@ -461,7 +444,7 @@
         });
         const result = await res.json();
         if (!result || result.length === 0 || result[0].ativa !== true) return;
-        // Busca registro na tabela "sessoes" para obter o primeiro nome
+        // Busca o registro na tabela "sessoes" para obter o primeiro nome
         const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
           method: "GET",
           headers: {
@@ -488,15 +471,18 @@
         console.error("Erro ao verificar sessão automática:", err);
       }
     });
-
-    // Função para mostrar a tela de Planos
-    function mostrarPlanos() {
-      document.getElementById('introSection').style.display = 'none';
-      document.getElementById('planosSection').classList.remove('hidden');
-      document.getElementById('loginArea').classList.add('hidden');
-      document.getElementById('searchSection').classList.add('hidden');
+    // Função para alternar a exibição dos Planos
+    function togglePlanos() {
+      const planos = document.getElementById('planosSection');
+      const btn = document.getElementById('planosToggle');
+      if (planos.classList.contains('hidden')) {
+        planos.classList.remove('hidden');
+        btn.innerHTML = '💳 Ocultar Planos';
+      } else {
+        planos.classList.add('hidden');
+        btn.innerHTML = '💳 Ver Planos +';
+      }
     }
-
     // Função para mostrar a Página Inicial (Início)
     function mostrarInicio() {
       document.getElementById('introSection').style.display = 'block';
@@ -504,7 +490,13 @@
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
     }
-
+    // Função para mostrar somente a seção de Planos
+    function mostrarPlanos() {
+      document.getElementById('introSection').style.display = 'none';
+      document.getElementById('planosSection').classList.remove('hidden');
+      document.getElementById('loginArea').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+    }
     // Função para mostrar a tela de Login
     function goToLogin() {
       document.getElementById('introSection').style.display = 'none';
