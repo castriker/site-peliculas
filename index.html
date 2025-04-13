@@ -27,6 +27,20 @@
       50% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
     }
   </style>
+  <script>
+    // Bloqueia o clique com o botão direito para evitar acesso ao código fonte.
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    // Bloqueia teclas comuns para abrir as devtools: F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U.
+    document.addEventListener('keydown', function(e) {
+      if (e.keyCode === 123 || 
+         (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+         (e.ctrlKey && e.key === 'U')) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </head>
 <body>
   <!-- Cabeçalho -->
@@ -232,7 +246,7 @@
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
     }
 
-    // Função de Login (checkEmail) – verificação de e-mail pago e limite de acesso por IP
+    // Função de Login (checkEmail) – verificação de e-mail pago, limite de acesso por IP e exibição do primeiro nome
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       if (!email) {
@@ -274,7 +288,7 @@
         const ipAddress = ipData.ip;
 
         // Verifica se o campo allowed_ip está definido no registro (tabela "sessoes")
-        // Se não estiver definido, atualiza-o com o ip atual (primeiro acesso define o ip permitido)
+        // Se não estiver definido, atualiza-o com o IP atual (primeiro acesso define o IP permitido)
         if (!registro.allowed_ip) {
           await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
             method: "PATCH",
@@ -286,9 +300,11 @@
             body: JSON.stringify({ allowed_ip: ipAddress })
           });
         } else if (registro.allowed_ip !== ipAddress) {
-          // Se o ip atual for diferente do allowed_ip, bloqueia o acesso e exibe um botão para solicitar alteração via WhatsApp
-          alert("Seu acesso está restrito ao IP: " + registro.allowed_ip + ". Para solicitar remoção deste dispositivo, clique no botão.");
-          document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/utidatecnologia" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Alteração</a></p>';
+          // Se o IP atual for diferente do allowed_ip, bloqueia o acesso e exibe um botão para solicitar alteração.
+          // A mensagem incluirá o primeiro nome (registro.nome) e o e-mail.
+          let whatsappMsg = encodeURIComponent(`Olá meu nome é ${registro.nome} e meu e-mail é ${email}, gostaria de excluir o meu IP cadastrado anteriormente. Estou ciente que somente posso fazer essa alteração uma única vez!`);
+          alert("Seu acesso está restrito ao IP: " + registro.allowed_ip + ". Para solicitar a alteração, clique no botão.");
+          document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/5537999625138?text=' + whatsappMsg + '" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Exclusão de IP</a></p>';
           return;
         }
 
@@ -303,9 +319,8 @@
           }
         });
         const activeSessions = await resSessions.json();
-        // Se houver sessões ativas, verifica se o ip_address é compatível com o allowed_ip (já verificado acima)
-        // Aqui, permitimos quantas sessões forem originadas do mesmo IP.
-        // Se for o mesmo IP, permitimos. Se não, já foi bloqueado anteriormente.
+        // Como o acesso é restrito a um único IP (allowed_ip), permitimos quantas sessões originadas do mesmo IP.
+        // Não há verificação adicional aqui.
 
         // Gera um token único e obtém informações do dispositivo
         const sessionToken = generateToken();
@@ -342,7 +357,8 @@
         localStorage.setItem("login_date", new Date().toISOString());
         localStorage.setItem("session_token", sessionToken);
 
-        // Atualiza a interface: esconde a área de login e mostra a área de busca/conteúdo
+        // Atualiza a interface: esconde a área de login e mostra a área de busca/conteúdo.
+        // Usa o primeiro nome (registro.nome) para a mensagem de boas-vindas.
         document.getElementById('introSection').style.display = 'none';
         document.getElementById('planosSection').style.display = 'none';
         document.getElementById('loginArea').classList.add('hidden');
@@ -351,9 +367,7 @@
         document.getElementById('planosToggle').classList.remove('hidden');
         document.getElementById('menuLogin').innerText = 'Sair';
         document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-
-        // Exibe mensagem de boas-vindas e carrega os dados
-        document.querySelector("#searchSection .bg-gray-800").innerHTML = `<strong>Bem-vindo(a), ${email}!</strong>`;
+        document.querySelector("#searchSection .bg-gray-800").innerHTML = `<strong>Bem-vindo(a), ${registro.nome}!</strong>`;
         loadData();
       } catch (err) {
         console.error(err);
@@ -467,7 +481,21 @@
         });
         const result = await res.json();
         if (!result || result.length === 0 || result[0].ativa !== true) return;
-        // Se a sessão estiver ativa, exibe a área de busca/conteúdo
+        // Se a sessão estiver ativa, opcionalmente busca o primeiro nome para a mensagem de boas-vindas.
+        const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
+          method: "GET",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        });
+        const autorizacoes = await resSessoes.json();
+        let displayName = email;
+        if (autorizacoes && autorizacoes.length > 0 && autorizacoes[0].nome) {
+          displayName = autorizacoes[0].nome;
+        }
         document.getElementById('introSection').style.display = 'none';
         document.getElementById('planosSection').style.display = 'none';
         document.getElementById('loginArea').classList.add('hidden');
@@ -476,7 +504,7 @@
         document.getElementById('planosToggle').classList.remove('hidden');
         document.getElementById('menuLogin').innerText = 'Sair';
         document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-        document.querySelector("#searchSection .bg-gray-800").innerHTML = `<strong>Bem-vindo(a), ${email}!</strong>`;
+        document.querySelector("#searchSection .bg-gray-800").innerHTML = `<strong>Bem-vindo(a), ${displayName}!</strong>`;
         loadData();
       } catch (err) {
         console.error("Erro ao verificar sessão automática:", err);
