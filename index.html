@@ -28,11 +28,10 @@
     }
   </style>
   <script>
-    // Bloqueia o clique com o botão direito para evitar acesso ao código fonte.
+    // BLOQUEIO DO CLIQUE COM BOTÃO DIREITO E TECLAS DE ATALHO
     document.addEventListener('contextmenu', function(e) {
       e.preventDefault();
     });
-    // Bloqueia teclas comuns para abrir as devtools: F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U.
     document.addEventListener('keydown', function(e) {
       if (e.keyCode === 123 || 
          (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
@@ -246,7 +245,7 @@
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
     }
 
-    // Função de Login (checkEmail) – verificação de e-mail pago, limite de acesso por IP e exibição do primeiro nome
+    // Função de Login (checkEmail) – verificação de e-mail pago, controle de IP e exibição do primeiro nome
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       if (!email) {
@@ -287,9 +286,9 @@
         const ipData = await ipResp.json();
         const ipAddress = ipData.ip;
 
-        // Verifica se o campo allowed_ip está definido no registro (tabela "sessoes")
-        // Se não estiver definido, atualiza-o com o IP atual (primeiro acesso define o IP permitido)
+        // Verifica se o campo allowed_ip está definido no registro da tabela "sessoes"
         if (!registro.allowed_ip) {
+          // Primeiro acesso: define o allowed_ip como o ip atual
           await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
             method: "PATCH",
             headers: {
@@ -300,15 +299,15 @@
             body: JSON.stringify({ allowed_ip: ipAddress })
           });
         } else if (registro.allowed_ip !== ipAddress) {
-          // Se o IP atual for diferente do allowed_ip, bloqueia o acesso e exibe um botão para solicitar alteração.
-          // A mensagem incluirá o primeiro nome (registro.nome) e o e-mail.
+          // Se o IP atual for diferente do allowed_ip, bloqueia o acesso
+          // Cria a mensagem do WhatsApp usando o primeiro nome e o e-mail
           let whatsappMsg = encodeURIComponent(`Olá meu nome é ${registro.nome} e meu e-mail é ${email}, gostaria de excluir o meu IP cadastrado anteriormente. Estou ciente que somente posso fazer essa alteração uma única vez!`);
           alert("Seu acesso está restrito ao IP: " + registro.allowed_ip + ". Para solicitar a alteração, clique no botão.");
           document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/5537999625138?text=' + whatsappMsg + '" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Exclusão de IP</a></p>';
           return;
         }
 
-        // Consulta a tabela "login_sessions" para contar quantas sessões ativas já existem para o mesmo e-mail
+        // Consulta a tabela "login_sessions" para obter as sessões ativas para o mesmo e-mail
         const resSessions = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&ativa=eq.true`, {
           method: "GET",
           headers: {
@@ -319,8 +318,7 @@
           }
         });
         const activeSessions = await resSessions.json();
-        // Como o acesso é restrito a um único IP (allowed_ip), permitimos quantas sessões originadas do mesmo IP.
-        // Não há verificação adicional aqui.
+        // Como o acesso é restrito pelo IP definido (allowed_ip), permitimos quantas sessões forem originadas dele.
 
         // Gera um token único e obtém informações do dispositivo
         const sessionToken = generateToken();
@@ -357,8 +355,7 @@
         localStorage.setItem("login_date", new Date().toISOString());
         localStorage.setItem("session_token", sessionToken);
 
-        // Atualiza a interface: esconde a área de login e mostra a área de busca/conteúdo.
-        // Usa o primeiro nome (registro.nome) para a mensagem de boas-vindas.
+        // Atualiza a interface: esconde a área de login e mostra a área de busca/conteúdo
         document.getElementById('introSection').style.display = 'none';
         document.getElementById('planosSection').style.display = 'none';
         document.getElementById('loginArea').classList.add('hidden');
@@ -367,6 +364,8 @@
         document.getElementById('planosToggle').classList.remove('hidden');
         document.getElementById('menuLogin').innerText = 'Sair';
         document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+
+        // Exibe mensagem de boas-vindas utilizando o primeiro nome (registro.nome) e carrega os dados
         document.querySelector("#searchSection .bg-gray-800").innerHTML = `<strong>Bem-vindo(a), ${registro.nome}!</strong>`;
         loadData();
       } catch (err) {
@@ -431,7 +430,7 @@
         });
         const result = await res.json();
         if (!result || result.length === 0 || result[0].ativa !== true) {
-          alert("Sua sessão foi encerrada (possivelmente por ter feito login em outro dispositivo).");
+          // Não exibe alerta se for logout manual ou por fechamento da aba; apenas encerra a sessão
           logout();
         }
       } catch (err) {
@@ -481,7 +480,7 @@
         });
         const result = await res.json();
         if (!result || result.length === 0 || result[0].ativa !== true) return;
-        // Se a sessão estiver ativa, opcionalmente busca o primeiro nome para a mensagem de boas-vindas.
+        // Busca o registro na tabela "sessoes" para obter o primeiro nome
         const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
           method: "GET",
           headers: {
