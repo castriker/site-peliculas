@@ -268,8 +268,11 @@
         });
         const autorizacoes = await resSessoes.json();
         if (!autorizacoes || autorizacoes.length === 0) {
-          alert("E-mail não autorizado. Por favor, adquira o plano para acessar.");
-          return;
+  alert("E-mail não autorizado. Por favor, adquira o plano para acessar.");
+  mostrarPlanos(); // <-- Redireciona para a seção de planos
+  return;
+}
+
         }
         // Verifica se o plano ainda está válido
         const registro = autorizacoes[0];
