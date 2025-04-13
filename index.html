@@ -41,124 +41,118 @@
     </div>
   </header>
 
- <!-- Introdução -->
-<section id="introSection" class="py-12 bg-[#0b1120] text-white">
-  <div class="max-w-7xl mx-auto flex flex-col-reverse lg:flex-row items-center px-4 lg:px-8">
-    
-    <!-- Texto -->
-    <div class="lg:w-1/2 text-center lg:text-left">
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-yellow-400 mb-4">
-        <span class="inline-block">🧩</span> Encontre a película certa em segundos
-      </h2>
-      <p class="text-gray-300 text-lg mb-4">Você trabalha com celular e perde tempo testando películas ou pesquisando compatibilidades?<br>
-      <span class="font-bold text-white">Esse site é pra você.</span></p>
-
-      <p class="text-gray-400 mb-4">Aqui você acessa uma <span class="text-yellow-400 font-bold">tabela completa e atualizada</span> com modelos compatíveis.<br>
-      Economize tempo, evite erros e <span class="text-yellow-400 font-bold">venda mais com segurança</span>.</p>
-
-      <div class="flex flex-wrap justify-center lg:justify-start gap-3 mt-4">
-        <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm"✔️ Fácil de usar</span>
-        <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Sem propagandas</span>
-        <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Atualizações automáticas</span>
+  <!-- Introdução -->
+  <section id="introSection" class="py-12 bg-[#0b1120] text-white">
+    <div class="max-w-7xl mx-auto flex flex-col-reverse lg:flex-row items-center px-4 lg:px-8">
+      <!-- Texto -->
+      <div class="lg:w-1/2 text-center lg:text-left">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-yellow-400 mb-4">
+          <span class="inline-block">🧩</span> Encontre a película certa em segundos
+        </h2>
+        <p class="text-gray-300 text-lg mb-4">
+          Você trabalha com celular e perde tempo testando películas ou pesquisando compatibilidades?<br>
+          <span class="font-bold text-white">Esse site é pra você.</span>
+        </p>
+        <p class="text-gray-400 mb-4">
+          Aqui você acessa uma <span class="text-yellow-400 font-bold">tabela completa e atualizada</span> com modelos compatíveis.<br>
+          Economize tempo, evite erros e <span class="text-yellow-400 font-bold">venda mais com segurança</span>.
+        </p>
+        <div class="flex flex-wrap justify-center lg:justify-start gap-3 mt-4">
+          <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Fácil de usar</span>
+          <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Sem propagandas</span>
+          <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Atualizações automáticas</span>
+        </div>
+        <p class="text-white mt-6 text-lg">
+          <span class="text-yellow-400 font-bold">A partir de R$ 12,00 por mês</span>, você transforma seu atendimento e ganha confiança no que oferece.
+        </p>
       </div>
-
-      <p class="text-white mt-6 text-lg">
-        <span class="text-yellow-400 font-bold">A partir de R$ 12,00 por mês</span>, você transforma seu atendimento e ganha confiança no que oferece.
-      </p>
+      <!-- Imagem -->
+      <div class="lg:w-1/2 flex justify-center mb-8 lg:mb-0">
+        <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
+      </div>
     </div>
+  </section>
 
-    <!-- Imagem -->
-    <div class="lg:w-1/2 flex justify-center mb-8 lg:mb-0">
-      <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
-    </div>
-  </div>
-</section>
-
-<!-- Título dos Planos -->
-<section class="text-center py-12 bg-[#121212]">
-  <h2 class="text-4xl font-extrabold text-yellow-400">Escolha seu Plano</h2>
-  <p class="text-gray-300 mt-2">Acesse nossa tabela de películas compatíveis com desconto progressivo.</p>
-</section>
-
+  <!-- Título dos Planos -->
+  <section class="text-center py-12 bg-[#121212]">
+    <h2 class="text-4xl font-extrabold text-yellow-400">Escolha seu Plano</h2>
+    <p class="text-gray-300 mt-2">Acesse nossa tabela de películas compatíveis com desconto progressivo.</p>
+  </section>
 
   <!-- Planos -->
   <section id="planosSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-8 max-w-7xl mx-auto">
+    <!-- 1 MÊS -->
+    <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
+      <div>
+        <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
+        <h3 class="text-lg sm:text-xl font-bold">1 Mês</h3>
+        <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 16,00</p>
+        <p class="text-sm text-gray-600 mb-3">Total: R$ 16,00</p>
+        <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+          <li>📄 Acesso à tabela completa</li>
+          <li>🔄 Atualizações automáticas</li>
+          <li>🚫 Sem propagandas</li>
+        </ul>
+      </div>
+      <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+        💳 Comprar
+      </button>
+    </div>
 
-  <!-- 1 MÊS -->
-  <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
-    <div>
-      <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
-      <h3 class="text-lg sm:text-xl font-bold">1 Mês</h3>
-      <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 16,00</p>
-      <p class="text-sm text-gray-600 mb-3">Total: R$ 16,00</p>
-      <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+    <!-- 3 MESES -->
+    <div class="relative bg-[#fffbea] text-black rounded-xl p-6 text-center shadow-[0_0_25px_rgba(255,204,0,0.5)] border-2 border-yellow-400 highlight">
+      <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+        MAIS VENDIDO
+      </div>
+      <h3 class="text-xl font-bold flex justify-center items-center gap-2">⭐ 3 Meses</h3>
+      <p class="text-3xl font-extrabold mt-2">R$ 14,00</p>
+      <p class="text-sm text-gray-600 mb-3">Total: R$ 42,00</p>
+      <ul class="text-sm sm:text-base mb-4 text-left space-y-1">
         <li>📄 Acesso à tabela completa</li>
         <li>🔄 Atualizações automáticas</li>
         <li>🚫 Sem propagandas</li>
       </ul>
+      <button onclick="window.open('https://mpago.la/1DTP1fB', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+        💳 Comprar
+      </button>
     </div>
-    <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-      💳 Comprar
-    </button>
-  </div>
 
-  <!-- 3 MESES -->
-  <div class="relative bg-[#fffbea] text-black rounded-xl p-6 text-center shadow-[0_0_25px_rgba(255,204,0,0.5)] border-2 border-yellow-400 highlight">
-  <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-    MAIS VENDIDO
-  </div>
-  <h3 class="text-xl font-bold flex justify-center items-center gap-2">⭐ 3 Meses</h3>
-  <p class="text-3xl font-extrabold mt-2">R$ 14,00</p>
-  <p class="text-sm text-gray-600 mb-3">Total: R$ 42,00</p>
-  <ul class="text-sm sm:text-base mb-4 text-left space-y-1">
-    <li>📄 Acesso à tabela completa</li>
-    <li>🔄 Atualizações automáticas</li>
-    <li>🚫 Sem propagandas</li>
-  </ul>
-  <button onclick="window.open('https://mpago.la/1DTP1fB', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-    💳 Comprar
-  </button>
-</div>
-
-
-  <!-- 6 MESES -->
-  <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
-    <div>
-      <div class="badge absolute top-2 right-2">18,75% OFF</div>
-      <h3 class="text-lg sm:text-xl font-bold">6 Meses</h3>
-      <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 13,00</p>
-      <p class="text-sm text-gray-600 mb-3">Total: R$ 78,00</p>
-      <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
-        <li>📄 Acesso à tabela completa</li>
-        <li>🔄 Atualizações automáticas</li>
-        <li>🚫 Sem propagandas</li>
-      </ul>
+    <!-- 6 MESES -->
+    <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
+      <div>
+        <div class="badge absolute top-2 right-2">18,75% OFF</div>
+        <h3 class="text-lg sm:text-xl font-bold">6 Meses</h3>
+        <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 13,00</p>
+        <p class="text-sm text-gray-600 mb-3">Total: R$ 78,00</p>
+        <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+          <li>📄 Acesso à tabela completa</li>
+          <li>🔄 Atualizações automáticas</li>
+          <li>🚫 Sem propagandas</li>
+        </ul>
+      </div>
+      <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+        💳 Comprar
+      </button>
     </div>
-    <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-      💳 Comprar
-    </button>
-  </div>
 
-  <!-- 1 ANO -->
-  <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
-    <div>
-      <div class="badge absolute top-2 right-2">25% OFF</div>
-      <h3 class="text-lg sm:text-xl font-bold">1 Ano</h3>
-      <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 12,00</p>
-      <p class="text-sm text-gray-600 mb-3">Total: R$ 144,00</p>
-      <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
-        <li>📄 Acesso à tabela completa</li>
-        <li>🔄 Atualizações automáticas</li>
-        <li>🚫 Sem propagandas</li>
-      </ul>
+    <!-- 1 ANO -->
+    <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
+      <div>
+        <div class="badge absolute top-2 right-2">25% OFF</div>
+        <h3 class="text-lg sm:text-xl font-bold">1 Ano</h3>
+        <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 12,00</p>
+        <p class="text-sm text-gray-600 mb-3">Total: R$ 144,00</p>
+        <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+          <li>📄 Acesso à tabela completa</li>
+          <li>🔄 Atualizações automáticas</li>
+          <li>🚫 Sem propagandas</li>
+        </ul>
+      </div>
+      <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+        💳 Comprar
+      </button>
     </div>
-    <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-      💳 Comprar
-    </button>
-  </div>
-
-</section>
-
+  </section>
 
   <!-- Área de Login -->
   <section id="loginArea" class="max-w-4xl mx-auto p-4 sm:p-6 hidden">
@@ -168,7 +162,8 @@
       🔐 Entrar
     </button>
   </section>
-  <!-- Busca -->
+
+  <!-- Área de Busca -->
   <section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
     <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
       <strong>Bem-vindo(a)!</strong> Agora você tem acesso ao buscador de películas mais completo do Brasil!
@@ -181,7 +176,7 @@
     </button>
   </section>
 
-  <!-- Planos abaixo da busca -->
+  <!-- Planos abaixo da Busca -->
   <section id="planosSectionAfter" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-8 max-w-7xl mx-auto"></section>
 
   <!-- Rodapé -->
@@ -189,356 +184,321 @@
     Copyright &copy; 2021 UTI Da Tecnologia - Todos os Direitos Reservados.<br>
     Desenvolvido por <strong>Carla Vasconcelos</strong> (UTI Da Tecnologia).
   </footer>
-<script>
-  let data = [];
 
-function formatarData(dataString) {
-  const partes = dataString.split("-");
-  if (partes.length === 3) {
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
-  }
-  return dataString;
-}
+  <script>
+    let data = [];
 
-
-  function loadData() {
-    fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
-      .then(response => response.json())
-      .then(jsonData => {
-        data = jsonData.map(row => row[0].trim().toUpperCase().split(',').map(m => m.trim()));
-      });
-  }
-
-  function searchModel() {
-    const searchModel = document.getElementById('searchModel').value.toUpperCase().trim();
-    const resultElement = document.getElementById('result');
-    if (searchModel === "") {
-      resultElement.classList.add('hidden');
-      return;
+    function formatarData(dataString) {
+      const partes = dataString.split("-");
+      if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+      return dataString;
     }
-    let foundRows = data.flatMap(row =>
-      row.some(model => model.includes(searchModel)) 
-        ? [`Modelo Procurado: <strong>${searchModel}</strong><br>Modelos Compatíveis: ${row.map(m => m.includes(searchModel) ? `<span class="highlight">${m}</span>` : m).join(', ')}`]
-        : []
-    );
-    resultElement.innerHTML = foundRows.length > 0 ? foundRows.join('<br><br>') : "<strong>Modelo não encontrado</strong>";
-    resultElement.classList.remove('hidden');
-  }
 
-  document.getElementById('searchModel').addEventListener('input', searchModel);
+    // Função para carregar dados (ex: da planilha)
+    function loadData() {
+      fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
+        .then(response => response.json())
+        .then(jsonData => {
+          data = jsonData.map(row =>
+            row[0].trim().toUpperCase().split(',').map(m => m.trim())
+          );
+        });
+    }
 
+    function searchModel() {
+      const searchModel = document.getElementById('searchModel').value.toUpperCase().trim();
+      const resultElement = document.getElementById('result');
+      if (searchModel === "") {
+        resultElement.classList.add('hidden');
+        return;
+      }
+      let foundRows = data.flatMap(row =>
+        row.some(model => model.includes(searchModel))
+          ? [`Modelo Procurado: <strong>${searchModel}</strong><br>Modelos Compatíveis: ${row.map(m =>
+              m.includes(searchModel) ? `<span class="highlight">${m}</span>` : m
+            ).join(', ')}`]
+          : []
+      );
+      resultElement.innerHTML = foundRows.length > 0 ? foundRows.join('<br><br>') : "<strong>Modelo não encontrado</strong>";
+      resultElement.classList.remove('hidden');
+    }
 
-async function checkEmail() {
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  if (!email) return alert('Digite um e-mail válido.');
+    document.getElementById('searchModel').addEventListener('input', searchModel);
 
-  const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-  
-  try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-      method: "GET",
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
+    // Função para gerar um token de sessão único
+    function generateToken() {
+      return Date.now().toString() + Math.random().toString(36).substr(2, 8);
+    }
+
+    // Função de Login (checkEmail) – verificação de e-mail pago e limite de 2 dispositivos usando IP
+    async function checkEmail() {
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      if (!email) {
+        alert('Digite um e-mail válido.');
+        return;
+      }
+
+      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+
+      try {
+        // Verifica a tabela "sessoes" para confirmar que o e-mail foi cadastrado (plano pago)
+        const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
+          method: "GET",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        });
+        const autorizacoes = await resSessoes.json();
+        if (!autorizacoes || autorizacoes.length === 0) {
+          alert("E-mail não autorizado. Por favor, adquira o plano para acessar.");
+          return;
+        }
+        // Verifica se o plano ainda está válido
+        const registro = autorizacoes[0];
+        const hoje = new Date();
+        const expira = new Date(registro.data_expiracao);
+        if (hoje > expira) {
+          alert("Seu plano expirou. Realize um novo pagamento para continuar o acesso.");
+          return;
+        }
+
+        // Obtém o IP público do usuário utilizando a API ipify
+        const ipResp = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResp.json();
+        const ipAddress = ipData.ip;
+
+        // Consulta a tabela "login_sessions" para contar quantas sessões ativas já existem para o mesmo e-mail
+        const resSessions = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&ativa=eq.true`, {
+          method: "GET",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        });
+        const activeSessions = await resSessions.json();
+        // Cria um array com os IPs únicos já registrados
+        const existingIPs = activeSessions.map(session => session.ip_address);
+        const uniqueIPs = [...new Set(existingIPs)];
+        // Se houver 2 IPs diferentes e o novo IP não estiver entre eles, bloqueia o login
+        if (uniqueIPs.length >= 2 && !uniqueIPs.includes(ipAddress)) {
+          alert("Você já está logado em 2 dispositivos diferentes. Por favor, faça logout em um dos dispositivos para continuar.");
+          return;
+        }
+
+        // Gera um token único e obtém informações do dispositivo
+        const sessionToken = generateToken();
+        const deviceInfo = navigator.userAgent;
+
+        // Cria a nova sessão na tabela "login_sessions"
+        const novaSessao = {
+          email: email,
+          session_token: sessionToken,
+          ativa: true,
+          login_date: new Date().toISOString(),
+          device_info: deviceInfo,
+          ip_address: ipAddress
+        };
+
+        const resInsert = await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
+          method: "POST",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(novaSessao)
+        });
+
+        if (!resInsert.ok) {
+          console.error("Erro ao criar a nova sessão:", resInsert.statusText);
+          alert("Erro ao criar sessão. Tente novamente.");
+          return;
+        }
+
+        // Salva os dados da sessão no localStorage
+        localStorage.setItem("user_email", email);
+        localStorage.setItem("login_date", new Date().toISOString());
+        localStorage.setItem("session_token", sessionToken);
+
+        // Atualiza a interface: esconde a área de login e mostra a área de busca/conteúdo
+        document.getElementById('introSection').style.display = 'none';
+        document.getElementById('planosSection').style.display = 'none';
+        document.getElementById('loginArea').classList.add('hidden');
+        document.getElementById('searchSection').classList.remove('hidden');
+        document.getElementById('menuPlanos').classList.add('hidden');
+        document.getElementById('planosToggle').classList.remove('hidden');
+        document.getElementById('menuLogin').innerText = 'Sair';
+        document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+
+        // Exibe mensagem de boas-vindas e carrega os dados
+        document.querySelector("#searchSection .bg-gray-800").innerHTML = `<strong>Bem-vindo(a), ${email}!</strong>`;
+        loadData();
+      } catch (err) {
+        console.error(err);
+        alert("❌ Ocorreu um erro ao verificar o e-mail.");
+      }
+    }
+
+    // Função de Logout utilizando a tabela "login_sessions"
+    async function logout() {
+      const email = localStorage.getItem("user_email");
+      const sessionToken = localStorage.getItem("session_token");
+      if (!email || !sessionToken) return;
+
+      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+
+      try {
+        await fetch(`${supabaseUrl}/rest/v1/login_sessions?session_token=eq.${sessionToken}`, {
+          method: "PATCH",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ ativa: false })
+        });
+      } catch (err) {
+        console.error("Erro ao encerrar a sessão:", err);
+      }
+
+      // Limpa os dados do localStorage e restaura a interface
+      localStorage.removeItem("user_email");
+      localStorage.removeItem("login_date");
+      localStorage.removeItem("session_token");
+
+      document.getElementById('introSection').style.display = 'block';
+      document.getElementById('planosSection').style.display = 'grid';
+      document.getElementById('loginArea').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('menuPlanos').classList.remove('hidden');
+      document.getElementById('planosToggle').classList.add('hidden');
+      document.getElementById('menuLogin').innerText = 'Login';
+      document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
+    }
+
+    // Função de validação periódica da sessão
+    async function validateSession() {
+      const email = localStorage.getItem("user_email");
+      const storedToken = localStorage.getItem("session_token");
+      if (!email || !storedToken) return;
+
+      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&session_token=eq.${storedToken}`, {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json"
+          }
+        });
+        const result = await res.json();
+        if (!result || result.length === 0 || result[0].ativa !== true) {
+          alert("Sua sessão foi encerrada (possivelmente por ter feito login em outro dispositivo).");
+          logout();
+        }
+      } catch (err) {
+        console.error("Erro na validação da sessão:", err);
+      }
+    }
+
+    // Verifica a sessão a cada 60 segundos
+    setInterval(validateSession, 60000);
+
+    // Evento beforeunload: marca a sessão atual como inativa ao fechar a aba
+    window.addEventListener("beforeunload", async () => {
+      const sessionToken = localStorage.getItem("session_token");
+      if (!sessionToken) return;
+      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+      try {
+        await fetch(`${supabaseUrl}/rest/v1/login_sessions?session_token=eq.${sessionToken}`, {
+          method: "PATCH",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ ativa: false })
+        });
+      } catch (err) {
+        console.error("Erro no beforeunload:", err);
       }
     });
 
-    const result = await response.json();
+    // Verificação automática da sessão ao carregar a página
+    window.addEventListener('DOMContentLoaded', async () => {
+      const email = localStorage.getItem("user_email");
+      const storedToken = localStorage.getItem("session_token");
+      if (!email || !storedToken) return;
 
-    if (!result || result.length === 0) {
-      alert("❌ E-mail não autorizado!");
-      return;
-    }
-
-    const sessao = result[0];
-
-    const hoje = new Date();
-    const expira = new Date(sessao.data_expiracao);
-
-    if (hoje > expira) {
-      const container = document.createElement('div');
-      container.style.position = 'fixed';
-      container.style.top = '0';
-      container.style.left = '0';
-      container.style.width = '100vw';
-      container.style.height = '100vh';
-      container.style.backgroundColor = 'rgba(0,0,0,0.8)';
-      container.style.display = 'flex';
-      container.style.alignItems = 'center';
-      container.style.justifyContent = 'center';
-      container.style.zIndex = '9999';
-
-      container.innerHTML = `
-        <div style="background: white; color: black; padding: 2rem; border-radius: 1rem; max-width: 90%; text-align: center;">
-          <h2 style="font-size: 1.25rem; font-weight: bold;">⚠️ Plano Expirado</h2>
-          <p style="margin-top: 0.5rem;">Seu plano expirou. Faça um novo pagamento para continuar o acesso.</p>
-          <button onclick="document.body.removeChild(this.parentElement.parentElement); mostrarInicio();" style="margin-top: 1rem; padding: 0.5rem 1rem; background-color: #facc15; color: black; border: none; border-radius: 0.5rem; font-weight: bold;">
-            🔁 Renovar o plano
-          </button>
-        </div>
-      `;
-
-      document.body.appendChild(container);
-      return;
-    }
-
-    if (sessao.ativa === true) {
-      alert("⚠️ Este e-mail já está sendo usado em outro dispositivo.");
-      return;
-    }
-
-    // ✅ Atualiza apenas o campo `ativa: true`
-    await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-      method: "PATCH",
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ ativa: true })
-    });
-
-    localStorage.setItem("user_email", email);
-    localStorage.setItem("login_date", hoje.toISOString());
-
-    document.getElementById('introSection').style.display = 'none';
-    document.getElementById('planosSection').style.display = 'none';
-    document.getElementById('loginArea').classList.add('hidden');
-    document.getElementById('searchSection').classList.remove('hidden');
-    document.getElementById('menuPlanos').classList.add('hidden');
-    document.getElementById('planosToggle').classList.remove('hidden');
-    document.getElementById('menuLogin').innerText = 'Sair';
-    document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-
-    // Mensagem de boas-vindas
-    const mensagem = `
-      <strong>Bem-vindo(a), ${sessao.nome || 'usuário(a)'}!</strong><br>
-      Plano atual: <strong>${sessao.plano}</strong><br>
-      Data da compra: <strong>${formatarData(sessao.data_compra)}</strong><br>
-      Válido até: <strong>${formatarData(sessao.data_expiracao)}</strong>.
-    `;
-    document.querySelector("#searchSection .bg-gray-800").innerHTML = mensagem;
-
-    loadData();
-  } catch (err) {
-    console.error(err);
-    alert("❌ Ocorreu um erro ao verificar o e-mail.");
-  }
-}
-// Verificação automática ao abrir a página
-window.addEventListener('DOMContentLoaded', async () => {
-  const email = localStorage.getItem("user_email");
-  if (!email) return;
-
-  const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-
-  try {
-    const res = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        "Content-Type": "application/json"
+      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&session_token=eq.${storedToken}`, {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json"
+          }
+        });
+        const result = await res.json();
+        if (!result || result.length === 0 || result[0].ativa !== true) return;
+        // Se a sessão estiver ativa, exibe a área de busca/conteúdo
+        document.getElementById('introSection').style.display = 'none';
+        document.getElementById('planosSection').style.display = 'none';
+        document.getElementById('loginArea').classList.add('hidden');
+        document.getElementById('searchSection').classList.remove('hidden');
+        document.getElementById('menuPlanos').classList.add('hidden');
+        document.getElementById('planosToggle').classList.remove('hidden');
+        document.getElementById('menuLogin').innerText = 'Sair';
+        document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+        document.querySelector("#searchSection .bg-gray-800").innerHTML = `<strong>Bem-vindo(a), ${email}!</strong>`;
+        loadData();
+      } catch (err) {
+        console.error("Erro ao verificar sessão automática:", err);
       }
     });
 
-    const result = await res.json();
-    if (!result || result.length === 0) return;
-
-    const sessao = result[0];
-    if (!sessao.ativa) return;
-
-    const hoje = new Date();
-    const expira = new Date(sessao.data_expiracao);
-
-    if (hoje > expira) {
-      await logout();
-      alert("⚠️ Seu plano expirou. Faça um novo pagamento para continuar o acesso.");
-      return;
-    }
-
-    document.getElementById('introSection').style.display = 'none';
-    document.getElementById('planosSection').style.display = 'none';
-    document.getElementById('loginArea').classList.add('hidden');
-    document.getElementById('searchSection').classList.remove('hidden');
-    document.getElementById('menuPlanos').classList.add('hidden');
-    document.getElementById('planosToggle').classList.remove('hidden');
-    document.getElementById('menuLogin').innerText = 'Sair';
-    document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-
-    const mensagem = `<strong>Bem-vindo(a)!</strong><br>
-    Você está usando o plano de <strong>${sessao.plano}</strong> 
-    (R$ ${sessao.valor}), válido até <strong>${new Date(sessao.data_expiracao).toLocaleDateString('pt-BR')}</strong>.`;
-    document.querySelector("#searchSection .bg-gray-800").innerHTML = mensagem;
-
-    loadData();
-  } catch (err) {
-    console.error("Erro ao verificar sessão automática:", err);
-  }
-});
-
-
-
-
-
-  function togglePlanos() {
-    const planos = document.getElementById('planosSection');
-    const planosAfter = document.getElementById('planosSectionAfter');
-    const btn = document.getElementById('planosToggle');
-
-    if (planosAfter.classList.contains('hidden')) {
-      planosAfter.innerHTML = planos.innerHTML;
-      planosAfter.classList.remove('hidden');
-      btn.innerHTML = '💳 Ver Planos -';
-    } else {
-      planosAfter.classList.add('hidden');
-      btn.innerHTML = '💳 Ver Planos +';
-    }
-  }
-
-  function mostrarInicio() {
-    document.getElementById('introSection').style.display = 'block';
-    document.getElementById('planosSection').style.display = 'grid';
-    document.getElementById('loginArea').classList.add('hidden');
-    document.getElementById('searchSection').classList.add('hidden');
-    document.getElementById('planosSectionAfter').classList.add('hidden');
-  }
-
-  function goToLogin() {
-    document.getElementById('introSection').style.display = 'none';
-    document.getElementById('planosSection').style.display = 'none';
-    document.getElementById('searchSection').classList.add('hidden');
-    document.getElementById('loginArea').classList.remove('hidden');
-    document.getElementById('planosToggle').classList.add('hidden');
-    document.getElementById('planosSectionAfter').classList.add('hidden');
-  }
-
-  async function logout() {
-    const email = localStorage.getItem("user_email");
-    if (!email) return;
-
-    const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-
-    await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-      method: "PATCH",
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ ativa: false })
-    });
-
-    localStorage.removeItem("user_email");
-
-    document.getElementById('introSection').style.display = 'block';
-    document.getElementById('planosSection').style.display = 'grid';
-    document.getElementById('loginArea').classList.add('hidden');
-    document.getElementById('searchSection').classList.add('hidden');
-    document.getElementById('menuPlanos').classList.remove('hidden');
-    document.getElementById('planosToggle').classList.add('hidden');
-    document.getElementById('planosSectionAfter').classList.add('hidden');
-    document.getElementById('menuLogin').innerText = 'Login';
-    document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
-  }
-
-
-// Bloqueia botão direito
-document.addEventListener('contextmenu', function(e) {
-  e.preventDefault();
-});
-
-// Bloqueia F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J
-document.addEventListener('keydown', function(e) {
-  if (
-    e.key === "F12" || 
-    (e.ctrlKey && e.shiftKey && e.key === "I") || 
-    (e.ctrlKey && e.key === "U") || 
-    (e.ctrlKey && e.shiftKey && e.key === "J")
-  ) {
-    e.preventDefault();
-  }
-});
-
-// Verifica automaticamente se o usuário estava logado
-window.addEventListener('DOMContentLoaded', async () => {
-  const email = localStorage.getItem("user_email");
-  if (!email) return;
-
-  const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-
-  try {
-    const res = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        "Content-Type": "application/json"
+    function togglePlanos() {
+      const planos = document.getElementById('planosSection');
+      const planosAfter = document.getElementById('planosSectionAfter');
+      const btn = document.getElementById('planosToggle');
+      if (planosAfter.classList.contains('hidden')) {
+        planosAfter.innerHTML = planos.innerHTML;
+        planosAfter.classList.remove('hidden');
+        btn.innerHTML = '💳 Ver Planos -';
+      } else {
+        planosAfter.classList.add('hidden');
+        btn.innerHTML = '💳 Ver Planos +';
       }
-    });
+    }
 
-    const result = await res.json();
-if (result.length > 0 && result[0].ativa === true) {
-  const loginDate = new Date(localStorage.getItem("login_date"));
-  const now = new Date();
-  const diff = now - loginDate;
-  const oneDay = 24 * 60 * 60 * 1000;
+    function mostrarInicio() {
+      document.getElementById('introSection').style.display = 'block';
+      document.getElementById('planosSection').style.display = 'grid';
+      document.getElementById('loginArea').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('planosSectionAfter').classList.add('hidden');
+    }
 
-  if (diff > oneDay) {
-    await logout();
-    return;
-  }
-
-  // ... continua com a exibição da área de busca
-
-
-  // Usuário ainda está ativo, mostrar busca
-  document.getElementById('introSection').style.display = 'none';
-  document.getElementById('planosSection').style.display = 'none';
-  document.getElementById('loginArea').classList.add('hidden');
-  document.getElementById('searchSection').classList.remove('hidden');
-  document.getElementById('menuPlanos').classList.add('hidden');
-  document.getElementById('planosToggle').classList.remove('hidden');
-  document.getElementById('menuLogin').innerText = 'Sair';
-  document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-
-let data = [];
-function formatarData(dataString) {
-  const partes = dataString.split("-");
-  if (partes.length === 3) {
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
-  }
-  return dataString;
-}
-
-
-  loadData();
-}
-
-  } catch (err) {
-    console.error("Erro ao verificar sessão automática:", err);
-  }
-});
-
-// Marca a sessão como inativa se a aba for fechada
-window.addEventListener("beforeunload", async () => {
-  const email = localStorage.getItem("user_email");
-  if (!email) return;
-
-  await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-    method: "PATCH",
-    headers: {
-      apikey: supabaseKey,
-      Authorization: `Bearer ${supabaseKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ ativa: false })
-  });
-});
-
-
-</script>
+    function goToLogin() {
+      document.getElementById('introSection').style.display = 'none';
+      document.getElementById('planosSection').style.display = 'none';
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('loginArea').classList.remove('hidden');
+      document.getElementById('planosToggle').classList.add('hidden');
+      document.getElementById('planosSectionAfter').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
