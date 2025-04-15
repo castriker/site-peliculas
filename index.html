@@ -81,7 +81,7 @@
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <!-- Logo / Título -->
       <div class="flex items-center space-x-2">
-        <!-- Ícone opcional (adicione o path do seu ícone se disponível) -->
+        <!-- Ícone opcional -->
         <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <!-- path do ícone -->
@@ -90,6 +90,7 @@
       </div>
       <!-- Menu -->
       <nav class="space-x-6 text-base font-semibold">
+        <!-- A chamada para as funções 'mostrarInicio' e 'mostrarPlanos' não afeta as seções legais -->
         <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
         <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
         <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
@@ -150,7 +151,7 @@
       </button>
     </div>
 
-    <!-- Card 3 Meses: agora pisca e sem negrito -->
+    <!-- Card 3 Meses: pisca e os textos usam font-normal -->
     <div class="relative bg-[#fffbea] text-black rounded-xl p-6 text-center shadow-[0_0_25px_rgba(255,204,0,0.5)] border-2 border-yellow-400 flex flex-col justify-between animate-blink">
       <div>
         <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs shadow-lg">
@@ -232,11 +233,92 @@
     <div id="result" class="p-4 bg-gray-700 rounded-lg hidden font-semibold"></div>
   </section>
 
-  <!-- Rodapé -->
+  <!-- Rodapé Principal -->
   <footer class="text-center text-gray-400 text-sm py-8">
     Copyright &copy; 2021 UTI Da Tecnologia - Todos os Direitos Reservados.
     <br>Desenvolvido por <strong>Carla Vasconcelos</strong> (UTI Da Tecnologia).
   </footer>
+
+  <!-- Novo Rodapé Legal -->
+  <footer class="bg-gray-900 text-gray-400 text-sm py-4">
+    <div class="max-w-6xl mx-auto flex justify-center space-x-8">
+      <!-- Ao clicar, as funções mostrarLegal são chamadas -->
+      <a href="javascript:void(0)" onclick="mostrarLegal('quem-somos')" class="hover:text-yellow-400">Quem Somos</a>
+      <a href="javascript:void(0)" onclick="mostrarLegal('termos-uso')" class="hover:text-yellow-400">Termos de Uso</a>
+      <a href="javascript:void(0)" onclick="mostrarLegal('politica-privacidade')" class="hover:text-yellow-400">Política de Privacidade</a>
+    </div>
+  </footer>
+
+  <!-- Seções Legais (iniciam ocultas) -->
+  <section id="legalContentContainer" class="max-w-6xl mx-auto py-8 px-4 hidden">
+    <div id="quem-somos" class="legal-section hidden">
+      <h2 class="text-2xl font-bold text-yellow-400 mb-4">Quem Somos</h2>
+      <p>Somos a UTI Da Tecnologia, uma equipe especializada em fornecer informações atualizadas sobre películas compatíveis para dispositivos móveis. Nossa missão é facilitar o acesso às informações e ajudar profissionais no atendimento e venda de películas com qualidade e confiabilidade. Liderada por Carla Vasconcelos, nossa empresa é comprometida em oferecer sempre o melhor para nossos clientes.</p>
+    </div>
+    <div id="termos-uso" class="legal-section hidden border-t border-gray-700 mt-8 pt-8">
+      <h2 class="text-2xl font-bold text-yellow-400 mb-4">Termos de Uso</h2>
+      <p>Bem-vindo ao site Películas Compatíveis. Ao acessar ou utilizar nosso site, você concorda em cumprir e aceitar integralmente os presentes Termos de Uso. Caso discorde de algum item, solicitamos que não utilize este site.</p>
+      <h3 class="text-xl font-bold mt-4">1. Utilização do Site</h3>
+      <p>Este site foi desenvolvido com o objetivo de fornecer informações detalhadas e precisas sobre películas compatíveis com diversos modelos de dispositivos eletrônicos. Você deve utilizar este site exclusivamente para fins legítimos, garantindo não infringir direitos de terceiros ou causar qualquer prejuízo ao site ou aos demais usuários.</p>
+      <p>É expressamente proibido:</p>
+      <ul class="list-disc pl-5">
+        <li>Acessar o site por meio de métodos ilegais ou não autorizados;</li>
+        <li>Realizar qualquer ação que possa sobrecarregar ou prejudicar a infraestrutura do site;</li>
+        <li>Utilizar ferramentas ou softwares para extrair conteúdo ou dados sem autorização prévia por escrito.</li>
+      </ul>
+      <h3 class="text-xl font-bold mt-4">2. Propriedade Intelectual</h3>
+      <p>Todo o conteúdo disponível neste site, incluindo textos, imagens, gráficos, logotipos, ícones, áudios e vídeos, é propriedade exclusiva deste site e está protegido pelas leis nacionais e internacionais de direitos autorais e propriedade intelectual.</p>
+      <p>É terminantemente proibido reproduzir, distribuir, modificar ou comercializar qualquer conteúdo do site sem consentimento prévio e expresso do administrador.</p>
+      <h3 class="text-xl font-bold mt-4">3. Responsabilidade e Garantias</h3>
+      <p>O site Películas Compatíveis disponibiliza conteúdo informativo com o maior rigor possível, porém não oferece garantias expressas ou implícitas quanto à exatidão, integridade ou adequação dessas informações.</p>
+      <p>O uso das informações disponibilizadas é de responsabilidade exclusiva do usuário. Em hipótese alguma seremos responsabilizados por quaisquer danos diretos, indiretos ou consequenciais decorrentes do uso ou da impossibilidade de uso do site, incluindo falhas técnicas ou problemas causados por vírus ou outras ameaças digitais.</p>
+      <h3 class="text-xl font-bold mt-4">4. Modificação dos Termos</h3>
+      <p>Reservamo-nos o direito de modificar ou atualizar estes Termos de Uso a qualquer momento e sem aviso prévio. As alterações serão imediatamente válidas após a publicação em nosso site. A continuidade do uso após a publicação das modificações implica a aceitação dos novos termos.</p>
+      <h3 class="text-xl font-bold mt-4">5. Lei Aplicável e Jurisdição</h3>
+      <p>Os presentes Termos de Uso são regidos e interpretados segundo as leis vigentes no Brasil. Eventuais disputas relacionadas a estes termos serão resolvidas no foro da cidade sede da administração do site, com renúncia expressa a qualquer outro.</p>
+      <h3 class="text-xl font-bold mt-4">6. Contato</h3>
+      <p>Em caso de dúvidas sobre estes Termos de Uso ou sobre o funcionamento do site, entre em contato pela aba "Contato".</p>
+      <p class="mt-4">Última atualização: 14/04/2025</p>
+    </div>
+    <div id="politica-privacidade" class="legal-section hidden border-t border-gray-700 mt-8 pt-8">
+      <h2 class="text-2xl font-bold text-yellow-400 mb-4">Política de Privacidade</h2>
+      <p>Sua privacidade é nossa prioridade. Nesta Política de Privacidade, explicamos como coletamos, usamos e protegemos suas informações quando você utiliza o site Películas Compatíveis.</p>
+      <h3 class="text-xl font-bold mt-4">1. Coleta de Informações</h3>
+      <p>Coletamos informações pessoais quando você se registra, faz login ou utiliza determinados serviços do site. Essas informações podem incluir seu nome, e-mail, endereço IP e dados de uso.</p>
+      <h3 class="text-xl font-bold mt-4">2. Uso das Informações</h3>
+      <p>Utilizamos os dados coletados para melhorar a experiência do usuário, fornecer suporte, enviar comunicações relevantes e assegurar o bom funcionamento do site. Não compartilhamos seus dados pessoais com terceiros sem o seu consentimento, exceto quando exigido por lei.</p>
+      <h3 class="text-xl font-bold mt-4">3. Segurança</h3>
+      <p>Adotamos medidas técnicas e administrativas para proteger suas informações contra acessos não autorizados, divulgação, alteração ou destruição. Contudo, nenhum método de transmissão ou armazenamento é 100% seguro.</p>
+      <h3 class="text-xl font-bold mt-4">4. Cookies</h3>
+      <p>Utilizamos cookies para melhorar sua experiência, armazenar preferências e coletar informações analíticas sobre o uso do site. Você pode desativar os cookies, mas isso pode afetar a funcionalidade do site.</p>
+      <h3 class="text-xl font-bold mt-4">5. Alterações nesta Política</h3>
+      <p>Podemos atualizar esta Política de Privacidade periodicamente, e a versão atualizada estará disponível nesta página. O uso contínuo do site implica a aceitação das alterações.</p>
+      <h3 class="text-xl font-bold mt-4">6. Contato</h3>
+      <p>Se tiver dúvidas sobre esta Política de Privacidade, entre em contato pela aba "Contato".</p>
+      <p class="mt-4">Última atualização: 14/04/2025</p>
+    </div>
+    <div class="text-center mt-4">
+      <button onclick="fecharLegal()" class="bg-blue-600 text-white py-2 px-4 rounded">Fechar</button>
+    </div>
+  </section>
+
+  <script>
+    function mostrarLegal(secId) {
+      // Exibe o container legal
+      document.getElementById('legalContentContainer').classList.remove('hidden');
+      // Oculta todas as seções legais
+      document.querySelectorAll('.legal-section').forEach(function(sec) {
+        sec.classList.add('hidden');
+      });
+      // Exibe somente a seção desejada
+      document.getElementById(secId).classList.remove('hidden');
+      // Rola para a área legal
+      document.getElementById('legalContentContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+    function fecharLegal() {
+      document.getElementById('legalContentContainer').classList.add('hidden');
+    }
+  </script>
 
   <script>
     let data = [];
@@ -275,7 +357,7 @@
       resultElement.classList.remove('hidden');
     }
     document.getElementById('searchModel').addEventListener('input', searchModel);
-
+    
     // Preenchimento do e-mail lembrado
     window.addEventListener('DOMContentLoaded', () => {
       const savedEmail = localStorage.getItem('saved_email');
@@ -284,11 +366,11 @@
         document.getElementById('rememberEmail').checked = true;
       }
     });
-
+    
     function generateToken() {
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
     }
-
+    
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -398,7 +480,7 @@
         alert("❌ Ocorreu um erro ao verificar o e-mail.");
       }
     }
-
+    
     async function logout() {
       const email = localStorage.getItem("user_email");
       const sessionToken = localStorage.getItem("session_token");
@@ -430,7 +512,7 @@
       document.getElementById('menuLogin').innerText = 'Login';
       document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
     }
-
+    
     async function validateSession() {
       const email = localStorage.getItem("user_email");
       const storedToken = localStorage.getItem("session_token");
@@ -454,7 +536,7 @@
       }
     }
     setInterval(validateSession, 60000);
-
+    
     window.addEventListener("beforeunload", async () => {
       const sessionToken = localStorage.getItem("session_token");
       if (!sessionToken) return;
@@ -474,21 +556,21 @@
         console.error("Erro no beforeunload:", err);
       }
     });
-
+    
     function mostrarInicio() {
       document.getElementById('introSection').style.display = 'block';
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
     }
-
+    
     function mostrarPlanos() {
       document.getElementById('introSection').style.display = 'none';
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
     }
-
+    
     function goToLogin() {
       document.getElementById('introSection').style.display = 'none';
       document.getElementById('planosSection').classList.add('hidden');
