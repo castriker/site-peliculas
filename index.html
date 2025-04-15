@@ -74,6 +74,13 @@ body {
         e.preventDefault();
       }
     });
+document.addEventListener('keydown', function(e) {
+  // Intercepta CTRL+C ou CMD+C
+  if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+    e.preventDefault();
+  }
+});
+
   </script>
 </head>
 <body>
@@ -224,16 +231,18 @@ body {
     </button>
   </section>
 
-  <!-- Área de Busca -->
+ <!-- Área de Busca -->
 <section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
-  <!-- Mensagem de boas-vindas -->
   <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
     <strong id="welcomeMsg">Bem-vindo(a)!</strong>
   </div>
 
   <!-- Alerta de responsabilidade -->
   <div class="mb-4 bg-red-600 text-white p-4 rounded-lg text-sm sm:text-base">
-    <strong>Aviso Importante:</strong> Ao aplicar qualquer película, o usuário deve medir cuidadosamente o tamanho, verificar as bordas, a localização da câmera e demais recortes. Este site se isenta de qualquer responsabilidade por erros de aplicação; é de inteira responsabilidade do usuário confirmar que a película é adequada ao dispositivo antes de utilizá-la.
+    <strong>Aviso Importante:</strong> Ao aplicar qualquer película, o usuário deve medir cuidadosamente
+    o tamanho, verificar as bordas, a localização da câmera e demais recortes. Este site se isenta de
+    qualquer responsabilidade por erros de aplicação; é de inteira responsabilidade do usuário confirmar
+    que a película é adequada ao dispositivo antes de utilizá-la.
   </div>
 
   <!-- Campo de busca -->
@@ -244,11 +253,98 @@ body {
     placeholder="Digite o modelo" 
     class="w-full p-3 text-black rounded-lg mb-4"
   />
-  <div 
-    id="result" 
-    class="p-4 bg-gray-700 rounded-lg hidden font-semibold">
-  </div>
+  <div id="result" class="p-4 bg-gray-700 rounded-lg hidden font-semibold"></div>
+
+  <!-- Botão: Relatar Incompatibilidade -->
+  <button 
+    onclick="abrirModalIncompatibilidade()" 
+    class="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold
+           py-2 px-4 rounded transition text-sm sm:text-base"
+  >
+    Relatar Incompatibilidade
+  </button>
 </section>
+
+<!-- Modal de Incompatibilidade (inicia oculto) -->
+<div 
+  id="modalIncompatibilidade" 
+  class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+>
+  <!-- Caixa do Modal -->
+  <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
+    <h2 class="text-lg font-bold mb-4">Relatar Incompatibilidade</h2>
+    <label class="block mb-2 text-sm font-medium" for="modeloTestado">Modelo testado</label>
+    <input 
+      type="text" 
+      id="modeloTestado" 
+      class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base"
+      placeholder="Ex: iPhone 14"
+    />
+
+    <label class="block mb-2 text-sm font-medium" for="modeloIncompativel">Modelo incompatível</label>
+    <input 
+      type="text" 
+      id="modeloIncompativel" 
+      class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base"
+      placeholder="Ex: Samsung A10"
+    />
+
+    <div class="flex justify-end space-x-2">
+      <button 
+        onclick="fecharModalIncompatibilidade()"
+        class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded"
+      >
+        Fechar
+      </button>
+      <button 
+        onclick="enviarIncompatibilidade()"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+      >
+        Enviar
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Função para abrir o Modal, com pré-preenchimento do "modelo testado"
+  function abrirModalIncompatibilidade() {
+    // Copia o valor do campo "searchModel"
+    const modeloProcurado = document.getElementById('searchModel').value.trim();
+    if (modeloProcurado) {
+      document.getElementById('modeloTestado').value = modeloProcurado;
+    }
+    // Exibe o modal
+    document.getElementById('modalIncompatibilidade').classList.remove('hidden');
+  }
+
+  // Função para fechar o Modal
+  function fecharModalIncompatibilidade() {
+    document.getElementById('modalIncompatibilidade').classList.add('hidden');
+  }
+
+  // Função que coleta dados e abre o link do WhatsApp
+  function enviarIncompatibilidade() {
+    const modeloTestado = document.getElementById('modeloTestado').value.trim();
+    const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
+
+    if (!modeloTestado || !modeloIncompativel) {
+      alert("Preencha ambos os campos antes de enviar!");
+      return;
+    }
+
+    const texto = `Olá, encontrei uma incompatibilidade de película:\n
+Modelo testado: ${modeloTestado}\n
+Modelo incompatível: ${modeloIncompativel}\n
+Poderia adicionar ou verificar essa informação na tabela? Obrigado!`;
+
+    window.open(`https://wa.me/5537999625138?text=${encodeURIComponent(texto)}`, '_blank');
+
+    fecharModalIncompatibilidade();
+  }
+</script>
+
+
 
 
   <!-- Rodapé Principal -->
