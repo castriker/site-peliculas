@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Película Compatível</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Importar Google Fonts (exemplo com Montserrat) -->
+  <!-- Importar Google Fonts (Montserrat) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
@@ -61,7 +61,7 @@
       text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
     }
   </style>
-  <!-- Bloqueia clique com o botão direito e atalhos para DevTools -->
+  <!-- Bloqueio de clique com botão direito e atalhos para DevTools -->
   <script>
     document.addEventListener('contextmenu', function(e) {
       e.preventDefault();
@@ -81,7 +81,6 @@
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <!-- Logo / Título -->
       <div class="flex items-center space-x-2">
-        <!-- Ícone opcional -->
         <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <!-- path do ícone -->
@@ -90,7 +89,6 @@
       </div>
       <!-- Menu -->
       <nav class="space-x-6 text-base font-semibold">
-        <!-- A chamada para as funções 'mostrarInicio' e 'mostrarPlanos' não afeta as seções legais -->
         <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
         <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
         <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
@@ -101,9 +99,9 @@
 
   <!-- Página Inicial: Introdução -->
   <section id="introSection" class="py-12 bg-[#0b1120] text-white">
-    <div class="max-w-7xl mx-auto flex flex-col-reverse lg:flex-row items-center px-4 lg:px-8">
+    <div class="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center px-4 lg:px-8">
       <!-- Texto -->
-      <div class="lg:w-1/2 text-center lg:text-left">
+      <div class="w-full md:w-1/2 text-center md:text-left">
         <h2 class="text-3xl sm:text-4xl font-extrabold text-yellow-400 mb-4">
           <span class="inline-block">🧩</span> Encontre a película certa em segundos
         </h2>
@@ -115,7 +113,7 @@
           Aqui você acessa uma <span class="text-yellow-400 font-bold">tabela completa e atualizada</span> com modelos compatíveis.<br>
           Economize tempo, evite erros e <span class="text-yellow-400 font-bold">venda mais com segurança</span>.
         </p>
-        <div class="flex flex-wrap justify-center lg:justify-start gap-3 mt-4">
+        <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-4">
           <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Fácil de usar</span>
           <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Sem propagandas</span>
           <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Atualizações automáticas</span>
@@ -125,7 +123,7 @@
         </p>
       </div>
       <!-- Imagem -->
-      <div class="lg:w-1/2 flex justify-center mb-8 lg:mb-0">
+      <div class="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
         <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
       </div>
     </div>
@@ -218,17 +216,11 @@
         <span>Lembrar meu e‑mail</span>
       </label>
     </div>
-<button
-  onclick="checkEmail()"
-  class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold
-         py-3 px-6 rounded-lg shadow-md border border-blue-500
-         transition text-sm sm:text-base">
-  🔐 Entrar
-</button>
-
-
-
-
+    <button
+      onclick="checkEmail()"
+      class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md border border-blue-500 transition text-sm sm:text-base">
+      🔐 Entrar
+    </button>
   </section>
 
   <!-- Área de Busca -->
@@ -250,7 +242,6 @@
   <!-- Novo Rodapé Legal -->
   <footer class="bg-gray-900 text-gray-400 text-sm py-4">
     <div class="max-w-6xl mx-auto flex justify-center space-x-8">
-      <!-- Ao clicar, as funções mostrarLegal são chamadas -->
       <a href="javascript:void(0)" onclick="mostrarLegal('quem-somos')" class="hover:text-yellow-400">Quem Somos</a>
       <a href="javascript:void(0)" onclick="mostrarLegal('termos-uso')" class="hover:text-yellow-400">Termos de Uso</a>
       <a href="javascript:void(0)" onclick="mostrarLegal('politica-privacidade')" class="hover:text-yellow-400">Política de Privacidade</a>
@@ -312,15 +303,13 @@
 
   <script>
     function mostrarLegal(secId) {
-      // Exibe o container legal
+      // Exibe o container legal e oculta outras seções
       document.getElementById('legalContentContainer').classList.remove('hidden');
-      // Oculta todas as seções legais
       document.querySelectorAll('.legal-section').forEach(function(sec) {
         sec.classList.add('hidden');
       });
-      // Exibe somente a seção desejada
       document.getElementById(secId).classList.remove('hidden');
-      // Rola para a área legal
+      // Rola suavemente para o conteúdo legal
       document.getElementById('legalContentContainer').scrollIntoView({ behavior: 'smooth' });
     }
     function fecharLegal() {
@@ -379,14 +368,15 @@
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
     }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const emailInput = document.getElementById('email');
-    emailInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        checkEmail();
-      }
+    document.addEventListener('DOMContentLoaded', () => {
+      const emailInput = document.getElementById('email');
+      emailInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          checkEmail();
+        }
+      });
     });
-  });
+
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       const rememberEmailChecked = document.getElementById('rememberEmail').checked;
