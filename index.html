@@ -5,17 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Película Compatível</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Importar Google Fonts (Montserrat) -->
+  <!-- Importar Google Fonts (mantive Montserrat, mas pode ser trocada se preferir) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
   <style>
-body {
-  background-color: #111;
-  font-family: 'Open Sans', sans-serif;
-  color: white;
-}
-
+    body {
+      background-color: #111;
+      font-family: 'Montserrat', sans-serif;
+      color: white;
+    }
     .badge {
       background-color: #e11d48;
       color: white;
@@ -31,8 +30,7 @@ body {
       0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
       50% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
     }
-    
-    /* Animação para o card 3 Meses piscar (blink) */
+    /* Animação para o card 3 Meses (piscar) */
     @keyframes blink {
       0%, 50%, 100% { opacity: 1; }
       25%, 75% { opacity: 0.5; }
@@ -40,8 +38,7 @@ body {
     .animate-blink {
       animation: blink 2s infinite;
     }
-    
-    /* Estilo Premium para o Menu (links com underline animado) */
+    /* Estilo Premium para o Menu */
     .premium-link {
       position: relative;
     }
@@ -61,8 +58,13 @@ body {
     .text-shadow {
       text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
     }
+    /* Alerta Importante – letra um pouco menor e padding reduzido */
+    .alert-avisos {
+      font-size: 0.875rem; /* text-sm */
+      padding: 0.75rem;
+    }
   </style>
-  <!-- Bloqueio de clique com botão direito e atalhos para DevTools -->
+  <!-- Bloqueia clique com o botão direito e atalhos para DevTools, incluindo Ctrl+C -->
   <script>
     document.addEventListener('contextmenu', function(e) {
       e.preventDefault();
@@ -73,14 +75,10 @@ body {
          (e.ctrlKey && e.key === 'U')) {
         e.preventDefault();
       }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+      }
     });
-document.addEventListener('keydown', function(e) {
-  // Intercepta CTRL+C ou CMD+C
-  if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
-    e.preventDefault();
-  }
-});
-
   </script>
 </head>
 <body>
@@ -152,7 +150,8 @@ document.addEventListener('keydown', function(e) {
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')" 
+              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
@@ -172,7 +171,8 @@ document.addEventListener('keydown', function(e) {
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button onclick="window.open('https://mpago.la/1DTP1fB', '_blank')"
+              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
@@ -190,7 +190,8 @@ document.addEventListener('keydown', function(e) {
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')"
+              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
@@ -208,7 +209,8 @@ document.addEventListener('keydown', function(e) {
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')"
+              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
@@ -224,128 +226,78 @@ document.addEventListener('keydown', function(e) {
         <span>Lembrar meu e‑mail</span>
       </label>
     </div>
-    <button
-      onclick="checkEmail()"
-      class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md border border-blue-500 transition text-sm sm:text-base">
+    <button onclick="checkEmail()"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md border border-blue-500 transition text-sm sm:text-base">
       🔐 Entrar
     </button>
   </section>
 
- <!-- Área de Busca -->
-<section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
-  <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
-    <strong id="welcomeMsg">Bem-vindo(a)!</strong>
-  </div>
-
-  <!-- Alerta de responsabilidade -->
-  <div class="mb-4 bg-red-600 text-white p-4 rounded-lg text-sm sm:text-base">
-    <strong>Aviso Importante:</strong> Ao aplicar qualquer película, o usuário deve medir cuidadosamente
-    o tamanho, verificar as bordas, a localização da câmera e demais recortes. Este site se isenta de
-    qualquer responsabilidade por erros de aplicação; é de inteira responsabilidade do usuário confirmar
-    que a película é adequada ao dispositivo antes de utilizá-la.
-  </div>
-
-  <!-- Campo de busca -->
-  <label class="block mb-2 text-sm font-medium">Digite o modelo do celular</label>
-  <input 
-    type="text" 
-    id="searchModel" 
-    placeholder="Digite o modelo" 
-    class="w-full p-3 text-black rounded-lg mb-4"
-  />
-  <div id="result" class="p-4 bg-gray-700 rounded-lg hidden font-semibold"></div>
-
-  <!-- Botão: Relatar Incompatibilidade -->
-  <button 
-    onclick="abrirModalIncompatibilidade()" 
-    class="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold
-           py-2 px-4 rounded transition text-sm sm:text-base"
-  >
-    Relatar Incompatibilidade
-  </button>
-</section>
-
-<!-- Modal de Incompatibilidade (inicia oculto) -->
-<div 
-  id="modalIncompatibilidade" 
-  class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
->
-  <!-- Caixa do Modal -->
-  <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
-    <h2 class="text-lg font-bold mb-4">Relatar Incompatibilidade</h2>
-    <label class="block mb-2 text-sm font-medium" for="modeloTestado">Modelo testado</label>
-    <input 
-      type="text" 
-      id="modeloTestado" 
-      class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base"
-      placeholder="Ex: iPhone 14"
-    />
-
-    <label class="block mb-2 text-sm font-medium" for="modeloIncompativel">Modelo incompatível</label>
-    <input 
-      type="text" 
-      id="modeloIncompativel" 
-      class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base"
-      placeholder="Ex: Samsung A10"
-    />
-
-    <div class="flex justify-end space-x-2">
-      <button 
-        onclick="fecharModalIncompatibilidade()"
-        class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded"
-      >
-        Fechar
+  <!-- Área de Busca -->
+  <section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
+    <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
+      <strong id="welcomeMsg">Bem-vindo(a)!</strong>
+    </div>
+    <!-- Alerta de Aviso Importante (fonte um pouco menor e padding reduzido) -->
+    <div class="mb-4 bg-red-600 text-white alert-avisos rounded-lg">
+      <strong>Aviso Importante:</strong> Ao aplicar qualquer película, o usuário deve medir cuidadosamente o tamanho, verificar as bordas, a localização da câmera e demais recortes. Este site se isenta de qualquer responsabilidade por erros de aplicação.
+    </div>
+    <label class="block mb-2 text-sm font-medium">Digite o modelo do celular</label>
+    <input type="text" id="searchModel" placeholder="Digite o modelo" class="w-full p-3 text-black rounded-lg mb-4"/>
+    <div id="result" class="p-4 bg-gray-700 rounded-lg hidden font-semibold"></div>
+    <!-- Botões de Relatar e Adicionar Compatibilidade -->
+    <div class="flex flex-col sm:flex-row gap-2">
+      <button onclick="abrirModalIncompatibilidade()"
+              class="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Relatar Incompatibilidade
       </button>
-      <button 
-        onclick="enviarIncompatibilidade()"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-      >
-        Enviar
+      <button onclick="abrirModalCompatibilidade()"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Adicionar Compatibilidade
       </button>
     </div>
+  </section>
+
+  <!-- Modal de Relatar Incompatibilidade -->
+  <div id="modalIncompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
+      <h2 class="text-lg font-bold mb-4">Relatar Incompatibilidade</h2>
+      <label class="block mb-2 text-sm font-medium" for="modeloTestado">Modelo testado</label>
+      <input type="text" id="modeloTestado" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: iPhone 14" />
+      <label class="block mb-2 text-sm font-medium" for="modeloIncompativel">Modelo incompatível</label>
+      <input type="text" id="modeloIncompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: Samsung A10" />
+      <div class="flex justify-end space-x-2">
+        <button onclick="fecharModalIncompatibilidade()"
+                class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
+          Fechar
+        </button>
+        <button onclick="enviarIncompatibilidade()"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+          Enviar
+        </button>
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-  // Função para abrir o Modal, com pré-preenchimento do "modelo testado"
-  function abrirModalIncompatibilidade() {
-    // Copia o valor do campo "searchModel"
-    const modeloProcurado = document.getElementById('searchModel').value.trim();
-    if (modeloProcurado) {
-      document.getElementById('modeloTestado').value = modeloProcurado;
-    }
-    // Exibe o modal
-    document.getElementById('modalIncompatibilidade').classList.remove('hidden');
-  }
-
-  // Função para fechar o Modal
-  function fecharModalIncompatibilidade() {
-    document.getElementById('modalIncompatibilidade').classList.add('hidden');
-  }
-
-  // Função que coleta dados e abre o link do WhatsApp
-  function enviarIncompatibilidade() {
-    const modeloTestado = document.getElementById('modeloTestado').value.trim();
-    const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
-
-    if (!modeloTestado || !modeloIncompativel) {
-      alert("Preencha ambos os campos antes de enviar!");
-      return;
-    }
-
-    const texto = `Olá, encontrei uma incompatibilidade de película:\n
-Modelo testado: ${modeloTestado}\n
-Modelo incompatível: ${modeloIncompativel}\n
-Poderia adicionar ou verificar essa informação na tabela? Obrigado!`;
-
-    window.open(`https://wa.me/5537999625138?text=${encodeURIComponent(texto)}`, '_blank');
-
-    fecharModalIncompatibilidade();
-  }
-</script>
-
-
-
+  <!-- Modal de Adicionar Compatibilidade -->
+  <div id="modalCompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
+      <h2 class="text-lg font-bold mb-4">Adicionar Compatibilidade</h2>
+      <label class="block mb-2 text-sm font-medium" for="modeloProcuradoCompat">Modelo Procurado</label>
+      <input type="text" id="modeloProcuradoCompat" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Modelo pesquisado" />
+      <label class="block mb-2 text-sm font-medium" for="modeloCompativel">Modelo Compatível</label>
+      <input type="text" id="modeloCompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: Samsung Galaxy A10" />
+      <div class="flex justify-end space-x-2">
+        <button onclick="fecharModalCompatibilidade()"
+                class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
+          Fechar
+        </button>
+        <button onclick="enviarCompatibilidade()"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+          Enviar
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Rodapé Principal -->
   <footer class="text-center text-gray-400 text-sm py-8">
@@ -416,14 +368,13 @@ Poderia adicionar ou verificar essa informação na tabela? Obrigado!`;
   </section>
 
   <script>
+    // Funções para exibir as seções legais
     function mostrarLegal(secId) {
-      // Exibe o container legal e oculta outras seções
       document.getElementById('legalContentContainer').classList.remove('hidden');
       document.querySelectorAll('.legal-section').forEach(function(sec) {
         sec.classList.add('hidden');
       });
       document.getElementById(secId).classList.remove('hidden');
-      // Rola suavemente para o conteúdo legal
       document.getElementById('legalContentContainer').scrollIntoView({ behavior: 'smooth' });
     }
     function fecharLegal() {
@@ -482,6 +433,7 @@ Poderia adicionar ou verificar essa informação na tabela? Obrigado!`;
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
     }
 
+    // Ativar o envio do login ao apertar a tecla Enter no campo de e-mail
     document.addEventListener('DOMContentLoaded', () => {
       const emailInput = document.getElementById('email');
       emailInput.addEventListener('keydown', (event) => {
@@ -696,6 +648,58 @@ Poderia adicionar ou verificar essa informação na tabela? Obrigado!`;
       document.getElementById('planosSection').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
       document.getElementById('loginArea').classList.remove('hidden');
+    }
+    
+    // Funções para o Modal de Relatar Incompatibilidade
+    function abrirModalIncompatibilidade() {
+      const modeloProcurado = document.getElementById('searchModel').value.trim();
+      if (modeloProcurado) {
+        document.getElementById('modeloTestado').value = modeloProcurado;
+      }
+      document.getElementById('modalIncompatibilidade').classList.remove('hidden');
+    }
+    function fecharModalIncompatibilidade() {
+      document.getElementById('modalIncompatibilidade').classList.add('hidden');
+    }
+    function enviarIncompatibilidade() {
+      const modeloTestado = document.getElementById('modeloTestado').value.trim();
+      const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
+      if (!modeloTestado || !modeloIncompativel) {
+        alert("Preencha ambos os campos antes de enviar!");
+        return;
+      }
+      const texto = `Olá, encontrei uma incompatibilidade de película:\n
+Modelo testado: ${modeloTestado}\n
+Modelo incompatível: ${modeloIncompativel}\n
+Por favor, verifique e atualize na tabela. Obrigado!`;
+      window.open(`https://wa.me/5537999625138?text=${encodeURIComponent(texto)}`, '_blank');
+      fecharModalIncompatibilidade();
+    }
+    
+    // Funções para o Modal de Adicionar Compatibilidade
+    function abrirModalCompatibilidade() {
+      const modeloProcurado = document.getElementById('searchModel').value.trim();
+      if (modeloProcurado) {
+        document.getElementById('modeloProcuradoCompat').value = modeloProcurado;
+      }
+      document.getElementById('modalCompatibilidade').classList.remove('hidden');
+    }
+    function fecharModalCompatibilidade() {
+      document.getElementById('modalCompatibilidade').classList.add('hidden');
+    }
+    function enviarCompatibilidade() {
+      const modeloProcuradoCompat = document.getElementById('modeloProcuradoCompat').value.trim();
+      const modeloCompativel = document.getElementById('modeloCompativel').value.trim();
+      if (!modeloProcuradoCompat || !modeloCompativel) {
+        alert("Preencha ambos os campos antes de enviar!");
+        return;
+      }
+      const texto = `Olá, gostaria de sugerir uma nova compatibilidade:\n
+Modelo procurado: ${modeloProcuradoCompat}\n
+Modelo compatível: ${modeloCompativel}\n
+Por favor, verifique e adicione esta informação à tabela. Obrigado!`;
+      window.open(`https://wa.me/5537999625138?text=${encodeURIComponent(texto)}`, '_blank');
+      fecharModalCompatibilidade();
     }
   </script>
 </body>
