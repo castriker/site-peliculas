@@ -218,9 +218,17 @@
         <span>Lembrar meu e‑mail</span>
       </label>
     </div>
-    <button onclick="checkEmail()" class="btn-premium w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition text-sm sm:text-base">
-      🔐 Entrar
-    </button>
+<button
+  onclick="checkEmail()"
+  class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold
+         py-3 px-6 rounded-lg shadow-md border border-blue-500
+         transition text-sm sm:text-base">
+  🔐 Entrar
+</button>
+
+
+
+
   </section>
 
   <!-- Área de Busca -->
@@ -370,7 +378,15 @@
     function generateToken() {
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
     }
-    
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const emailInput = document.getElementById('email');
+    emailInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        checkEmail();
+      }
+    });
+  });
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       const rememberEmailChecked = document.getElementById('rememberEmail').checked;
