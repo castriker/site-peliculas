@@ -8,13 +8,14 @@
   <!-- Importar Google Fonts (Montserrat) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      background-color: #111;
-      font-family: 'Montserrat', sans-serif;
-      color: white;
-    }
+body {
+  background-color: #111;
+  font-family: 'Open Sans', sans-serif;
+  color: white;
+}
+
     .badge {
       background-color: #e11d48;
       color: white;
@@ -224,14 +225,31 @@
   </section>
 
   <!-- Área de Busca -->
-  <section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
-    <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
-      <strong id="welcomeMsg">Bem-vindo(a)!</strong>
-    </div>
-    <label class="block mb-2 text-sm font-medium">Digite o modelo do celular</label>
-    <input type="text" id="searchModel" placeholder="Digite o modelo" class="w-full p-3 text-black rounded-lg mb-4"/>
-    <div id="result" class="p-4 bg-gray-700 rounded-lg hidden font-semibold"></div>
-  </section>
+<section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
+  <!-- Mensagem de boas-vindas -->
+  <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
+    <strong id="welcomeMsg">Bem-vindo(a)!</strong>
+  </div>
+
+  <!-- Alerta de responsabilidade -->
+  <div class="mb-4 bg-red-600 text-white p-4 rounded-lg text-sm sm:text-base">
+    <strong>Aviso Importante:</strong> Ao aplicar qualquer película, o usuário deve medir cuidadosamente o tamanho, verificar as bordas, a localização da câmera e demais recortes. Este site se isenta de qualquer responsabilidade por erros de aplicação; é de inteira responsabilidade do usuário confirmar que a película é adequada ao dispositivo antes de utilizá-la.
+  </div>
+
+  <!-- Campo de busca -->
+  <label class="block mb-2 text-sm font-medium">Digite o modelo do celular</label>
+  <input 
+    type="text" 
+    id="searchModel" 
+    placeholder="Digite o modelo" 
+    class="w-full p-3 text-black rounded-lg mb-4"
+  />
+  <div 
+    id="result" 
+    class="p-4 bg-gray-700 rounded-lg hidden font-semibold">
+  </div>
+</section>
+
 
   <!-- Rodapé Principal -->
   <footer class="text-center text-gray-400 text-sm py-8">
