@@ -5,10 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Película Compatível</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Importar Google Fonts (exemplo com Montserrat) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
   <style>
     body {
       background-color: #111;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Montserrat', sans-serif;
       color: white;
     }
     .badge {
@@ -26,8 +30,38 @@
       0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
       50% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
     }
+    
+    /* Animação para o card 3 Meses piscar (blink) */
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.5; }
+    }
+    .animate-blink {
+      animation: blink 2s infinite;
+    }
+    
+    /* Estilo Premium para o Menu (links com underline animado) */
+    .premium-link {
+      position: relative;
+    }
+    .premium-link::after {
+      content: "";
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      bottom: -2px;
+      left: 0;
+      background-color: #FFC107;
+      transition: width 0.3s ease;
+    }
+    .premium-link:hover::after {
+      width: 100%;
+    }
+    .text-shadow {
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
   </style>
-  <!-- Bloqueia o clique com o botão direito e atalhos para devtools -->
+  <!-- Bloqueia clique com o botão direito e atalhos para DevTools -->
   <script>
     document.addEventListener('contextmenu', function(e) {
       e.preventDefault();
@@ -43,14 +77,23 @@
 </head>
 <body>
   <!-- Cabeçalho -->
-  <header class="bg-gradient-to-r from-[#0f172a] to-[#1e3a8a] p-6 shadow-md text-white">
+  <header class="bg-gradient-to-r from-black to-gray-800 p-6 shadow-xl text-white">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <h1 class="text-3xl font-extrabold tracking-wide">PELÍCULA COMPATÍVEL</h1>
-      <nav class="space-x-6 text-sm font-semibold">
-        <a href="#introSection" onclick="mostrarInicio()" class="hover:text-yellow-400 transition">Início</a>
-        <a href="#planosSection" onclick="mostrarPlanos()" class="hover:text-yellow-400 transition">Planos</a>
-        <a href="https://wa.me/utidatecnologia" target="_blank" class="hover:text-yellow-400 transition">Contato</a>
-        <a href="#loginArea" id="menuLogin" onclick="goToLogin()" class="hover:text-yellow-400 transition">Login</a>
+      <!-- Logo / Título -->
+      <div class="flex items-center space-x-2">
+        <!-- Ícone opcional (adicione o path do seu ícone se disponível) -->
+        <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <!-- path do ícone -->
+        </svg>
+        <h1 class="text-3xl font-black tracking-widest text-shadow">PELÍCULA COMPATÍVEL</h1>
+      </div>
+      <!-- Menu -->
+      <nav class="space-x-6 text-base font-semibold">
+        <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
+        <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
+        <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
+        <a href="#loginArea" id="menuLogin" onclick="goToLogin()" class="premium-link hover:text-yellow-400 transition">Login</a>
       </nav>
     </div>
   </header>
@@ -87,9 +130,9 @@
     </div>
   </section>
 
-  <!-- Seção de Planos: Agora visível por padrão na página inicial -->
-  <section id="planosSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-8 max-w-7xl mx-auto">
-    <!-- Plano: 1 Mês -->
+  <!-- Seção de Planos -->
+  <section id="planosSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-8 max-w-7xl mx-auto items-stretch">
+    <!-- Card 1 Mês -->
     <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
       <div>
         <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
@@ -102,30 +145,32 @@
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')" 
-              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
-    <!-- Plano: 3 Meses -->
-    <div class="relative bg-[#fffbea] text-black rounded-xl p-6 text-center shadow-[0_0_25px_rgba(255,204,0,0.5)] border-2 border-yellow-400 highlight">
-      <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-        MAIS VENDIDO
+
+    <!-- Card 3 Meses: agora pisca e sem negrito -->
+    <div class="relative bg-[#fffbea] text-black rounded-xl p-6 text-center shadow-[0_0_25px_rgba(255,204,0,0.5)] border-2 border-yellow-400 flex flex-col justify-between animate-blink">
+      <div>
+        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs shadow-lg">
+          MAIS VENDIDO
+        </div>
+        <h3 class="text-xl font-normal flex justify-center items-center gap-2">⭐ 3 Meses</h3>
+        <p class="text-3xl font-normal mt-2">R$ 14,00</p>
+        <p class="text-sm text-gray-600 mb-3 font-normal">Total: R$ 42,00</p>
+        <ul class="text-sm sm:text-base mb-4 text-left space-y-1 font-normal">
+          <li>📄 Acesso à tabela completa</li>
+          <li>🔄 Atualizações automáticas</li>
+          <li>🚫 Sem propagandas</li>
+        </ul>
       </div>
-      <h3 class="text-xl font-bold flex justify-center items-center gap-2">⭐ 3 Meses</h3>
-      <p class="text-3xl font-extrabold mt-2">R$ 14,00</p>
-      <p class="text-sm text-gray-600 mb-3">Total: R$ 42,00</p>
-      <ul class="text-sm sm:text-base mb-4 text-left space-y-1">
-        <li>📄 Acesso à tabela completa</li>
-        <li>🔄 Atualizações automáticas</li>
-        <li>🚫 Sem propagandas</li>
-      </ul>
-      <button onclick="window.open('https://mpago.la/1DTP1fB', '_blank')" 
-              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
-    <!-- Plano: 6 Meses -->
+
+    <!-- Card 6 Meses -->
     <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
       <div>
         <div class="badge absolute top-2 right-2">18,75% OFF</div>
@@ -138,12 +183,12 @@
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')"
-              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
-    <!-- Plano: 1 Ano -->
+
+    <!-- Card 1 Ano -->
     <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
       <div>
         <div class="badge absolute top-2 right-2">25% OFF</div>
@@ -156,33 +201,34 @@
           <li>🚫 Sem propagandas</li>
         </ul>
       </div>
-      <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')" 
-              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
         💳 Comprar
       </button>
     </div>
   </section>
 
-  <!-- Área de Login (Oculta inicialmente) -->
+  <!-- Área de Login (sem modificações) -->
   <section id="loginArea" class="max-w-4xl mx-auto p-4 sm:p-6 hidden">
     <label class="block mb-2 font-medium text-sm sm:text-base">Digite seu e-mail para acessar</label>
-    <input type="email" id="email" placeholder="Digite seu e-mail" 
-           class="w-full p-3 text-black rounded-lg mb-4 text-sm sm:text-base"/>
-    <button onclick="checkEmail()" 
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition text-sm sm:text-base">
+    <input type="email" id="email" placeholder="Digite seu e-mail" class="w-full p-3 text-black rounded-lg mb-2 text-sm sm:text-base" />
+    <div class="mb-4">
+      <label class="inline-flex items-center space-x-2 text-sm">
+        <input type="checkbox" id="rememberEmail" class="text-blue-600 border-gray-300 rounded focus:ring-0" />
+        <span>Lembrar meu e‑mail</span>
+      </label>
+    </div>
+    <button onclick="checkEmail()" class="btn-premium w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition text-sm sm:text-base">
       🔐 Entrar
     </button>
   </section>
 
-  <!-- Área de Busca (Oculta inicialmente) -->
+  <!-- Área de Busca -->
   <section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
     <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
-      <!-- A mensagem de boas-vindas será atualizada com o primeiro nome, o nome do plano e a data de expiração -->
       <strong id="welcomeMsg">Bem-vindo(a)!</strong>
     </div>
     <label class="block mb-2 text-sm font-medium">Digite o modelo do celular</label>
-    <input type="text" id="searchModel" placeholder="Digite o modelo" 
-           class="w-full p-3 text-black rounded-lg mb-4"/>
+    <input type="text" id="searchModel" placeholder="Digite o modelo" class="w-full p-3 text-black rounded-lg mb-4"/>
     <div id="result" class="p-4 bg-gray-700 rounded-lg hidden font-semibold"></div>
   </section>
 
@@ -201,7 +247,7 @@
       }
       return dataString;
     }
-    // Função para carregar dados (ex: da planilha)
+    // Função para carregar dados (exemplo: da planilha)
     function loadData() {
       fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
         .then(response => response.json())
@@ -225,19 +271,32 @@
             ).join(', ')}`]
           : []
       );
-      resultElement.innerHTML = foundRows.length > 0 
-                                  ? foundRows.join('<br><br>') 
-                                  : "<strong>Modelo não encontrado</strong>";
+      resultElement.innerHTML = foundRows.length > 0 ? foundRows.join('<br><br>') : "<strong>Modelo não encontrado</strong>";
       resultElement.classList.remove('hidden');
     }
     document.getElementById('searchModel').addEventListener('input', searchModel);
-    // Função para gerar um token de sessão único
+
+    // Preenchimento do e-mail lembrado
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedEmail = localStorage.getItem('saved_email');
+      if (savedEmail) {
+        document.getElementById('email').value = savedEmail;
+        document.getElementById('rememberEmail').checked = true;
+      }
+    });
+
     function generateToken() {
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
     }
-    // Função de Login (checkEmail) – verifica e-mail, controla até 2 IPs distintos para um único e-mail e exibe o primeiro nome, plano e data de expiração
+
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
+      const rememberEmailChecked = document.getElementById('rememberEmail').checked;
+      if (rememberEmailChecked && email) {
+        localStorage.setItem('saved_email', email);
+      } else {
+        localStorage.removeItem('saved_email');
+      }
       if (!email) {
         alert('Digite um e-mail válido.');
         return;
@@ -245,7 +304,6 @@
       const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
       const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
       try {
-        // Verifica a tabela "sessoes" para confirmar que o e-mail foi cadastrado (indicando plano pago)
         const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
           method: "GET",
           headers: {
@@ -260,30 +318,23 @@
           alert("E-mail não autorizado. Por favor, adquira o plano para acessar.");
           return;
         }
-        // Verifica se o plano ainda está válido
         const registro = autorizacoes[0];
         const hoje = new Date();
         const expira = new Date(registro.data_expiracao);
         if (hoje > expira) {
           alert(`Seu plano ${registro.plano} expirou em ${formatarData(registro.data_expiracao)}. Realize um novo pagamento para continuar o acesso.`);
-          // Redireciona para a seção de Planos após fechar o alerta
           mostrarPlanos();
           return;
         }
-        // Obtém o IP público do usuário (usando a API ipify)
         const ipResp = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipResp.json();
         const ipAddress = ipData.ip;
-        // Trata o campo allowed_ip na tabela "sessoes" (permitindo até 2 IPs distintos para o mesmo e-mail, mas não simultâneos)
         let allowedIPs = [];
         if (registro.allowed_ip && registro.allowed_ip.trim() !== "") {
           allowedIPs = registro.allowed_ip.split(",").map(ip => ip.trim());
         }
-        if (allowedIPs.includes(ipAddress)) {
-          // IP já permitido: prossegue normalmente
-        } else {
+        if (!allowedIPs.includes(ipAddress)) {
           if (allowedIPs.length < 2) {
-            // Adiciona o novo IP e atualiza o registro
             allowedIPs.push(ipAddress);
             let newAllowed = allowedIPs.join(", ");
             await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
@@ -296,25 +347,12 @@
               body: JSON.stringify({ allowed_ip: newAllowed })
             });
           } else {
-            // Já há 2 IPs distintos permitidos e o IP atual não está autorizado
             let whatsappMsg = encodeURIComponent(`Olá meu nome é ${registro.nome} e meu e-mail é ${email}, gostaria de excluir um dos IPs cadastrados. Estou ciente que somente posso fazer essa alteração uma única vez!`);
             alert("Excedido o limite de IPs permitidos para seu e-mail. Você já está logado com os IPs: " + allowedIPs.join(", ") + ". Para solicitar a alteração, clique no botão.");
             document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/5537999625138?text=' + whatsappMsg + '" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Exclusão de IP</a></p>';
             return;
           }
         }
-        // Consulta a tabela "login_sessions" para obter as sessões ativas para o mesmo e-mail
-        const resSessions = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&ativa=eq.true`, {
-          method: "GET",
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          }
-        });
-        const activeSessions = await resSessions.json();
-        // Fluxo de login permitido, cria a nova sessão
         const sessionToken = generateToken();
         const deviceInfo = navigator.userAgent;
         const novaSessao = {
@@ -342,14 +380,14 @@
         localStorage.setItem("user_email", email);
         localStorage.setItem("login_date", new Date().toISOString());
         localStorage.setItem("session_token", sessionToken);
-        // Atualiza a interface: oculta a área de Login, exibe a área de Busca
         document.getElementById('introSection').style.display = 'none';
         document.getElementById('planosSection').classList.add('hidden');
         document.getElementById('loginArea').classList.add('hidden');
         document.getElementById('searchSection').classList.remove('hidden');
+        document.querySelector('a[href="#introSection"]').style.display = 'none';
+        document.querySelector('a[href="#planosSection"]').style.display = 'none';
         document.getElementById('menuLogin').innerText = 'Sair';
         document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-        // Exibe mensagem de boas-vindas com o primeiro nome, o plano e a data de expiração
         document.querySelector("#searchSection .bg-gray-800").innerHTML =
           `<strong>Bem-vindo(a), ${registro.nome}!</strong><br>` +
           `Plano: ${registro.plano}<br>` +
@@ -360,7 +398,7 @@
         alert("❌ Ocorreu um erro ao verificar o e-mail.");
       }
     }
-    // Função de Logout utilizando a tabela "login_sessions"
+
     async function logout() {
       const email = localStorage.getItem("user_email");
       const sessionToken = localStorage.getItem("session_token");
@@ -383,6 +421,8 @@
       localStorage.removeItem("user_email");
       localStorage.removeItem("login_date");
       localStorage.removeItem("session_token");
+      document.querySelector('a[href="#introSection"]').style.display = '';
+      document.querySelector('a[href="#planosSection"]').style.display = '';
       document.getElementById('introSection').style.display = 'block';
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
@@ -390,7 +430,7 @@
       document.getElementById('menuLogin').innerText = 'Login';
       document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
     }
-    // Função de validação periódica da sessão
+
     async function validateSession() {
       const email = localStorage.getItem("user_email");
       const storedToken = localStorage.getItem("session_token");
@@ -407,14 +447,14 @@
         });
         const result = await res.json();
         if (!result || result.length === 0 || result[0].ativa !== true) {
-          logout();
+          console.warn("Sessão inválida ou não encontrada; ignorando logout imediato.");
         }
       } catch (err) {
         console.error("Erro na validação da sessão:", err);
       }
     }
     setInterval(validateSession, 60000);
-    // Evento beforeunload: marca a sessão atual como inativa ao fechar a aba
+
     window.addEventListener("beforeunload", async () => {
       const sessionToken = localStorage.getItem("session_token");
       if (!sessionToken) return;
@@ -434,81 +474,21 @@
         console.error("Erro no beforeunload:", err);
       }
     });
-    // Verificação automática da sessão ao carregar a página
-    window.addEventListener('DOMContentLoaded', async () => {
-      const email = localStorage.getItem("user_email");
-      const storedToken = localStorage.getItem("session_token");
-      if (!email || !storedToken) return;
-      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-      try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&session_token=eq.${storedToken}`, {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json"
-          }
-        });
-        const result = await res.json();
-        if (!result || result.length === 0 || result[0].ativa !== true) return;
-        // Busca o registro na tabela "sessoes" para obter os dados do usuário, plano e data de expiração
-        const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-          method: "GET",
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          }
-        });
-        const autorizacoes = await resSessoes.json();
-        let displayName = email;
-        let planoNome = "Plano não identificado";
-        let dataExpiracao = "Não definida";
-        if (autorizacoes && autorizacoes.length > 0) {
-          if (autorizacoes[0].nome) displayName = autorizacoes[0].nome;
-          if (autorizacoes[0].plano) planoNome = autorizacoes[0].plano;
-          if (autorizacoes[0].data_expiracao) dataExpiracao = formatarData(autorizacoes[0].data_expiracao);
-        }
-        document.getElementById('introSection').style.display = 'none';
-        document.getElementById('planosSection').classList.add('hidden');
-        document.getElementById('loginArea').classList.add('hidden');
-        document.getElementById('searchSection').classList.remove('hidden');
-        document.getElementById('menuLogin').innerText = 'Sair';
-        document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-        document.querySelector("#searchSection .bg-gray-800").innerHTML = `<strong>Bem-vindo(a), ${displayName}!</strong><br>Plano: ${planoNome}<br>Válido até: ${dataExpiracao}`;
-        loadData();
-      } catch (err) {
-        console.error("Erro ao verificar sessão automática:", err);
-      }
-    });
-    // Função para alternar a exibição dos Planos (se necessário)
-    function togglePlanos() {
-      const planos = document.getElementById('planosSection');
-      const btn = document.getElementById('planosToggle');
-      if (planos.classList.contains('hidden')) {
-        planos.classList.remove('hidden');
-        btn.innerHTML = '💳 Ocultar Planos';
-      } else {
-        planos.classList.add('hidden');
-        btn.innerHTML = '💳 Ver Planos +';
-      }
-    }
-    // Função para mostrar a Página Inicial (Início): mostra a introdução e os planos
+
     function mostrarInicio() {
       document.getElementById('introSection').style.display = 'block';
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
     }
-    // Função para mostrar somente a seção de Planos
+
     function mostrarPlanos() {
       document.getElementById('introSection').style.display = 'none';
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
     }
-    // Função para mostrar a tela de Login
+
     function goToLogin() {
       document.getElementById('introSection').style.display = 'none';
       document.getElementById('planosSection').classList.add('hidden');
