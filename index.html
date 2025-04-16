@@ -4,11 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Película Compatível</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Importar Google Fonts (mantive Montserrat, mas pode ser trocada se preferir) -->
+  
+  <!-- Google Fonts: Montserrat -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+  
+  <!-- jsPDF para gerar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
   <style>
     body {
       background-color: #111;
@@ -38,7 +45,7 @@
     .animate-blink {
       animation: blink 2s infinite;
     }
-    /* Estilo Premium para o Menu */
+    /* Estilo Premium para o Menu (underline animado) */
     .premium-link {
       position: relative;
     }
@@ -58,24 +65,25 @@
     .text-shadow {
       text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
     }
-    /* Alerta Importante – letra um pouco menor e padding reduzido */
+    /* Alerta Importante – letra e padding reduzidos */
     .alert-avisos {
-      font-size: 0.875rem; /* text-sm */
+      font-size: 0.875rem;
       padding: 0.75rem;
     }
+    /* Força inputs de texto (exceto email) a exibir em maiúscula */
+    input[type="text"] {
+      text-transform: uppercase;
+    }
   </style>
-  <!-- Bloqueia clique com o botão direito e atalhos para DevTools, incluindo Ctrl+C -->
+  
+  <!-- Bloqueia clique direito, atalhos DevTools e Ctrl+C -->
   <script>
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-    });
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
       if (e.keyCode === 123 ||
          (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
-         (e.ctrlKey && e.key === 'U')) {
-        e.preventDefault();
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+         (e.ctrlKey && e.key === 'U') ||
+         ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c')) {
         e.preventDefault();
       }
     });
@@ -87,9 +95,10 @@
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <!-- Logo / Título -->
       <div class="flex items-center space-x-2">
+        <!-- Para exibir apenas o texto "UTI" no favicon, troque o SVG por texto se preferir -->
         <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <!-- path do ícone -->
+          <!-- Conteúdo do ícone pode ser removido se usar somente texto -->
         </svg>
         <h1 class="text-3xl font-black tracking-widest text-shadow">PELÍCULA COMPATÍVEL</h1>
       </div>
@@ -102,7 +111,7 @@
       </nav>
     </div>
   </header>
-
+  
   <!-- Página Inicial: Introdução -->
   <section id="introSection" class="py-12 bg-[#0b1120] text-white">
     <div class="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center px-4 lg:px-8">
@@ -134,7 +143,7 @@
       </div>
     </div>
   </section>
-
+  
   <!-- Seção de Planos -->
   <section id="planosSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-8 max-w-7xl mx-auto items-stretch">
     <!-- Card 1 Mês -->
@@ -155,8 +164,8 @@
         💳 Comprar
       </button>
     </div>
-
-    <!-- Card 3 Meses: pisca e os textos usam font-normal -->
+    
+    <!-- Card 3 Meses (pisca e textos em font-normal) -->
     <div class="relative bg-[#fffbea] text-black rounded-xl p-6 text-center shadow-[0_0_25px_rgba(255,204,0,0.5)] border-2 border-yellow-400 flex flex-col justify-between animate-blink">
       <div>
         <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs shadow-lg">
@@ -176,7 +185,7 @@
         💳 Comprar
       </button>
     </div>
-
+    
     <!-- Card 6 Meses -->
     <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
       <div>
@@ -195,7 +204,7 @@
         💳 Comprar
       </button>
     </div>
-
+    
     <!-- Card 1 Ano -->
     <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
       <div>
@@ -215,11 +224,55 @@
       </button>
     </div>
   </section>
-
+  
+  <!-- Seção de Pedidos -->
+  <section id="orderSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
+    <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
+      <strong>Área de Pedidos</strong>
+    </div>
+    
+    <div class="bg-gray-700 p-4 rounded-lg mb-4">
+      <label class="block mb-2 text-sm font-medium" for="orderModelo">Modelo da película (procurado)</label>
+      <input type="text" 
+             id="orderModelo"
+             placeholder="Digite (ex: A20) e veja as opções..."
+             class="w-full p-3 text-black rounded-lg mb-2"/>
+      
+      <!-- Resultado da busca dos modelos -->
+      <div id="orderResult" class="hidden p-2 bg-gray-600 rounded-lg text-sm text-white mb-2"></div>
+      
+      <label class="block mb-2 text-sm font-medium" for="orderQuantidade">Quantidade</label>
+      <input type="number" 
+             id="orderQuantidade"
+             placeholder="Digite a quantidade" 
+             class="w-full p-3 text-black rounded-lg mb-4"
+             min="1"/>
+      
+      <button onclick="adicionarPedido()"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Adicionar ao Pedido
+      </button>
+    </div>
+    
+    <!-- Lista dos itens adicionados (mini-carrinho) -->
+    <div class="bg-gray-700 p-4 rounded-lg">
+      <h3 class="text-lg font-semibold mb-2">Itens do Pedido</h3>
+      <div id="pedidoItens" class="text-sm">
+        <p class="text-gray-300">Nenhum item adicionado ainda.</p>
+      </div>
+      
+      <button onclick="gerarPDFPedido()"
+              class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Gerar PDF do Pedido
+      </button>
+    </div>
+  </section>
+  
   <!-- Área de Login (sem modificações) -->
   <section id="loginArea" class="max-w-4xl mx-auto p-4 sm:p-6 hidden">
-    <label class="block mb-2 font-medium text-sm sm:text-base">Digite seu e-mail para acessar</label>
-    <input type="email" id="email" placeholder="Digite seu e-mail" class="w-full p-3 text-black rounded-lg mb-2 text-sm sm:text-base" />
+    <label class="block mb-2 font-medium text-sm sm:text-base">Digite seu e‑mail para acessar</label>
+    <input type="email" id="email" placeholder="Digite seu e‑mail" 
+           class="w-full p-3 text-black rounded-lg mb-2 text-sm sm:text-base" />
     <div class="mb-4">
       <label class="inline-flex items-center space-x-2 text-sm">
         <input type="checkbox" id="rememberEmail" class="text-blue-600 border-gray-300 rounded focus:ring-0" />
@@ -231,20 +284,20 @@
       🔐 Entrar
     </button>
   </section>
-
-  <!-- Área de Busca -->
+  
+  <!-- Área de Busca (Compatibilidade) -->
   <section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
     <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
       <strong id="welcomeMsg">Bem-vindo(a)!</strong>
     </div>
-    <!-- Alerta de Aviso Importante (fonte um pouco menor e padding reduzido) -->
     <div class="mb-4 bg-red-600 text-white alert-avisos rounded-lg">
-      <strong>Aviso Importante:</strong> Ao aplicar qualquer película, o usuário deve medir cuidadosamente o tamanho, verificar as bordas, a localização da câmera e demais recortes. Este site se isenta de qualquer responsabilidade por erros de aplicação.
+      <strong>Aviso Importante:</strong> Ao aplicar qualquer película, o usuário deve medir cuidadosamente o tamanho, verificar as bordas, a localização da câmera e demais recortes. Este site se isenta de qualquer responsabilidade.
     </div>
     <label class="block mb-2 text-sm font-medium">Digite o modelo do celular</label>
     <input type="text" id="searchModel" placeholder="Digite o modelo" class="w-full p-3 text-black rounded-lg mb-4"/>
     <div id="result" class="p-4 bg-gray-700 rounded-lg hidden font-semibold"></div>
-    <!-- Botões de Relatar e Adicionar Compatibilidade -->
+    
+    <!-- Botões da área de busca -->
     <div class="flex flex-col sm:flex-row gap-2">
       <button onclick="abrirModalIncompatibilidade()"
               class="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
@@ -254,57 +307,73 @@
               class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
         Adicionar Compatibilidade
       </button>
+      <button onclick="mostrarPedidos()"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Fazer Pedido
+      </button>
     </div>
   </section>
-
+  
   <!-- Modal de Relatar Incompatibilidade -->
   <div id="modalIncompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
     <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
       <h2 class="text-lg font-bold mb-4">Relatar Incompatibilidade</h2>
       <label class="block mb-2 text-sm font-medium" for="modeloTestado">Modelo testado</label>
-      <input type="text" id="modeloTestado" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: iPhone 14" />
+      <input type="text" id="modeloTestado" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: IPHONE 14" />
       <label class="block mb-2 text-sm font-medium" for="modeloIncompativel">Modelo incompatível</label>
-      <input type="text" id="modeloIncompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: Samsung A10" />
+      <input type="text" id="modeloIncompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: SAMSUNG A10" />
       <div class="flex justify-end space-x-2">
-        <button onclick="fecharModalIncompatibilidade()"
-                class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
+        <button onclick="fecharModalIncompatibilidade()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
           Fechar
         </button>
-        <button onclick="enviarIncompatibilidade()"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+        <button onclick="enviarIncompatibilidade()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
           Enviar
         </button>
       </div>
     </div>
   </div>
-
+  
   <!-- Modal de Adicionar Compatibilidade -->
   <div id="modalCompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
     <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
       <h2 class="text-lg font-bold mb-4">Adicionar Compatibilidade</h2>
       <label class="block mb-2 text-sm font-medium" for="modeloProcuradoCompat">Modelo Procurado</label>
-      <input type="text" id="modeloProcuradoCompat" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Modelo pesquisado" />
+      <input type="text" id="modeloProcuradoCompat" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="MODELO PESQUISADO" />
       <label class="block mb-2 text-sm font-medium" for="modeloCompativel">Modelo Compatível</label>
-      <input type="text" id="modeloCompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: Samsung Galaxy A10" />
+      <input type="text" id="modeloCompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: SAMSUNG GALAXY A10" />
       <div class="flex justify-end space-x-2">
-        <button onclick="fecharModalCompatibilidade()"
-                class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
+        <button onclick="fecharModalCompatibilidade()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
           Fechar
         </button>
-        <button onclick="enviarCompatibilidade()"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+        <button onclick="enviarCompatibilidade()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
           Enviar
         </button>
       </div>
     </div>
   </div>
-
+  
+  <!-- Modal de Duplicata (Alteração de Quantidade) -->
+  <div id="modalDuplicate" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
+      <h2 class="text-lg font-bold mb-4">Item Duplicado</h2>
+      <p id="duplicateMessage" class="mb-4 text-sm sm:text-base"></p>
+      <div class="flex justify-end space-x-2">
+        <button onclick="cancelarDuplicado()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
+          Cancelar
+        </button>
+        <button onclick="alterarQtdDuplicado()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+          Alterar Quantidade
+        </button>
+      </div>
+    </div>
+  </div>
+  
   <!-- Rodapé Principal -->
   <footer class="text-center text-gray-400 text-sm py-8">
     Copyright &copy; 2021 UTI Da Tecnologia - Todos os Direitos Reservados.
     <br>Desenvolvido por <strong>Carla Vasconcelos</strong> (UTI Da Tecnologia).
   </footer>
-
+  
   <!-- Novo Rodapé Legal -->
   <footer class="bg-gray-900 text-gray-400 text-sm py-4">
     <div class="max-w-6xl mx-auto flex justify-center space-x-8">
@@ -313,16 +382,16 @@
       <a href="javascript:void(0)" onclick="mostrarLegal('politica-privacidade')" class="hover:text-yellow-400">Política de Privacidade</a>
     </div>
   </footer>
-
-  <!-- Seções Legais (iniciam ocultas) -->
+  
+  <!-- Seções Legais (ocultas) -->
   <section id="legalContentContainer" class="max-w-6xl mx-auto py-8 px-4 hidden">
     <div id="quem-somos" class="legal-section hidden">
       <h2 class="text-2xl font-bold text-yellow-400 mb-4">Quem Somos</h2>
-      <p>Somos a UTI Da Tecnologia, uma assistência técnica com mais de 10 anos no mercado, com uma equipe especializada, que teve a brilhante idéia de organizar a maior dificuldade de todos, que seria encontrar compatibilidade peliculas rapidamente. Nossa missão é facilitar o acesso às informações e ajudar profissionais no atendimento e venda de películas com qualidade e confiabilidade. Liderada por Carla Vasconcelos, nossa empresa é comprometida em oferecer sempre o melhor para nossos clientes.</p>
+      <p>Somos a UTI Da Tecnologia, uma equipe especializada em fornecer informações atualizadas sobre películas compatíveis para dispositivos móveis. Nossa missão é facilitar o acesso às informações e ajudar profissionais no atendimento e venda de películas com qualidade e confiabilidade. Liderada por Carla Vasconcelos, nossa empresa é comprometida em oferecer sempre o melhor para nossos clientes.</p>
     </div>
     <div id="termos-uso" class="legal-section hidden border-t border-gray-700 mt-8 pt-8">
       <h2 class="text-2xl font-bold text-yellow-400 mb-4">Termos de Uso</h2>
-      <p>Bem-vindo ao site Películas UTI. Ao acessar ou utilizar nosso site, você concorda em cumprir e aceitar integralmente os presentes Termos de Uso. Caso discorde de algum item, solicitamos que não utilize este site.</p>
+      <p>Bem-vindo ao site Películas Compatíveis. Ao acessar ou utilizar nosso site, você concorda em cumprir e aceitar integralmente os presentes Termos de Uso. Caso discorde de algum item, solicitamos que não utilize este site.</p>
       <h3 class="text-xl font-bold mt-4">1. Utilização do Site</h3>
       <p>Este site foi desenvolvido com o objetivo de fornecer informações detalhadas e precisas sobre películas compatíveis com diversos modelos de dispositivos eletrônicos. Você deve utilizar este site exclusivamente para fins legítimos, garantindo não infringir direitos de terceiros ou causar qualquer prejuízo ao site ou aos demais usuários.</p>
       <p>É expressamente proibido:</p>
@@ -335,7 +404,7 @@
       <p>Todo o conteúdo disponível neste site, incluindo textos, imagens, gráficos, logotipos, ícones, áudios e vídeos, é propriedade exclusiva deste site e está protegido pelas leis nacionais e internacionais de direitos autorais e propriedade intelectual.</p>
       <p>É terminantemente proibido reproduzir, distribuir, modificar ou comercializar qualquer conteúdo do site sem consentimento prévio e expresso do administrador.</p>
       <h3 class="text-xl font-bold mt-4">3. Responsabilidade e Garantias</h3>
-      <p>O site Películas UTI disponibiliza conteúdo informativo com o maior rigor possível, porém não oferece garantias expressas ou implícitas quanto à exatidão, integridade ou adequação dessas informações.</p>
+      <p>O site Películas Compatíveis disponibiliza conteúdo informativo com o maior rigor possível, porém não oferece garantias expressas ou implícitas quanto à exatidão, integridade ou adequação dessas informações.</p>
       <p>O uso das informações disponibilizadas é de responsabilidade exclusiva do usuário. Em hipótese alguma seremos responsabilizados por quaisquer danos diretos, indiretos ou consequenciais decorrentes do uso ou da impossibilidade de uso do site, incluindo falhas técnicas ou problemas causados por vírus ou outras ameaças digitais.</p>
       <h3 class="text-xl font-bold mt-4">4. Modificação dos Termos</h3>
       <p>Reservamo-nos o direito de modificar ou atualizar estes Termos de Uso a qualquer momento e sem aviso prévio. As alterações serão imediatamente válidas após a publicação em nosso site. A continuidade do uso após a publicação das modificações implica a aceitação dos novos termos.</p>
@@ -347,9 +416,9 @@
     </div>
     <div id="politica-privacidade" class="legal-section hidden border-t border-gray-700 mt-8 pt-8">
       <h2 class="text-2xl font-bold text-yellow-400 mb-4">Política de Privacidade</h2>
-      <p>Sua privacidade é nossa prioridade. Nesta Política de Privacidade, explicamos como coletamos, usamos e protegemos suas informações quando você utiliza o site Películas UTI.</p>
+      <p>Sua privacidade é nossa prioridade. Nesta Política de Privacidade, explicamos como coletamos, usamos e protegemos suas informações quando você utiliza o site Películas Compatíveis.</p>
       <h3 class="text-xl font-bold mt-4">1. Coleta de Informações</h3>
-      <p>Coletamos informações pessoais quando você se registra, faz login ou utiliza determinados serviços do site. Essas informações podem incluir seu nome, e-mail, endereço IP e dados de uso.</p>
+      <p>Coletamos informações pessoais quando você se registra, faz login ou utiliza determinados serviços do site. Essas informações podem incluir seu nome, e‑mail, endereço IP e dados de uso.</p>
       <h3 class="text-xl font-bold mt-4">2. Uso das Informações</h3>
       <p>Utilizamos os dados coletados para melhorar a experiência do usuário, fornecer suporte, enviar comunicações relevantes e assegurar o bom funcionamento do site. Não compartilhamos seus dados pessoais com terceiros sem o seu consentimento, exceto quando exigido por lei.</p>
       <h3 class="text-xl font-bold mt-4">3. Segurança</h3>
@@ -366,24 +435,15 @@
       <button onclick="fecharLegal()" class="bg-blue-600 text-white py-2 px-4 rounded">Fechar</button>
     </div>
   </section>
-
+  
+  <!-- Script Principal -->
   <script>
-    // Funções para exibir as seções legais
-    function mostrarLegal(secId) {
-      document.getElementById('legalContentContainer').classList.remove('hidden');
-      document.querySelectorAll('.legal-section').forEach(function(sec) {
-        sec.classList.add('hidden');
-      });
-      document.getElementById(secId).classList.remove('hidden');
-      document.getElementById('legalContentContainer').scrollIntoView({ behavior: 'smooth' });
-    }
-    function fecharLegal() {
-      document.getElementById('legalContentContainer').classList.add('hidden');
-    }
-  </script>
+    // Variáveis globais para compatibilidade e pedidos
+    let data = [];            // Array de arrays com os modelos compatíveis
+    let orderItems = [];      // Cada item: { rowIndex, modeloDigitado, quantidade }
+    let duplicateIndex = -1;  // Para armazenar o índice do item duplicado
 
-  <script>
-    let data = [];
+    // Função para formatar datas
     function formatarData(dataString) {
       const partes = dataString.split("-");
       if (partes.length === 3) {
@@ -391,7 +451,8 @@
       }
       return dataString;
     }
-    // Função para carregar dados (exemplo: da planilha)
+
+    // Carregar os dados (ex.: da planilha)
     function loadData() {
       fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
         .then(response => response.json())
@@ -401,17 +462,19 @@
           );
         });
     }
+
+    // Pesquisa principal (compatibilidade)
     function searchModel() {
-      const searchModel = document.getElementById('searchModel').value.toUpperCase().trim();
+      const input = document.getElementById('searchModel').value.toUpperCase().trim();
       const resultElement = document.getElementById('result');
-      if (searchModel === "") {
+      if (input === "") {
         resultElement.classList.add('hidden');
         return;
       }
       let foundRows = data.flatMap(row =>
-        row.some(model => model.includes(searchModel))
-          ? [`Modelo Procurado: <strong>${searchModel}</strong><br>Modelos Compatíveis: ${row.map(m =>
-              m.includes(searchModel) ? `<span class="highlight">${m}</span>` : m
+        row.some(model => model.includes(input))
+          ? [`Modelo Procurado: <strong>${input}</strong><br>Modelos Compatíveis: ${row.map(m =>
+              m.includes(input) ? `<span class="highlight">${m}</span>` : m
             ).join(', ')}`]
           : []
       );
@@ -419,30 +482,33 @@
       resultElement.classList.remove('hidden');
     }
     document.getElementById('searchModel').addEventListener('input', searchModel);
-    
-    // Preenchimento do e-mail lembrado
+
+    // Preenchimento do e‑mail lembrado
     window.addEventListener('DOMContentLoaded', () => {
       const savedEmail = localStorage.getItem('saved_email');
       if (savedEmail) {
         document.getElementById('email').value = savedEmail;
         document.getElementById('rememberEmail').checked = true;
       }
+      loadData();
     });
-    
-    function generateToken() {
-      return Date.now().toString() + Math.random().toString(36).substr(2, 8);
-    }
 
-    // Ativar o envio do login ao apertar a tecla Enter no campo de e-mail
+    // Enviar login ao pressionar Enter no campo de e‑mail
     document.addEventListener('DOMContentLoaded', () => {
       const emailInput = document.getElementById('email');
-      emailInput.addEventListener('keydown', (event) => {
+      emailInput.addEventListener('keydown', event => {
         if (event.key === 'Enter') {
           checkEmail();
         }
       });
     });
 
+    // Gerar token único para sessão
+    function generateToken() {
+      return Date.now().toString() + Math.random().toString(36).substr(2, 8);
+    }
+
+    // FUNÇÕES DE LOGIN (Supabase Key fornecida)
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -452,7 +518,7 @@
         localStorage.removeItem('saved_email');
       }
       if (!email) {
-        alert('Digite um e-mail válido.');
+        alert('Digite um e‑mail válido.');
         return;
       }
       const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
@@ -469,7 +535,7 @@
         });
         const autorizacoes = await resSessoes.json();
         if (!autorizacoes || autorizacoes.length === 0) {
-          alert("E-mail não autorizado. Por favor, adquira o plano para acessar.");
+          alert("E‑mail não autorizado. Por favor, adquira o plano para acessar.");
           return;
         }
         const registro = autorizacoes[0];
@@ -501,8 +567,8 @@
               body: JSON.stringify({ allowed_ip: newAllowed })
             });
           } else {
-            let whatsappMsg = encodeURIComponent(`Olá meu nome é ${registro.nome} e meu e-mail é ${email}, gostaria de excluir um dos IPs cadastrados. Estou ciente que somente posso fazer essa alteração uma única vez!`);
-            alert("Excedido o limite de IPs permitidos para seu e-mail. Você já está logado com os IPs: " + allowedIPs.join(", ") + ". Para solicitar a alteração, clique no botão.");
+            let whatsappMsg = encodeURIComponent(`Olá meu nome é ${registro.nome} e meu e‑mail é ${email}, gostaria de excluir um dos IPs cadastrados. Estou ciente que somente posso fazer essa alteração uma única vez!`);
+            alert("Excedido o limite de IPs permitidos para seu e‑mail. Você já está logado com os IPs: " + allowedIPs.join(", ") + ". Para solicitar a alteração, clique no botão.");
             document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/5537999625138?text=' + whatsappMsg + '" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Exclusão de IP</a></p>';
             return;
           }
@@ -549,7 +615,7 @@
         loadData();
       } catch (err) {
         console.error(err);
-        alert("❌ Ocorreu um erro ao verificar o e-mail.");
+        alert("❌ Ocorreu um erro ao verificar o e‑mail.");
       }
     }
     
@@ -581,6 +647,7 @@
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.add('hidden');
       document.getElementById('menuLogin').innerText = 'Login';
       document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
     }
@@ -629,11 +696,13 @@
       }
     });
     
+    // Funções para mostrar/ocultar seções
     function mostrarInicio() {
       document.getElementById('introSection').style.display = 'block';
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.add('hidden');
     }
     
     function mostrarPlanos() {
@@ -641,16 +710,213 @@
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.add('hidden');
     }
     
     function goToLogin() {
       document.getElementById('introSection').style.display = 'none';
       document.getElementById('planosSection').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.add('hidden');
       document.getElementById('loginArea').classList.remove('hidden');
     }
     
-    // Funções para o Modal de Relatar Incompatibilidade
+    function mostrarPedidos() {
+      document.getElementById('introSection').style.display = 'none';
+      document.getElementById('planosSection').classList.add('hidden');
+      document.getElementById('loginArea').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.remove('hidden');
+      const modeloPesquisado = document.getElementById('searchModel').value.trim();
+      if (modeloPesquisado) {
+        document.getElementById('orderModelo').value = modeloPesquisado;
+      }
+    }
+    
+    // Na área de pedidos, busca os modelos compatíveis (igual ao searchModel)
+    document.getElementById('orderModelo').addEventListener('input', function() {
+      const input = this.value.toUpperCase().trim();
+      const orderResult = document.getElementById('orderResult');
+      if (!input) {
+        orderResult.classList.add('hidden');
+        orderResult.innerHTML = "";
+        return;
+      }
+      let foundRows = data.flatMap(row =>
+        row.some(model => model.includes(input))
+          ? [ row.map(m =>
+              m.includes(input) ? `<span class="highlight">${m}</span>` : m
+            ).join(', ') ]
+          : []
+      );
+      if (foundRows.length > 0) {
+        orderResult.classList.remove('hidden');
+        orderResult.innerHTML = foundRows.join('<br><br>');
+      } else {
+        orderResult.classList.remove('hidden');
+        orderResult.innerHTML = "Nenhum modelo encontrado.";
+      }
+    });
+    
+    // Função para encontrar a linha de compatibilidade (rowIndex) a partir do modelo digitado
+    function findRowIndexForModel(input) {
+      return data.findIndex(row => row.includes(input.toUpperCase()));
+    }
+    
+    // ADICIONAR ITEM AO PEDIDO
+    function adicionarPedido() {
+      const modeloDigitado = document.getElementById('orderModelo').value.trim();
+      const quantidade = document.getElementById('orderQuantidade').value.trim();
+      if (!modeloDigitado || !quantidade) {
+        alert("Preencha o modelo e a quantidade antes de adicionar!");
+        return;
+      }
+      const rowIndex = findRowIndexForModel(modeloDigitado);
+      if (rowIndex === -1) {
+        alert("Modelo não encontrado na base de compatibilidade.");
+        return;
+      }
+      const itemExistenteIndex = orderItems.findIndex(item => item.rowIndex === rowIndex);
+      if (itemExistenteIndex !== -1) {
+        // Já existe um item deste conjunto -> exibir modal de duplicata
+        duplicateIndex = itemExistenteIndex;
+        const itemExistente = orderItems[itemExistenteIndex];
+        const msg = `O modelo "${itemExistente.modeloDigitado.toUpperCase()}" já foi adicionado.\nDeseja alterar a quantidade?`;
+        document.getElementById('duplicateMessage').innerText = msg;
+        document.getElementById('modalDuplicate').classList.remove('hidden');
+      } else {
+        orderItems.push({
+          rowIndex,
+          modeloDigitado,
+          quantidade
+        });
+        atualizarListaPedidos();
+      }
+    }
+    
+    // Modal de Duplicata: Cancelar
+    function cancelarDuplicado() {
+      document.getElementById('modalDuplicate').classList.add('hidden');
+      duplicateIndex = -1;
+    }
+    
+    // Modal de Duplicata: Alterar Quantidade
+    function alterarQtdDuplicado() {
+      document.getElementById('modalDuplicate').classList.add('hidden');
+      if (duplicateIndex < 0) return;
+      destacarItemNoPedido(duplicateIndex);
+      // Exibir campo de edição (botão e input já estão na lista de pedidos)
+      const inputQtd = document.getElementById(`editInput-${duplicateIndex}`);
+      const saveBtn = document.getElementById(`saveBtn-${duplicateIndex}`);
+      if (inputQtd && saveBtn) {
+        inputQtd.classList.remove('hidden');
+        saveBtn.classList.remove('hidden');
+        inputQtd.focus();
+      }
+      duplicateIndex = -1;
+    }
+    
+    // Atualizar lista de pedidos (mini-carrinho)
+    function atualizarListaPedidos() {
+      const pedidoItensDiv = document.getElementById('pedidoItens');
+      if (orderItems.length === 0) {
+        pedidoItensDiv.innerHTML = "<p class='text-gray-300'>Nenhum item adicionado ainda.</p>";
+        return;
+      }
+      let html = "<ul class='list-disc ml-5 space-y-1'>";
+      orderItems.forEach((item, index) => {
+        html += `
+          <li id="pedidoItem-${index}" class="flex items-center gap-2">
+            <span class="text-yellow-300 font-bold">${item.modeloDigitado.toUpperCase()}</span>
+            <span class="text-white">– Qtd: ${item.quantidade}</span>
+            <button onclick="removerItemPedido(${index})"
+                    class="bg-red-600 hover:bg-red-700 text-white ml-3 px-2 rounded text-xs">
+              Remover
+            </button>
+            <button onclick="exibirInputEdicao(${index})"
+                    class="bg-blue-600 hover:bg-blue-700 text-white ml-2 px-2 rounded text-xs">
+              Alterar Qtde
+            </button>
+            <input type="number"
+                   id="editInput-${index}"
+                   class="hidden w-16 p-1 text-black rounded text-xs ml-2"
+                   value="${item.quantidade}"
+                   min="1"
+                   onkeydown="if(event.key==='Enter'){salvarNovaQuantidade(${index})}">
+            <button id="saveBtn-${index}"
+                    class="hidden bg-green-500 hover:bg-green-600 text-white px-2 rounded text-xs ml-1"
+                    onclick="salvarNovaQuantidade(${index})">
+              OK
+            </button>
+          </li>
+        `;
+      });
+      html += "</ul>";
+      pedidoItensDiv.innerHTML = html;
+    }
+    
+    // Exibir input de edição para alteração de quantidade
+    function exibirInputEdicao(index) {
+      const inputQtd = document.getElementById(`editInput-${index}`);
+      const saveBtn = document.getElementById(`saveBtn-${index}`);
+      if (!inputQtd || !saveBtn) return;
+      inputQtd.classList.remove('hidden');
+      saveBtn.classList.remove('hidden');
+      inputQtd.focus();
+    }
+    
+    // Salvar nova quantidade a partir do input de edição
+    function salvarNovaQuantidade(index) {
+      const inputQtd = document.getElementById(`editInput-${index}`);
+      if (!inputQtd) return;
+      const novaQtd = inputQtd.value.trim();
+      if (!novaQtd || parseInt(novaQtd) < 1) {
+        alert("Quantidade inválida!");
+        return;
+      }
+      orderItems[index].quantidade = novaQtd;
+      atualizarListaPedidos();
+    }
+    
+    // Destacar um item (para efeito visual)
+    function destacarItemNoPedido(index) {
+      const li = document.getElementById(`pedidoItem-${index}`);
+      if (!li) return;
+      li.classList.add('bg-red-500');
+      setTimeout(() => {
+        li.classList.remove('bg-red-500');
+      }, 1000);
+    }
+    
+    // Gerar PDF do Pedido (inclui a linha de rodapé solicitada)
+    function gerarPDFPedido() {
+      if (orderItems.length === 0) {
+        alert("Nenhum item no pedido para gerar PDF!");
+        return;
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text("Pedido de Películas", 20, 20);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      let offsetY = 40;
+      orderItems.forEach((item, i) => {
+        const upperModel = item.modeloDigitado.toUpperCase();
+        doc.text(`${i+1}. Modelo: ${upperModel} | Qtd: ${item.quantidade}`, 20, offsetY);
+        offsetY += 10;
+      });
+      
+      offsetY += 10;
+      doc.text("Pedido gerado pelo site www.peliculasuti.com.br", 20, offsetY);
+      
+      doc.save("pedido-peliculas.pdf");
+    }
+    
+    // Funções para modais de incompatibilidade e compatibilidade
     function abrirModalIncompatibilidade() {
       const modeloProcurado = document.getElementById('searchModel').value.trim();
       if (modeloProcurado) {
@@ -676,7 +942,6 @@ Por favor, verifique e atualize na tabela. Obrigado!`;
       fecharModalIncompatibilidade();
     }
     
-    // Funções para o Modal de Adicionar Compatibilidade
     function abrirModalCompatibilidade() {
       const modeloProcurado = document.getElementById('searchModel').value.trim();
       if (modeloProcurado) {
@@ -701,6 +966,10 @@ Por favor, verifique e adicione esta informação à tabela. Obrigado!`;
       window.open(`https://wa.me/5537999625138?text=${encodeURIComponent(texto)}`, '_blank');
       fecharModalCompatibilidade();
     }
+    
+    // Modal de Duplicata para item duplicado
+    // As funções cancelarDuplicado() e alterarQtdDuplicado() já estão declaradas acima.
+    
   </script>
 </body>
 </html>
