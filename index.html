@@ -251,6 +251,15 @@
       <button onclick="gerarPDFPedido()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
         Gerar PDF do Pedido
       </button>
+<button onclick="voltarConsulta()"
+        class="mt-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+  ← Voltar à Consulta
+</button>
+<button onclick="limparPedido()"
+        class="mt-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+  Limpar Pedido
+</button>
+
     </div>
   </section>
 
@@ -846,6 +855,19 @@
         document.getElementById('orderModelo').value = modeloPesquisado;
       }
     }
+// 17) Voltar à consulta de modelos mantendo o pedido atual
+function voltarConsulta() {
+  // oculta a área de pedido
+  document.getElementById('orderSection').classList.add('hidden');
+  // mostra a área de busca (consulta de modelos)
+  document.getElementById('searchSection').classList.remove('hidden');
+}
+
+// 18) Limpar todo o pedido e atualizar a lista
+function limparPedido() {
+  orderItems = [];
+  atualizarListaPedidos();
+}
 
     /* 14) Seções Legais */
     function mostrarLegal(secId) {
