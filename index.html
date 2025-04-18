@@ -902,15 +902,26 @@
       fecharModalCompatibilidade();
     }
 
-    /* 16) Ativar Enter para enviar no campo de e-mail */
-    document.addEventListener('DOMContentLoaded', () => {
-      const emailInput = document.getElementById('email');
-      emailInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          checkEmail();
-        }
-      });
-    });
+document.addEventListener('DOMContentLoaded', () => {
+  const emailInput = document.getElementById('email');
+  const rememberCheckbox = document.getElementById('rememberEmail');
+
+  // 1) Pré‑preenche o e‑mail salvo, se existir
+  const savedEmail = localStorage.getItem('saved_email');
+  if (savedEmail) {
+    emailInput.value = savedEmail;
+    rememberCheckbox.checked = true;
+  }
+
+  // 2) Ativa Enter para enviar
+  emailInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      checkEmail();
+    }
+  });
+});
+
+
 
     /* --------------------- FIM --------------------- */
   </script>
