@@ -463,49 +463,57 @@
         resultElement.classList.add('hidden');
         return;
       }
-      let foundRows = data.flatMap(row =>
-        row.some(model => model.includes(input))
-          ? [`Modelo Procurado: <strong>${input}</strong><br>Modelos Compatíveis: ${row.map(m =>
-              m.includes(input) ? `<span class="highlight">${m}</span>` : m
-            ).join(', ')}`]
-          : []
-      );
+     let foundRows = data.flatMap(row =>
+  row.some(model => model.includes(input))
+    ? [`Modelo Procurado: <strong>${input}</strong><br>Modelos Compatíveis: ${row.map(m =>
+        m.includes(input)
+          ? m.replace(new RegExp(input, 'g'),
+              match => `<span class="highlight animate-blink">${match}</span>`)
+          : m
+      ).join(', ')}`]
+    : []
+);
+
+
       resultElement.innerHTML = foundRows.length > 0 ? foundRows.join('<br><br>') : "<strong>Modelo não encontrado</strong>";
       resultElement.classList.remove('hidden');
     });
 
-    /* 5) PESQUISA NA ABA DE PEDIDOS (orderModelo)
-          Alteração: usar .includes() para destacar somente o que contém o input, assim replicando o efeito de piscar que você gostou na busca. */
-    document.getElementById('orderModelo').addEventListener('input', function() {
-      const input = this.value.toUpperCase().trim();
-      const orderResult = document.getElementById('orderResult');
-      if (!input) {
-        orderResult.classList.add('hidden');
-        orderResult.innerHTML = "";
-        return;
-      }
-      let foundRows = data.flatMap(row => {
-        if (row.some(model => model.includes(input))) {
-          return [
-            row.map(m => m.includes(input)
-              ? `<span class="highlight cursor-pointer" onclick="preencherModelo('${m}')">${m}</span>`
-              : `<span class="cursor-pointer" onclick="preencherModelo('${m}')">${m}</span>`
-            ).join(', ')
-          ];
-        }
-        return [];
-      });
-      if (foundRows.length > 0) {
-        orderResult.classList.remove('hidden');
-        orderResult.innerHTML = foundRows.join('<br><br>');
-      } else {
-        orderResult.classList.remove('hidden');
-        orderResult.innerHTML = "";
-      }
-    });
-    function preencherModelo(valor) {
-      document.getElementById('orderModelo').value = valor;
-    }
+        /* 5) PESQUISA NA ABA DE PEDIDOS (orderModelo) */
+document.getElementById('orderModelo').addEventListener('input', function() {
+  const input = this.value.toUpperCase().trim();
+  const orderResult = document.getElementById('orderResult');
+  if (!input) {
+    orderResult.classList.add('hidden');
+    orderResult.innerHTML = "";
+    return;
+  }
+  // monta as linhas encontradas, só com input destacado e piscando
+  let foundRows = data.flatMap(row =>
+    row.some(model => model.includes(input))
+      ? [
+          row.map(m => {
+            // apenas o trecho exato input fica em highlight+piscando
+            const display = m.includes(input)
+              ? m.replace(new RegExp(input, 'g'),
+                  match => `<span class="highlight animate-blink">${match}</span>`)
+              : m;
+            return `<span class="cursor-pointer" onclick="preencherModelo('${m}')">${display}</span>`;
+          }).join(', ')
+        ]
+      : []
+  );
+  if (foundRows.length > 0) {
+    orderResult.classList.remove('hidden');
+    orderResult.innerHTML = foundRows.join('<br><br>');
+  } else {
+    orderResult.classList.add('hidden');
+  }
+});
+function preencherModelo(valor) {
+  document.getElementById('orderModelo').value = valor;
+}
+
 
     /* 6) findRowIndexForModel */
     function findRowIndexForModel(input) {
