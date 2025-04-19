@@ -150,7 +150,59 @@ body {
         <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
       </div>
     </div>
-  </section>
+  </section> <!-- fim de #introSection -->
+
+<section id="promoPedido" class="py-16 bg-gradient-to-r from-yellow-500 to-yellow-600 text-gray-900">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+    <!-- Texto Promocional -->
+    <div class="lg:w-1/2 space-y-6">
+      <h2 class="text-4xl sm:text-5xl font-extrabold leading-tight relative">
+        Muito mais que <span class="text-white">Compatibilidade!</span>
+        <span class="absolute -top-4 -left-6 text-yellow-300 text-6xl opacity-30"></span>
+      </h2>
+      <p class="text-lg sm:text-xl">Assinando nosso plano você tem:</p>
+      <ul class="space-y-4">
+        <li class="flex items-start"><svg class="w-6 h-6 text-white mr-2" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41z"/></svg><span>Acesso ilimitado à tabela completa de modelos compatíveis</span></li>
+        <li class="flex items-start"><svg class="w-6 h-6 text-white mr-2" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41z"/></svg><span>Ferramenta de pedido integrada</span></li>
+        <li class="flex items-start"><svg class="w-6 h-6 text-white mr-2" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41z"/></svg><span>PDF de pedido pronto para enviar ao fornecedor em segundos</span></li>
+      </ul>
+      <button onclick="mostrarPlanos()" class="mt-6 bg-gray-900 text-yellow-400 px-10 py-4 rounded-full font-extrabold shadow-lg transform hover:scale-105 transition duration-300">
+        Quero este Plano e o Pedido Automático
+      </button>
+    </div>
+    <!-- Três Imagens com Dois Planos Atrás e Um em Destaque -->
+    <div class="lg:w-1/2 relative h-80">
+      <!-- Cartão 1 - Pedido de Películas -->
+      <figure class="absolute top-0 left-0 w-2/3 md:w-1/2 bg-white rounded-xl shadow-lg overflow-hidden transform -rotate-3 hover:rotate-0 transition duration-500 z-10 cursor-pointer promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg" alt="Pedido de Películas" class="w-full h-full object-cover" />
+      </figure>
+      <!-- Cartão 2 - Modelo Compatível -->
+      <figure class="absolute bottom-0 left-1/4 w-2/3 md:w-1/2 bg-white rounded-xl shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition duration-500 z-10 cursor-pointer promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg" alt="Modelo Compatível" class="w-full h-full object-cover" />
+      </figure>
+      <!-- Cartão em Destaque - Área de Pedidos -->
+      <figure class="absolute inset-y-1/4 right-0 w-2/3 md:w-1/2 bg-white rounded-xl shadow-2xl overflow-hidden transform hover:scale-105 transition duration-500 z-20 cursor-pointer promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg" alt="Área de Pedidos" class="w-full h-full object-cover" />
+      </figure>
+    </div>
+  </div>
+  <!-- Lightbox Modal -->
+  <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <button id="closeModal" class="absolute top-6 right-6 text-white text-3xl font-bold">×</button>
+    <img id="modalImage" class="max-w-4xl max-h-full rounded-lg shadow-2xl" alt="Imagem ampliada">
+  </div>
+  <script>
+    // Lightbox funcionalidade
+    document.querySelectorAll('.promo-image').forEach(el => el.addEventListener('click', () => {
+      document.getElementById('modalImage').src = el.getAttribute('data-src');
+      document.getElementById('imageModal').classList.remove('hidden');
+    }));
+    document.getElementById('closeModal').addEventListener('click', () => document.getElementById('imageModal').classList.add('hidden'));
+    document.getElementById('imageModal').addEventListener('click', e => { if (e.target.id === 'imageModal') e.currentTarget.classList.add('hidden'); });
+  </script>
+</section>
+
+
 
   <!-- Seção de Planos -->
   <section id="planosSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-8 max-w-7xl mx-auto items-stretch">
@@ -843,6 +895,7 @@ function preencherModelo(valor) {
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
       document.getElementById('orderSection').classList.add('hidden');
+	document.getElementById('promoPedido').classList.remove('hidden');
     }
     function mostrarPlanos() {
       document.getElementById('introSection').style.display = 'none';
@@ -850,6 +903,7 @@ function preencherModelo(valor) {
       document.getElementById('loginArea').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
       document.getElementById('orderSection').classList.add('hidden');
+	document.getElementById('promoPedido').classList.add('hidden');
     }
     function goToLogin() {
       document.getElementById('introSection').style.display = 'none';
@@ -857,6 +911,7 @@ function preencherModelo(valor) {
       document.getElementById('searchSection').classList.add('hidden');
       document.getElementById('orderSection').classList.add('hidden');
       document.getElementById('loginArea').classList.remove('hidden');
+	document.getElementById('promoPedido').classList.add('hidden');
     }
     function mostrarPedidos() {
       document.getElementById('introSection').style.display = 'none';
@@ -867,6 +922,7 @@ function preencherModelo(valor) {
       const modeloPesquisado = document.getElementById('searchModel').value.trim();
       if (modeloPesquisado) {
         document.getElementById('orderModelo').value = modeloPesquisado;
+	document.getElementById('promoPedido').classList.add('hidden');
       }
     }
 // 17) Voltar à consulta de modelos mantendo o pedido atual
