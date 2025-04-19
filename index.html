@@ -210,26 +210,30 @@ body {
 
 
   <!-- Seção de Planos -->
-  <section id="planosSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-8 max-w-7xl mx-auto items-stretch">
-    <!-- Card 1 Mês -->
-    <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
-      <div>
-        <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
-        <h3 class="text-lg sm:text-xl font-bold">1 Mês</h3>
-        <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 16,00</p>
-        <p class="text-sm text-gray-600 mb-3">Total: R$ 16,00</p>
-        <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
-          <li>📄 Acesso à tabela completa</li>
-          <li>🔄 Atualizações automáticas</li>
-          <li>🚫 Sem propagandas</li>
-        </ul>
-      </div>
-      <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')"
-              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-        💳 Comprar
-      </button>
+  <section
+  id="planosSection"
+  class="flex overflow-x-auto gap-4 px-4 sm:px-8 py-8 lg:grid lg:grid-cols-4 max-w-7xl mx-auto"
+>
+  <!-- Card 1 Mês -->
+  <div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
+    <div>
+      <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
+      <h3 class="text-lg sm:text-xl font-bold">1 Mês</h3>
+      <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 16,00</p>
+      <p class="text-sm text-gray-600 mb-3">Total: R$ 16,00</p>
+      <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+        <li>📄 Acesso à tabela completa</li>
+        <li>🔄 Atualizações automáticas</li>
+        <li>🚫 Sem propagandas</li>
+      </ul>
     </div>
-    <!-- Card 3 Meses (pisca) -->
+    <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')"
+            class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      💳 Comprar
+    </button>
+  </div>
+
+<!-- Card 3 Meses (pisca) -->
     <div class="relative bg-[#fffbea] text-black rounded-xl p-6 text-center shadow-[0_0_25px_rgba(255,204,0,0.5)] border-2 border-yellow-400 flex flex-col justify-between animate-blink">
       <div>
         <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs shadow-lg">
@@ -249,43 +253,48 @@ body {
         💳 Comprar
       </button>
     </div>
-    <!-- Card 6 Meses -->
-    <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
-      <div>
-        <div class="badge absolute top-2 right-2">18,75% OFF</div>
-        <h3 class="text-lg sm:text-xl font-bold">6 Meses</h3>
-        <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 13,00</p>
-        <p class="text-sm text-gray-600 mb-3">Total: R$ 78,00</p>
-        <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
-          <li>📄 Acesso à tabela completa</li>
-          <li>🔄 Atualizações automáticas</li>
-          <li>🚫 Sem propagandas</li>
-        </ul>
-      </div>
-      <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')"
-              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-        💳 Comprar
-      </button>
+
+  <!-- Card 6 Meses -->
+ <div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
+
+    <div>
+      <div class="badge absolute top-2 right-2">18,75% OFF</div>
+      <h3 class="text-lg sm:text-xl font-bold">6 Meses</h3>
+      <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 13,00</p>
+      <p class="text-sm text-gray-600 mb-3">Total: R$ 78,00</p>
+      <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+        <li>📄 Acesso à tabela completa</li>
+        <li>🔄 Atualizações automáticas</li>
+        <li>🚫 Sem propagandas</li>
+      </ul>
     </div>
-    <!-- Card 1 Ano -->
-    <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
-      <div>
-        <div class="badge absolute top-2 right-2">25% OFF</div>
-        <h3 class="text-lg sm:text-xl font-bold">1 Ano</h3>
-        <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 12,00</p>
-        <p class="text-sm text-gray-600 mb-3">Total: R$ 144,00</p>
-        <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
-          <li>📄 Acesso à tabela completa</li>
-          <li>🔄 Atualizações automáticas</li>
-          <li>🚫 Sem propagandas</li>
-        </ul>
-      </div>
-      <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')"
-              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-        💳 Comprar
-      </button>
+    <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')"
+            class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      💳 Comprar
+    </button>
+  </div>
+
+  <!-- Card 1 Ano -->
+<div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
+
+    <div>
+      <div class="badge absolute top-2 right-2">25% OFF</div>
+      <h3 class="text-lg sm:text-xl font-bold">1 Ano</h3>
+      <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 12,00</p>
+      <p class="text-sm text-gray-600 mb-3">Total: R$ 144,00</p>
+      <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+        <li>📄 Acesso à tabela completa</li>
+        <li>🔄 Atualizações automáticas</li>
+        <li>🚫 Sem propagandas</li>
+      </ul>
     </div>
-  </section>
+    <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')"
+            class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      💳 Comprar
+    </button>
+  </div>
+</section>
+
 
   <!-- Seção de Pedidos -->
   <section id="orderSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
