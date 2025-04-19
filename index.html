@@ -234,25 +234,41 @@ body {
   </div>
 
 <!-- Card 3 Meses (pisca) -->
-    <div class="relative bg-[#fffbea] text-black rounded-xl p-6 text-center shadow-[0_0_25px_rgba(255,204,0,0.5)] border-2 border-yellow-400 flex flex-col justify-between animate-blink">
-      <div>
-        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs shadow-lg">
-          MAIS VENDIDO
-        </div>
-        <h3 class="text-xl font-normal flex justify-center items-center gap-2">⭐ 3 Meses</h3>
-        <p class="text-3xl font-normal mt-2">R$ 14,00</p>
-        <p class="text-sm text-gray-600 mb-3 font-normal">Total: R$ 42,00</p>
-        <ul class="text-sm sm:text-base mb-4 text-left space-y-1 font-normal">
-          <li>📄 Acesso à tabela completa</li>
-          <li>🔄 Atualizações automáticas</li>
-          <li>🚫 Sem propagandas</li>
-        </ul>
-      </div>
-      <button onclick="window.open('https://mpago.la/1DTP1fB', '_blank')"
-              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-        💳 Comprar
-      </button>
-    </div>
+<div
+  class="relative
+         min-w-[80%] lg:min-w-0 flex-shrink-0    /* largura carrossel no mobile */
+         bg-[#fffbea] text-black rounded-xl p-6
+         text-center shadow-[0_0_25px_rgba(255,204,0,0.5)]
+         border-2 border-yellow-400
+         flex flex-col justify-between
+         animate-blink"
+>
+  <!-- Selo Mais Vendido -->
+  <div class="absolute -top-4 left-1/2 transform -translate-x-1/2
+              bg-yellow-400 text-black px-3 py-1 rounded-full text-xs shadow-lg">
+    MAIS VENDIDO
+  </div>
+
+  <!-- Título e valores -->
+  <h3 class="text-xl font-normal flex justify-center items-center gap-2">⭐ 3 Meses</h3>
+  <p class="text-3xl font-normal mt-2">R$ 14,00</p>
+  <p class="text-sm text-gray-600 mb-3 font-normal">Total: R$ 42,00</p>
+
+  <!-- Lista de benefícios -->
+  <ul class="text-sm sm:text-base mb-4 text-left space-y-1 font-normal">
+    <li>📄 Acesso à tabela completa</li>
+    <li>🔄 Atualizações automáticas</li>
+    <li>🚫 Sem propagandas</li>
+  </ul>
+
+  <!-- Botão -->
+  <button
+    onclick="window.open('https://mpago.la/1DTP1fB', '_blank')"
+    class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
+  >
+    💳 Comprar
+  </button>
+</div>
 
   <!-- Card 6 Meses -->
  <div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
@@ -902,7 +918,7 @@ function preencherModelo(valor) {
       }
     });
 
-    /* 13) Exibir/Ocultar Seções */
+    /** 13) Exibir/Ocultar Seções */
     function mostrarInicio() {
       document.getElementById('introSection').style.display = 'block';
       document.getElementById('planosSection').classList.remove('hidden');
