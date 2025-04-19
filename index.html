@@ -1,3 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Película Compatível</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+
+  <!-- jsPDF para gerar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+body {
+  background-color: #111;
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-weight: 400;    /* peso normal para todo o corpo de texto */
+}
+
+    .badge {
+      background-color: #e11d48;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: bold;
+    }
+    .highlight {
+      /* Este estilo já aplica negrito e uma cor chamativa, e funciona com a animação definida na classe animate-blink */
+      font-weight: bold;
+      color: #ffea00;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+    }
+    /* Animação para o card 3 Meses (piscar) */
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.5; }
+    }
+    .animate-blink {
+      animation: blink 2s infinite;
+    }
+    /* Estilo Premium para o Menu (underline animado) */
+    .premium-link {
+      position: relative;
+    }
+    .premium-link::after {
+      content: "";
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      bottom: -2px;
+      left: 0;
+      background-color: #FFC107;
+      transition: width 0.3s ease;
+    }
+    .premium-link:hover::after {
+      width: 100%;
+    }
+    .text-shadow {
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+    /* Alerta Importante – letra menor e padding reduzido */
+    .alert-avisos {
+      font-size: 0.875rem;
+      padding: 0.75rem;
+    }
+    /* Forçar os inputs de texto (exceto e-mail) a exibirem em maiúsculas */
+    input[type="text"] {
+      text-transform: uppercase;
+    }
+    /* Modal título duplicado em vermelho */
+    .modal-duplicate-title {
+      color: red;
+    }
+  </style>
+
+  <!-- Bloqueia clique direito, atalhos para DevTools e Ctrl+C -->
+  <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (
+        e.keyCode === 123 || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || 
+        (e.ctrlKey && e.key === 'U') || 
+        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c')
+      ) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header class="bg-gradient-to-r from-black to-gray-800 p-6 shadow-xl text-white">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <!-- Logo / Título -->
+      <div class="flex items-center space-x-2">
+        <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"></svg>
+        <h1 class="text-3xl font-black tracking-widest text-shadow">PELÍCULA COMPATÍVEL</h1>
+      </div>
+      <!-- Menu -->
+      <nav class="space-x-6 text-base font-semibold">
+        <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
+        <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
+        <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
+        <a href="#loginArea" id="menuLogin" onclick="goToLogin()" class="premium-link hover:text-yellow-400 transition">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Página Inicial: Introdução -->
+  <section id="introSection" class="py-12 bg-[#0b1120] text-white">
+    <div class="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center px-4 lg:px-8">
+      <!-- Texto -->
+      <div class="w-full md:w-1/2 text-center md:text-left">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-yellow-400 mb-4">
+          <span class="inline-block">🧩</span> Encontre a película certa em segundos
+        </h2>
+        <p class="text-gray-300 text-lg mb-4">
+          Você trabalha com celular e perde tempo testando películas ou pesquisando compatibilidades?<br>
+          <span class="font-bold text-white">Esse site é pra você.</span>
+        </p>
+        <p class="text-gray-400 mb-4">
+          Aqui você acessa uma <span class="text-yellow-400 font-bold">tabela completa e atualizada</span> com modelos compatíveis.<br>
+          Economize tempo, evite erros e <span class="text-yellow-400 font-bold">venda mais com segurança</span>.
+        </p>
+        <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-4">
+          <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Fácil de usar</span>
+          <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Sem propagandas</span>
+          <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Atualizações automáticas</span>
+        </div>
+        <p class="text-white mt-6 text-lg">
+          <span class="text-yellow-400 font-bold">A partir de R$ 12,00 por mês</span>, você transforma seu atendimento e ganha confiança no que oferece.
+        </p>
+      </div>
+      <!-- Imagem -->
+      <div class="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+        <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
+      </div>
+    </div>
+  </section> <!-- fim de #introSection -->
+
 <section id="promoPedido" class="py-16 bg-gradient-to-r from-yellow-500 to-yellow-600 text-gray-900">
   <div class="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
     <!-- Texto Promocional -->
@@ -52,3 +206,821 @@
     document.getElementById('imageModal').addEventListener('click', e => { if (e.target.id === 'imageModal') e.currentTarget.classList.add('hidden'); });
   </script>
 </section>
+
+
+
+  <!-- Seção de Planos -->
+  <section id="planosSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-8 max-w-7xl mx-auto items-stretch">
+    <!-- Card 1 Mês -->
+    <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
+      <div>
+        <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
+        <h3 class="text-lg sm:text-xl font-bold">1 Mês</h3>
+        <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 16,00</p>
+        <p class="text-sm text-gray-600 mb-3">Total: R$ 16,00</p>
+        <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+          <li>📄 Acesso à tabela completa</li>
+          <li>🔄 Atualizações automáticas</li>
+          <li>🚫 Sem propagandas</li>
+        </ul>
+      </div>
+      <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')"
+              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+        💳 Comprar
+      </button>
+    </div>
+    <!-- Card 3 Meses (pisca) -->
+    <div class="relative bg-[#fffbea] text-black rounded-xl p-6 text-center shadow-[0_0_25px_rgba(255,204,0,0.5)] border-2 border-yellow-400 flex flex-col justify-between animate-blink">
+      <div>
+        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs shadow-lg">
+          MAIS VENDIDO
+        </div>
+        <h3 class="text-xl font-normal flex justify-center items-center gap-2">⭐ 3 Meses</h3>
+        <p class="text-3xl font-normal mt-2">R$ 14,00</p>
+        <p class="text-sm text-gray-600 mb-3 font-normal">Total: R$ 42,00</p>
+        <ul class="text-sm sm:text-base mb-4 text-left space-y-1 font-normal">
+          <li>📄 Acesso à tabela completa</li>
+          <li>🔄 Atualizações automáticas</li>
+          <li>🚫 Sem propagandas</li>
+        </ul>
+      </div>
+      <button onclick="window.open('https://mpago.la/1DTP1fB', '_blank')"
+              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+        💳 Comprar
+      </button>
+    </div>
+    <!-- Card 6 Meses -->
+    <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
+      <div>
+        <div class="badge absolute top-2 right-2">18,75% OFF</div>
+        <h3 class="text-lg sm:text-xl font-bold">6 Meses</h3>
+        <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 13,00</p>
+        <p class="text-sm text-gray-600 mb-3">Total: R$ 78,00</p>
+        <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+          <li>📄 Acesso à tabela completa</li>
+          <li>🔄 Atualizações automáticas</li>
+          <li>🚫 Sem propagandas</li>
+        </ul>
+      </div>
+      <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')"
+              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+        💳 Comprar
+      </button>
+    </div>
+    <!-- Card 1 Ano -->
+    <div class="relative bg-white text-black rounded-xl p-6 text-center shadow-md flex flex-col justify-between">
+      <div>
+        <div class="badge absolute top-2 right-2">25% OFF</div>
+        <h3 class="text-lg sm:text-xl font-bold">1 Ano</h3>
+        <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 12,00</p>
+        <p class="text-sm text-gray-600 mb-3">Total: R$ 144,00</p>
+        <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+          <li>📄 Acesso à tabela completa</li>
+          <li>🔄 Atualizações automáticas</li>
+          <li>🚫 Sem propagandas</li>
+        </ul>
+      </div>
+      <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')"
+              class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+        💳 Comprar
+      </button>
+    </div>
+  </section>
+
+  <!-- Seção de Pedidos -->
+  <section id="orderSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
+    <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
+      <strong>Área de Pedidos</strong>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-lg mb-4">
+      <label class="block mb-2 text-sm font-medium" for="orderModelo">Modelo da película (procurado)</label>
+      <input type="text" id="orderModelo" placeholder="Digite (ex: A10) e veja as opções..." class="w-full p-3 text-black rounded-lg mb-2"/>
+      <!-- Exibe os modelos compatíveis clicáveis (com destaque igual à busca principal) -->
+      <div id="orderResult" class="hidden p-2 bg-gray-600 rounded-lg text-sm text-white font-light leading-relaxed mb-2"></div>
+      <label class="block mb-2 text-sm font-medium" for="orderQuantidade">Quantidade</label>
+      <input type="number" id="orderQuantidade" placeholder="Digite a quantidade" class="w-full p-3 text-black rounded-lg mb-4" min="1"/>
+      <button onclick="adicionarPedido()" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Adicionar ao Pedido
+      </button>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-lg">
+      <h3 class="text-lg font-semibold mb-2">Itens do Pedido</h3>
+      <div id="pedidoItens" class="text-sm">
+        <p class="text-gray-300">Nenhum item adicionado ainda.</p>
+      </div>
+      <button onclick="gerarPDFPedido()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Gerar PDF do Pedido
+      </button>
+<button onclick="voltarConsulta()"
+        class="mt-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+  ← Voltar à Consulta
+</button>
+<button onclick="limparPedido()"
+        class="mt-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+  Limpar Pedido
+</button>
+
+    </div>
+  </section>
+
+  <!-- Área de Login -->
+  <section id="loginArea" class="max-w-4xl mx-auto p-4 sm:p-6 hidden">
+    <label class="block mb-2 font-medium text-sm sm:text-base">Digite seu e‑mail para acessar</label>
+    <input type="email" id="email" placeholder="Digite seu e‑mail" class="w-full p-3 text-black rounded-lg mb-2 text-sm sm:text-base" />
+    <div class="mb-4">
+      <label class="inline-flex items-center space-x-2 text-sm">
+        <input type="checkbox" id="rememberEmail" class="text-blue-600 border-gray-300 rounded focus:ring-0" />
+        <span>Lembrar meu e‑mail</span>
+      </label>
+    </div>
+    <button onclick="checkEmail()"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md border border-blue-500 transition text-sm sm:text-base">
+      🔐 Entrar
+    </button>
+  </section>
+
+  <!-- Área de Busca (Compatibilidade) -->
+  <section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
+    <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
+      <strong id="welcomeMsg">Bem-vindo(a)!</strong>
+    </div>
+    <div class="mb-4 bg-red-600 text-white alert-avisos rounded-lg">
+      <strong>Aviso Importante:</strong> Ao aplicar qualquer película, meça cuidadosamente o tamanho, verifique bordas, localização de câmera e demais recortes. O site isenta-se de quaisquer responsabilidades.
+    </div>
+    <label class="block mb-2 text-sm font-medium">Digite o modelo do celular</label>
+    <input type="text" id="searchModel" placeholder="Digite o modelo" class="w-full p-3 text-black rounded-lg mb-4"/>
+    <div id="result" class="p-4 bg-gray-700 rounded-lg hidden font-light leading-relaxed"></div>
+
+    <!-- Botões da área de busca -->
+    <div class="flex flex-col sm:flex-row gap-2">
+      <button onclick="abrirModalIncompatibilidade()" class="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Relatar Incompatibilidade
+      </button>
+      <button onclick="abrirModalCompatibilidade()" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Adicionar Compatibilidade
+      </button>
+      <button onclick="mostrarPedidos()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+        Fazer Pedido
+      </button>
+    </div>
+  </section>
+
+  <!-- Modal de Relatar Incompatibilidade -->
+  <div id="modalIncompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
+      <h2 class="text-lg font-bold mb-4">Relatar Incompatibilidade</h2>
+      <label class="block mb-2 text-sm font-medium" for="modeloTestado">Modelo testado</label>
+      <input type="text" id="modeloTestado" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: IPHONE 14" />
+      <label class="block mb-2 text-sm font-medium" for="modeloIncompativel">Modelo incompatível</label>
+      <input type="text" id="modeloIncompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: SAMSUNG A10" />
+      <div class="flex justify-end space-x-2">
+        <button onclick="fecharModalIncompatibilidade()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
+          Fechar
+        </button>
+        <button onclick="enviarIncompatibilidade()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+          Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Adicionar Compatibilidade -->
+  <div id="modalCompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
+      <h2 class="text-lg font-bold mb-4">Adicionar Compatibilidade</h2>
+      <label class="block mb-2 text-sm font-medium" for="modeloProcuradoCompat">Modelo Procurado</label>
+      <input type="text" id="modeloProcuradoCompat" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="MODELO PESQUISADO" />
+      <label class="block mb-2 text-sm font-medium" for="modeloCompativel">Modelo Compatível</label>
+      <input type="text" id="modeloCompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: SAMSUNG GALAXY A10" />
+      <div class="flex justify-end space-x-2">
+        <button onclick="fecharModalCompatibilidade()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
+          Fechar
+        </button>
+        <button onclick="enviarCompatibilidade()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+          Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Duplicata -->
+  <div id="modalDuplicate" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
+      <h2 class="text-lg font-bold mb-4 modal-duplicate-title">ITEM DUPLICADO</h2>
+      <p id="duplicateMessage" class="mb-4 text-sm sm:text-base"></p>
+      <div class="flex justify-end space-x-2">
+        <button onclick="cancelarDuplicado()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
+          Cancelar
+        </button>
+        <button onclick="alterarQtdDuplicado()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+          Alterar Quantidade
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rodapé Principal -->
+  <footer class="text-center text-gray-400 text-sm py-8">
+    Copyright &copy; 2021 UTI Da Tecnologia - Todos os Direitos Reservados.
+    <br>Desenvolvido por <strong>Carla Vasconcelos</strong> (UTI Da Tecnologia).
+  </footer>
+
+  <!-- Rodapé Legal -->
+  <footer class="bg-gray-900 text-gray-400 text-sm py-4">
+    <div class="max-w-6xl mx-auto flex justify-center space-x-8">
+      <a href="javascript:void(0)" onclick="mostrarLegal('quem-somos')" class="hover:text-yellow-400">Quem Somos</a>
+      <a href="javascript:void(0)" onclick="mostrarLegal('termos-uso')" class="hover:text-yellow-400">Termos de Uso</a>
+      <a href="javascript:void(0)" onclick="mostrarLegal('politica-privacidade')" class="hover:text-yellow-400">Política de Privacidade</a>
+    </div>
+  </footer>
+
+  <!-- Seções Legais (ocultas) -->
+  <section id="legalContentContainer" class="max-w-6xl mx-auto py-8 px-4 hidden">
+    <div id="quem-somos" class="legal-section hidden">
+      <h2 class="text-2xl font-bold text-yellow-400 mb-4">Quem Somos</h2>
+      <p>Somos a UTI Da Tecnologia, uma equipe especializada em fornecer informações atualizadas sobre películas compatíveis para dispositivos móveis. Nossa missão é facilitar o acesso às informações e ajudar profissionais no atendimento e venda de películas com qualidade e confiabilidade. Liderada por Carla Vasconcelos, nossa empresa é comprometida em oferecer sempre o melhor para nossos clientes.</p>
+    </div>
+    <div id="termos-uso" class="legal-section hidden border-t border-gray-700 mt-8 pt-8">
+      <h2 class="text-2xl font-bold text-yellow-400 mb-4">Termos de Uso</h2>
+      <p>Bem-vindo ao site Películas Compatíveis. Ao acessar ou utilizar nosso site, você concorda em cumprir e aceitar integralmente os presentes Termos de Uso. Caso discorde de algum item, solicitamos que não utilize este site.</p>
+      <h3 class="text-xl font-bold mt-4">1. Utilização do Site</h3>
+      <p>Este site foi desenvolvido com o objetivo de fornecer informações detalhadas e precisas sobre películas compatíveis com diversos modelos de dispositivos eletrônicos. Você deve utilizar este site exclusivamente para fins legítimos, garantindo não infringir direitos de terceiros ou causar qualquer prejuízo ao site ou aos demais usuários.</p>
+      <p>É expressamente proibido:</p>
+      <ul class="list-disc pl-5">
+        <li>Acessar o site por meio de métodos ilegais ou não autorizados;</li>
+        <li>Realizar qualquer ação que possa sobrecarregar ou prejudicar a infraestrutura do site;</li>
+        <li>Utilizar ferramentas ou softwares para extrair conteúdo ou dados sem autorização prévia por escrito.</li>
+      </ul>
+      <h3 class="text-xl font-bold mt-4">2. Propriedade Intelectual</h3>
+      <p>Todo o conteúdo disponível neste site, incluindo textos, imagens, gráficos, logotipos, ícones, áudios e vídeos, é propriedade exclusiva deste site e está protegido pelas leis nacionais e internacionais de direitos autorais e propriedade intelectual.</p>
+      <p>É terminantemente proibido reproduzir, distribuir, modificar ou comercializar qualquer conteúdo do site sem consentimento prévio e expresso do administrador.</p>
+      <h3 class="text-xl font-bold mt-4">3. Responsabilidade e Garantias</h3>
+      <p>O site Películas Compatíveis disponibiliza conteúdo informativo com o maior rigor possível, porém não oferece garantias expressas ou implícitas quanto à exatidão, integridade ou adequação dessas informações.</p>
+      <p>O uso das informações disponibilizadas é de responsabilidade exclusiva do usuário. Em hipótese alguma seremos responsabilizados por quaisquer danos diretos, indiretos ou consequenciais decorrentes do uso ou da impossibilidade de uso do site, incluindo falhas técnicas ou problemas causados por vírus ou outras ameaças digitais.</p>
+      <h3 class="text-xl font-bold mt-4">4. Modificação dos Termos</h3>
+      <p>Reservamo-nos o direito de modificar ou atualizar estes Termos de Uso a qualquer momento e sem aviso prévio. As alterações serão imediatamente válidas após a publicação em nosso site. A continuidade do uso após a publicação das modificações implica a aceitação dos novos termos.</p>
+      <h3 class="text-xl font-bold mt-4">5. Lei Aplicável e Jurisdição</h3>
+      <p>Os presentes Termos de Uso são regidos e interpretados segundo as leis vigentes no Brasil. Eventuais disputas relacionadas a estes termos serão resolvidas no foro da cidade sede da administração do site, com renúncia expressa a qualquer outro.</p>
+      <h3 class="text-xl font-bold mt-4">6. Contato</h3>
+      <p>Em caso de dúvidas sobre estes Termos de Uso ou sobre o funcionamento do site, entre em contato pela aba "Contato".</p>
+      <p class="mt-4">Última atualização: 14/04/2025</p>
+    </div>
+    <div id="politica-privacidade" class="legal-section hidden border-t border-gray-700 mt-8 pt-8">
+      <h2 class="text-2xl font-bold text-yellow-400 mb-4">Política de Privacidade</h2>
+      <p>Sua privacidade é nossa prioridade. Nesta Política de Privacidade, explicamos como coletamos, usamos e protegemos suas informações quando você utiliza o site Películas Compatíveis.</p>
+      <h3 class="text-xl font-bold mt-4">1. Coleta de Informações</h3>
+      <p>Coletamos informações pessoais quando você se registra, faz login ou utiliza determinados serviços do site. Essas informações podem incluir seu nome, e‑mail, endereço IP e dados de uso.</p>
+      <h3 class="text-xl font-bold mt-4">2. Uso das Informações</h3>
+      <p>Utilizamos os dados coletados para melhorar a experiência do usuário, fornecer suporte, enviar comunicações relevantes e assegurar o bom funcionamento do site. Não compartilhamos seus dados pessoais com terceiros sem o seu consentimento, exceto quando exigido por lei.</p>
+      <h3 class="text-xl font-bold mt-4">3. Segurança</h3>
+      <p>Adotamos medidas técnicas e administrativas para proteger suas informações contra acessos não autorizados, divulgação, alteração ou destruição. Contudo, nenhum método de transmissão ou armazenamento é 100% seguro.</p>
+      <h3 class="text-xl font-bold mt-4">4. Cookies</h3>
+      <p>Utilizamos cookies para melhorar sua experiência, armazenar preferências e coletar informações analíticas sobre o uso do site. Você pode desativar os cookies, mas isso pode afetar a funcionalidade do site.</p>
+      <h3 class="text-xl font-bold mt-4">5. Alterações nesta Política</h3>
+      <p>Podemos atualizar esta Política de Privacidade periodicamente, e a versão atualizada estará disponível nesta página. O uso contínuo do site implica a aceitação das alterações.</p>
+      <h3 class="text-xl font-bold mt-4">6. Contato</h3>
+      <p>Se tiver dúvidas sobre esta Política de Privacidade, entre em contato pela aba "Contato".</p>
+      <p class="mt-4">Última atualização: 14/04/2025</p>
+    </div>
+    <div class="text-center mt-4">
+      <button onclick="fecharLegal()" class="bg-blue-600 text-white py-2 px-4 rounded">Fechar</button>
+    </div>
+  </section>
+
+  <script>
+    /* 1) Funções generateToken e formatarData */
+    function generateToken() {
+      return Date.now().toString() + Math.random().toString(36).substr(2, 8);
+    }
+    function formatarData(dataString) {
+      const partes = dataString.split("-");
+      if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+      return dataString;
+    }
+
+    /* 2) Variáveis e Estruturas */
+    let data = [];        // Base de compatibilidade
+    let orderItems = [];  // Itens do pedido
+    let duplicateIndex = -1;
+
+    /* 3) Carregar dados da planilha */
+    function loadData() {
+      fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
+        .then(response => response.json())
+        .then(jsonData => {
+          data = jsonData.map(row =>
+            row[0].trim().toUpperCase().split(',').map(m => m.trim())
+          );
+        });
+    }
+
+    /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
+    document.getElementById('searchModel').addEventListener('input', function() {
+      const input = this.value.toUpperCase().trim();
+      const resultElement = document.getElementById('result');
+      if (!input) {
+        resultElement.classList.add('hidden');
+        return;
+      }
+     let foundRows = data.flatMap(row =>
+  row.some(model => model.includes(input))
+    ? [`<span class="font-bold">Modelo Procurado:</span> <span class="font-bold">${input}</span><br>
+<span class="font-bold">Modelos Compatíveis:</span>
+ ${row.map(m =>
+        m.includes(input)
+          ? m.replace(new RegExp(input, 'g'),
+              match => `<span class="highlight animate-blink">${match}</span>`)
+          : m
+      ).join(', ')}`]
+    : []
+);
+
+
+      resultElement.innerHTML = foundRows.length > 0 ? foundRows.join('<br><br>') : "<strong>Modelo não encontrado</strong>";
+      resultElement.classList.remove('hidden');
+    });
+
+        /* 5) PESQUISA NA ABA DE PEDIDOS (orderModelo) */
+document.getElementById('orderModelo').addEventListener('input', function() {
+  const input = this.value.toUpperCase().trim();
+  const orderResult = document.getElementById('orderResult');
+  if (!input) {
+    orderResult.classList.add('hidden');
+    orderResult.innerHTML = "";
+    return;
+  }
+  // monta as linhas encontradas, só com input destacado e piscando
+  let foundRows = data.flatMap(row =>
+    row.some(model => model.includes(input))
+      ? [
+          row.map(m => {
+            // apenas o trecho exato input fica em highlight+piscando
+            const display = m.includes(input)
+              ? m.replace(new RegExp(input, 'g'),
+                  match => `<span class="highlight animate-blink">${match}</span>`)
+              : m;
+            return `<span class="cursor-pointer" onclick="preencherModelo('${m}')">${display}</span>`;
+          }).join(', ')
+        ]
+      : []
+  );
+  if (foundRows.length > 0) {
+    orderResult.classList.remove('hidden');
+    orderResult.innerHTML = foundRows.join('<br><br>');
+  } else {
+    orderResult.classList.add('hidden');
+  }
+});
+function preencherModelo(valor) {
+  document.getElementById('orderModelo').value = valor;
+}
+
+
+    /* 6) findRowIndexForModel */
+    function findRowIndexForModel(input) {
+      return data.findIndex(row => row.includes(input.toUpperCase()));
+    }
+
+    /* 7) ADICIONAR PEDIDO */
+    function adicionarPedido() {
+      const modeloDigitado = document.getElementById('orderModelo').value.trim();
+      const quantidade = document.getElementById('orderQuantidade').value.trim();
+      if (!modeloDigitado || !quantidade) {
+        alert("Preencha o modelo e a quantidade antes de adicionar!");
+        return;
+      }
+      const rowIndex = findRowIndexForModel(modeloDigitado);
+      const itemExistenteIndex = orderItems.findIndex(item => item.rowIndex === rowIndex && rowIndex !== -1);
+      if (itemExistenteIndex !== -1) {
+        duplicateIndex = itemExistenteIndex;
+        const itemExistente = orderItems[itemExistenteIndex];
+        const msg = `O modelo "${itemExistente.modeloDigitado.toUpperCase()}" já foi adicionado, deseja alterar a quantidade?`;
+        document.getElementById('duplicateMessage').innerText = msg;
+        document.getElementById('modalDuplicate').classList.remove('hidden');
+      } else {
+        orderItems.push({ rowIndex, modeloDigitado, quantidade });
+        atualizarListaPedidos();
+      }
+    }
+
+    /* 8) Atualizar lista de pedidos */
+    function atualizarListaPedidos() {
+      const pedidoItensDiv = document.getElementById('pedidoItens');
+      if (orderItems.length === 0) {
+        pedidoItensDiv.innerHTML = "<p class='text-gray-300'>Nenhum item adicionado ainda.</p>";
+        return;
+      }
+      let html = "<ul class='list-disc ml-5 space-y-1'>";
+      orderItems.forEach((item, index) => {
+        html += `
+          <li id="pedidoItem-${index}" class="flex items-center gap-2">
+            <span class="text-yellow-300 font-bold">${item.modeloDigitado.toUpperCase()}</span>
+            <span class="text-white">– Qtd: ${item.quantidade}</span>
+            <button onclick="removerItemPedido(${index})" class="bg-red-600 hover:bg-red-700 text-white ml-3 px-2 rounded text-xs">
+              Remover
+            </button>
+            <button onclick="exibirInputEdicao(${index})" class="bg-blue-600 hover:bg-blue-700 text-white ml-2 px-2 rounded text-xs">
+              Alterar Qtde
+            </button>
+            <input type="number" id="editInput-${index}" class="hidden w-16 p-1 text-black rounded text-xs ml-2" value="${item.quantidade}" min="1" onkeydown="if(event.key==='Enter'){salvarNovaQuantidade(${index})}">
+            <button id="saveBtn-${index}" class="hidden bg-green-500 hover:bg-green-600 text-white px-2 rounded text-xs ml-1" onclick="salvarNovaQuantidade(${index})">
+              OK
+            </button>
+          </li>
+        `;
+      });
+      html += "</ul>";
+      pedidoItensDiv.innerHTML = html;
+    }
+
+    /* 9) Edição e remoção de itens */
+    function exibirInputEdicao(index) {
+      const inputQtd = document.getElementById(`editInput-${index}`);
+      const saveBtn = document.getElementById(`saveBtn-${index}`);
+      if (!inputQtd || !saveBtn) return;
+      inputQtd.classList.remove('hidden');
+      saveBtn.classList.remove('hidden');
+      inputQtd.focus();
+    }
+    function salvarNovaQuantidade(index) {
+      const inputQtd = document.getElementById(`editInput-${index}`);
+      if (!inputQtd) return;
+      const novaQtd = inputQtd.value.trim();
+      if (!novaQtd || parseInt(novaQtd) < 1) {
+        alert("Quantidade inválida!");
+        return;
+      }
+      orderItems[index].quantidade = novaQtd;
+      atualizarListaPedidos();
+    }
+    function destacarItemNoPedido(index) {
+      const li = document.getElementById(`pedidoItem-${index}`);
+      if (!li) return;
+      li.classList.add('bg-red-500');
+      setTimeout(() => { li.classList.remove('bg-red-500'); }, 1000);
+    }
+    function removerItemPedido(index) {
+      orderItems.splice(index, 1);
+      atualizarListaPedidos();
+    }
+
+    /* 10) Modal de Duplicata */
+    function cancelarDuplicado() {
+      document.getElementById('modalDuplicate').classList.add('hidden');
+      duplicateIndex = -1;
+    }
+    function alterarQtdDuplicado() {
+      document.getElementById('modalDuplicate').classList.add('hidden');
+      if (duplicateIndex < 0) return;
+      destacarItemNoPedido(duplicateIndex);
+      const inputQtd = document.getElementById(`editInput-${duplicateIndex}`);
+      const saveBtn = document.getElementById(`saveBtn-${duplicateIndex}`);
+      if (inputQtd && saveBtn) {
+        inputQtd.classList.remove('hidden');
+        saveBtn.classList.remove('hidden');
+        inputQtd.focus();
+      }
+      duplicateIndex = -1;
+    }
+
+    /* 11) Gerar PDF do Pedido */
+    function gerarPDFPedido() {
+      if (orderItems.length === 0) {
+        alert("Nenhum item no pedido para gerar PDF!");
+        return;
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text("Pedido de Películas", 20, 20);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      let offsetY = 40;
+      orderItems.forEach((item, i) => {
+        doc.text(`${i+1}. Modelo: ${item.modeloDigitado.toUpperCase()} | Qtd: ${item.quantidade}`, 20, offsetY);
+        offsetY += 10;
+      });
+      offsetY += 10;
+      doc.text("Pedido gerado pelo site www.peliculasuti.com.br", 20, offsetY);
+      doc.save("pedido-peliculas.pdf");
+    }
+
+    /* 12) LOGIN / LOGOUT */
+    async function checkEmail() {
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const rememberEmailChecked = document.getElementById('rememberEmail').checked;
+      if (rememberEmailChecked && email) localStorage.setItem('saved_email', email);
+      else localStorage.removeItem('saved_email');
+      if (!email) {
+        alert('Digite um e‑mail válido.');
+        return;
+      }
+      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+      try {
+        const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
+          method: "GET",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        });
+        const autorizacoes = await resSessoes.json();
+        if (!autorizacoes || autorizacoes.length === 0) {
+          alert("E‑mail não autorizado. Por favor, adquira o plano para acessar.");
+          return;
+        }
+        const registro = autorizacoes[0];
+        const hoje = new Date();
+        const expira = new Date(registro.data_expiracao);
+        if (hoje > expira) {
+          alert(`Seu plano ${registro.plano} expirou em ${formatarData(registro.data_expiracao)}. Realize um novo pagamento para continuar o acesso.`);
+          mostrarPlanos();
+          return;
+        }
+        const ipResp = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResp.json();
+        const ipAddress = ipData.ip;
+        let allowedIPs = [];
+        if (registro.allowed_ip && registro.allowed_ip.trim() !== "") {
+          allowedIPs = registro.allowed_ip.split(",").map(ip => ip.trim());
+        }
+        if (!allowedIPs.includes(ipAddress)) {
+          if (allowedIPs.length < 2) {
+            allowedIPs.push(ipAddress);
+            let newAllowed = allowedIPs.join(", ");
+            await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
+              method: "PATCH",
+              headers: {
+                apikey: supabaseKey,
+                Authorization: `Bearer ${supabaseKey}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ allowed_ip: newAllowed })
+            });
+          } else {
+            let whatsappMsg = encodeURIComponent(`Olá meu nome é ${registro.nome} e meu e‑mail é ${email}, gostaria de excluir um dos IPs cadastrados. Estou ciente que somente posso fazer essa alteração uma única vez!`);
+            alert("Excedido o limite de IPs permitidos para seu e‑mail. Você já está logado com os IPs: " + allowedIPs.join(", ") + ". Para solicitar a alteração, clique no botão.");
+            document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/5537999625138?text=' + whatsappMsg + '" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Exclusão de IP</a></p>';
+            return;
+          }
+        }
+        const sessionToken = generateToken();
+        const deviceInfo = navigator.userAgent;
+        const novaSessao = {
+          email: email,
+          session_token: sessionToken,
+          ativa: true,
+          login_date: new Date().toISOString(),
+          device_info: deviceInfo,
+          ip_address: ipAddress
+        };
+        const resInsert = await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
+          method: "POST",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(novaSessao)
+        });
+        if (!resInsert.ok) {
+          console.error("Erro ao criar a nova sessão:", resInsert.statusText);
+          alert("Erro ao criar sessão. Tente novamente.");
+          return;
+        }
+        localStorage.setItem("user_email", email);
+        localStorage.setItem("login_date", new Date().toISOString());
+        localStorage.setItem("session_token", sessionToken);
+        document.getElementById('introSection').style.display = 'none';
+        document.getElementById('planosSection').classList.add('hidden');
+        document.getElementById('loginArea').classList.add('hidden');
+        document.getElementById('searchSection').classList.remove('hidden');
+        document.querySelector('a[href="#introSection"]').style.display = 'none';
+        document.querySelector('a[href="#planosSection"]').style.display = 'none';
+        document.getElementById('menuLogin').innerText = 'Sair';
+        document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+        document.querySelector("#searchSection .bg-gray-800").innerHTML =
+          `<strong>Bem-vindo(a), ${registro.nome}!</strong><br>` +
+          `Plano: ${registro.plano}<br>` +
+          `Válido até: ${formatarData(registro.data_expiracao)}`;
+        loadData();
+      } catch (err) {
+        console.error(err);
+        alert("❌ Ocorreu um erro ao verificar o e‑mail.");
+      }
+    }
+
+    async function logout() {
+      const email = localStorage.getItem("user_email");
+      const sessionToken = localStorage.getItem("session_token");
+      if (!email || !sessionToken) return;
+      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+      try {
+        await fetch(`${supabaseUrl}/rest/v1/login_sessions?session_token=eq.${sessionToken}`, {
+          method: "PATCH",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ ativa: false })
+        });
+      } catch (err) {
+        console.error("Erro ao encerrar a sessão:", err);
+      }
+      localStorage.removeItem("user_email");
+      localStorage.removeItem("login_date");
+      localStorage.removeItem("session_token");
+      document.querySelector('a[href="#introSection"]').style.display = '';
+      document.querySelector('a[href="#planosSection"]').style.display = '';
+      document.getElementById('introSection').style.display = 'block';
+      document.getElementById('planosSection').classList.remove('hidden');
+      document.getElementById('loginArea').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.add('hidden');
+      document.getElementById('menuLogin').innerText = 'Login';
+      document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
+    }
+
+    async function validateSession() {
+      const email = localStorage.getItem("user_email");
+      const storedToken = localStorage.getItem("session_token");
+      if (!email || !storedToken) return;
+      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&session_token=eq.${storedToken}`, {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json"
+          }
+        });
+        const result = await res.json();
+        if (!result || result.length === 0 || result[0].ativa !== true) {
+          console.warn("Sessão inválida ou não encontrada; ignorando logout imediato.");
+        }
+      } catch (err) {
+        console.error("Erro na validação da sessão:", err);
+      }
+    }
+    setInterval(validateSession, 60000);
+
+    window.addEventListener("beforeunload", async () => {
+      const sessionToken = localStorage.getItem("session_token");
+      if (!sessionToken) return;
+      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+      try {
+        await fetch(`${supabaseUrl}/rest/v1/login_sessions?session_token=eq.${sessionToken}`, {
+          method: "PATCH",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ ativa: false })
+        });
+      } catch (err) {
+        console.error("Erro no beforeunload:", err);
+      }
+    });
+
+    /* 13) Exibir/Ocultar Seções */
+    function mostrarInicio() {
+      document.getElementById('introSection').style.display = 'block';
+      document.getElementById('planosSection').classList.remove('hidden');
+      document.getElementById('loginArea').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.add('hidden');
+	document.getElementById('promoPedido').classList.remove('hidden');
+    }
+    function mostrarPlanos() {
+      document.getElementById('introSection').style.display = 'none';
+      document.getElementById('planosSection').classList.remove('hidden');
+      document.getElementById('loginArea').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.add('hidden');
+	document.getElementById('promoPedido').classList.add('hidden');
+    }
+    function goToLogin() {
+      document.getElementById('introSection').style.display = 'none';
+      document.getElementById('planosSection').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.add('hidden');
+      document.getElementById('loginArea').classList.remove('hidden');
+	document.getElementById('promoPedido').classList.add('hidden');
+    }
+    function mostrarPedidos() {
+      document.getElementById('introSection').style.display = 'none';
+      document.getElementById('planosSection').classList.add('hidden');
+      document.getElementById('loginArea').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('orderSection').classList.remove('hidden');
+      const modeloPesquisado = document.getElementById('searchModel').value.trim();
+      if (modeloPesquisado) {
+        document.getElementById('orderModelo').value = modeloPesquisado;
+	document.getElementById('promoPedido').classList.add('hidden');
+      }
+    }
+// 17) Voltar à consulta de modelos mantendo o pedido atual
+function voltarConsulta() {
+  // oculta a área de pedido
+  document.getElementById('orderSection').classList.add('hidden');
+  // mostra a área de busca (consulta de modelos)
+  document.getElementById('searchSection').classList.remove('hidden');
+}
+
+// 18) Limpar todo o pedido e atualizar a lista
+function limparPedido() {
+  orderItems = [];
+  atualizarListaPedidos();
+}
+
+    /* 14) Seções Legais */
+    function mostrarLegal(secId) {
+      document.getElementById('legalContentContainer').classList.remove('hidden');
+      document.querySelectorAll('.legal-section').forEach(sec => sec.classList.add('hidden'));
+      document.getElementById(secId).classList.remove('hidden');
+      document.getElementById('legalContentContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+    function fecharLegal() {
+      document.getElementById('legalContentContainer').classList.add('hidden');
+    }
+
+    /* 15) Modais: Incompatibilidade e Compatibilidade */
+    function abrirModalIncompatibilidade() {
+      const modeloProcurado = document.getElementById('searchModel').value.trim();
+      if (modeloProcurado) {
+        document.getElementById('modeloTestado').value = modeloProcurado;
+      }
+      document.getElementById('modalIncompatibilidade').classList.remove('hidden');
+    }
+    function fecharModalIncompatibilidade() {
+      document.getElementById('modalIncompatibilidade').classList.add('hidden');
+    }
+    function enviarIncompatibilidade() {
+      const modeloTestado = document.getElementById('modeloTestado').value.trim();
+      const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
+      if (!modeloTestado || !modeloIncompativel) {
+        alert("Preencha ambos os campos antes de enviar!");
+        return;
+      }
+      const texto = `Olá, encontrei uma incompatibilidade de película:\nModelo testado: ${modeloTestado}\nModelo incompatível: ${modeloIncompativel}\nPor favor, verifique e atualize na tabela. Obrigado!`;
+      window.open(`https://wa.me/5537999625138?text=${encodeURIComponent(texto)}`, '_blank');
+      fecharModalIncompatibilidade();
+    }
+    function abrirModalCompatibilidade() {
+      const modeloProcurado = document.getElementById('searchModel').value.trim();
+      if (modeloProcurado) {
+        document.getElementById('modeloProcuradoCompat').value = modeloProcurado;
+      }
+      document.getElementById('modalCompatibilidade').classList.remove('hidden');
+    }
+    function fecharModalCompatibilidade() {
+      document.getElementById('modalCompatibilidade').classList.add('hidden');
+    }
+    function enviarCompatibilidade() {
+      const modeloProcuradoCompat = document.getElementById('modeloProcuradoCompat').value.trim();
+      const modeloCompativel = document.getElementById('modeloCompativel').value.trim();
+      if (!modeloProcuradoCompat || !modeloCompativel) {
+        alert("Preencha ambos os campos antes de enviar!");
+        return;
+      }
+      const texto = `Olá, gostaria de sugerir uma nova compatibilidade:\nModelo procurado: ${modeloProcuradoCompat}\nModelo compatível: ${modeloCompativel}\nPor favor, verifique e adicione esta informação à tabela. Obrigado!`;
+      window.open(`https://wa.me/5537999625138?text=${encodeURIComponent(texto)}`, '_blank');
+      fecharModalCompatibilidade();
+    }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const emailInput = document.getElementById('email');
+  const rememberCheckbox = document.getElementById('rememberEmail');
+
+  // 1) Pré‑preenche o e‑mail salvo, se existir
+  const savedEmail = localStorage.getItem('saved_email');
+  if (savedEmail) {
+    emailInput.value = savedEmail;
+    rememberCheckbox.checked = true;
+  }
+
+  // 2) Ativa Enter para enviar
+  emailInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      checkEmail();
+    }
+  });
+});
+
+
+
+    /* --------------------- FIM --------------------- */
+  </script>
+</body>
+</html>
