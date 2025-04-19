@@ -919,7 +919,7 @@ function preencherModelo(valor) {
     });
 
     /** 13) Exibir/Ocultar Seções */
-    function mostrarInicio() {
+ function mostrarInicio() {
       document.getElementById('introSection').style.display = 'block';
       document.getElementById('planosSection').classList.remove('hidden');
       document.getElementById('loginArea').classList.add('hidden');
@@ -928,21 +928,45 @@ function preencherModelo(valor) {
 	document.getElementById('promoPedido').classList.remove('hidden');
     }
     function mostrarPlanos() {
-      document.getElementById('introSection').style.display = 'none';
+      ['introSection','planosSection','promoPedido','loginArea','searchSection','orderSection']
+        .forEach(id => document.getElementById(id).classList.add('hidden'));
       document.getElementById('planosSection').classList.remove('hidden');
-      document.getElementById('loginArea').classList.add('hidden');
-      document.getElementById('searchSection').classList.add('hidden');
-      document.getElementById('orderSection').classList.add('hidden');
-	document.getElementById('promoPedido').classList.add('hidden');
+    
     }
     function goToLogin() {
       document.getElementById('introSection').style.display = 'none';
-      document.getElementById('planosSection').classList.add('hidden');
+  document.getElementById('planosSection').style.display = 'none';
       document.getElementById('searchSection').classList.add('hidden');
       document.getElementById('orderSection').classList.add('hidden');
       document.getElementById('loginArea').classList.remove('hidden');
 	document.getElementById('promoPedido').classList.add('hidden');
     }
+
+function logout() {
+  // 1) Esconder tudo que é da área logada
+  ['loginArea','searchSection','orderSection','promoPedido']
+    .forEach(id => document.getElementById(id).classList.add('hidden'));
+
+  // 2) Mostrar intro e planos
+  document.getElementById('introSection').classList.remove('hidden');
+  document.getElementById('planosSection').classList.remove('hidden');
+
+  // 3) Delay antes de scroll para a introSection
+  setTimeout(() => {
+    document.getElementById('introSection')
+            .scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
+
+  // 4) Resetar o menu
+  const btn = document.getElementById('menuLogin');
+  btn.innerText = 'Login';
+  btn.onclick = goToLogin;
+
+  // 5) Limpar credenciais (opcional)
+  localStorage.removeItem('user_email');
+  localStorage.removeItem('session_token');
+}
+
     function mostrarPedidos() {
       document.getElementById('introSection').style.display = 'none';
       document.getElementById('planosSection').classList.add('hidden');
@@ -955,6 +979,8 @@ function preencherModelo(valor) {
 	document.getElementById('promoPedido').classList.add('hidden');
       }
     }
+
+
 // 17) Voltar à consulta de modelos mantendo o pedido atual
 function voltarConsulta() {
   // oculta a área de pedido
