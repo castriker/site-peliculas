@@ -1026,17 +1026,43 @@ function limparPedido() {
     function fecharModalIncompatibilidade() {
       document.getElementById('modalIncompatibilidade').classList.add('hidden');
     }
-    function enviarIncompatibilidade() {
-      const modeloTestado = document.getElementById('modeloTestado').value.trim();
-      const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
-      if (!modeloTestado || !modeloIncompativel) {
-        alert("Preencha ambos os campos antes de enviar!");
-        return;
-      }
-      const texto = `Olá, encontrei uma incompatibilidade de película:\nModelo testado: ${modeloTestado}\nModelo incompatível: ${modeloIncompativel}\nPor favor, verifique e atualize na tabela. Obrigado!`;
-      window.open(`https://wa.me/5537999625138?text=${encodeURIComponent(texto)}`, '_blank');
-      fecharModalIncompatibilidade();
-    }
+    async function enviarIncompatibilidade() {
+  const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+  const modeloTestado = document.getElementById('modeloTestado').value.trim();
+  const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
+  const email = localStorage.getItem("user_email") || null;
+
+  if (!modeloTestado || !modeloIncompativel) {
+    return alert("Preencha ambos os campos antes de enviar!");
+  }
+
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/relatorios_pelicula`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify([{
+        tipo: "incompatibilidade",
+        modelo_procurado: modeloTestado,
+        modelo_informado: modeloIncompativel,
+        email_usuario: email
+      }])
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+
+    alert("📥 Registro de incompatibilidade enviado com sucesso!");
+    fecharModalIncompatibilidade();
+  } catch (err) {
+    console.error(err);
+    alert("❌ Falha ao enviar. Tente novamente.");
+  }
+}
+
     function abrirModalCompatibilidade() {
       const modeloProcurado = document.getElementById('searchModel').value.trim();
       if (modeloProcurado) {
@@ -1047,36 +1073,43 @@ function limparPedido() {
     function fecharModalCompatibilidade() {
       document.getElementById('modalCompatibilidade').classList.add('hidden');
     }
-    function enviarCompatibilidade() {
-      const modeloProcuradoCompat = document.getElementById('modeloProcuradoCompat').value.trim();
-      const modeloCompativel = document.getElementById('modeloCompativel').value.trim();
-      if (!modeloProcuradoCompat || !modeloCompativel) {
-        alert("Preencha ambos os campos antes de enviar!");
-        return;
-      }
-      const texto = `Olá, gostaria de sugerir uma nova compatibilidade:\nModelo procurado: ${modeloProcuradoCompat}\nModelo compatível: ${modeloCompativel}\nPor favor, verifique e adicione esta informação à tabela. Obrigado!`;
-      window.open(`https://wa.me/5537999625138?text=${encodeURIComponent(texto)}`, '_blank');
-      fecharModalCompatibilidade();
-    }
+    async function enviarCompatibilidade() {
+  const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+  const modeloProcurado = document.getElementById('modeloProcuradoCompat').value.trim();
+  const modeloCompativel = document.getElementById('modeloCompativel').value.trim();
+  const email = localStorage.getItem("user_email") || null;
 
-document.addEventListener('DOMContentLoaded', () => {
-  const emailInput = document.getElementById('email');
-  const rememberCheckbox = document.getElementById('rememberEmail');
-
-  // 1) Pré‑preenche o e‑mail salvo, se existir
-  const savedEmail = localStorage.getItem('saved_email');
-  if (savedEmail) {
-    emailInput.value = savedEmail;
-    rememberCheckbox.checked = true;
+  if (!modeloProcurado || !modeloCompativel) {
+    return alert("Preencha ambos os campos antes de enviar!");
   }
 
-  // 2) Ativa Enter para enviar
-  emailInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      checkEmail();
-    }
-  });
-});
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/relatorios_pelicula`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify([{
+        tipo: "compatibilidade",
+        modelo_procurado: modeloProcurado,
+        modelo_informado: modeloCompativel,
+        email_usuario: email
+      }])
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+
+    alert("📥 Registro de compatibilidade enviado com sucesso!");
+    fecharModalCompatibilidade();
+  } catch (err) {
+    console.error(err);
+    alert("❌ Falha ao enviar. Tente novamente.");
+  }
+}
+
 
 
 
