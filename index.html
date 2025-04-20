@@ -87,7 +87,7 @@ body {
 
   <!-- Bloqueia clique direito, atalhos para DevTools e Ctrl+C -->
   <script>
-    document.addEventListener('contextmenu', e => e.preventDefault());
+     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
       if (
         e.keyCode === 123 || 
@@ -96,6 +96,21 @@ body {
         ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c')
       ) {
         e.preventDefault();
+      }
+    });
+  </script>
+
+  <!-- Script para pré‑carregar o e‑mail salvo -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('saved_email');
+      if (saved) {
+        const emailInput = document.getElementById('email');
+        const rememberCb = document.getElementById('rememberEmail');
+        if (emailInput && rememberCb) {
+          emailInput.value = saved;
+          rememberCb.checked = true;
+        }
       }
     });
   </script>
