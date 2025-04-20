@@ -115,7 +115,7 @@ body {
         <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
         <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
         <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
-        <a href="#loginArea" id="menuLogin" onclick="goToLogin()" class="premium-link hover:text-yellow-400 transition">Login</a>
+        <a href="javascript:void(0)" id="menuLogin" onclick="goToLogin()" class="premium-link hover:text-yellow-400 transition">Login</a>
       </nav>
     </div>
   </header>
@@ -943,21 +943,30 @@ function preencherModelo(valor) {
     }
 
 function logout() {
-  // 1) Esconder tudo que é da área logada
-  ['loginArea','searchSection','orderSection','promoPedido']
+  // 1) Esconder as áreas restritas
+  ['loginArea','searchSection','orderSection']
     .forEach(id => document.getElementById(id).classList.add('hidden'));
 
-  // 2) Mostrar intro e planos
-  document.getElementById('introSection').classList.remove('hidden');
-  document.getElementById('planosSection').classList.remove('hidden');
+  // 2) Exibir Intro, PromoPedido e Planos
+  const intro = document.getElementById('introSection');
+  const promo = document.getElementById('promoPedido');
+  const planos = document.getElementById('planosSection');
 
-  // 3) Delay antes de scroll para a introSection
-  setTimeout(() => {
-    document.getElementById('introSection')
-            .scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 50);
+  // Remove a classe hidden
+  [intro, promo, planos].forEach(el => el.classList.remove('hidden'));
+  // Limpa qualquer inline style que estava escondendo
+  [intro, promo, planos].forEach(el => el.style.display = '');
 
-  // 4) Resetar o menu
+  // 2.1) Reexibir links de navegação
+  const linkInicio = document.querySelector('a[href="#introSection"]');
+  const linkPlanos = document.querySelector('a[href="#planosSection"]');
+  if (linkInicio) linkInicio.style.display = '';
+  if (linkPlanos) linkPlanos.style.display = '';
+
+  // 3) Rolar até o início
+  intro.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // 4) Resetar o menu para “Login”
   const btn = document.getElementById('menuLogin');
   btn.innerText = 'Login';
   btn.onclick = goToLogin;
