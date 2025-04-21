@@ -252,24 +252,31 @@ body {
   id="planosSection"
   class="flex overflow-x-auto gap-4 px-4 sm:px-8 py-8 lg:grid lg:grid-cols-4 max-w-7xl mx-auto"
 >
-  <!-- Card 1 Mês -->
-  <div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
-    <div>
-      <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
-      <h3 class="text-lg sm:text-xl font-bold">1 Mês</h3>
-      <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 16,00</p>
-      <p class="text-sm text-gray-600 mb-3">Total: R$ 16,00</p>
-      <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
-        <li>📄 Acesso à tabela completa</li>
-        <li>🔄 Atualizações automáticas</li>
-        <li>🚫 Sem propagandas</li>
-      </ul>
-    </div>
-    <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')"
-            class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-      💳 Comprar
-    </button>
+<!-- Card 1 Mês -->
+<div
+  class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center"
+>
+  <div>
+    <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
+    <h3 class="text-lg sm:text-xl font-bold">1 Mês</h3>
+    <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 16,00</p>
+    <p class="text-sm text-gray-600 mb-3">Total: R$ 16,00</p>
+    <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+      <li>📄 Acesso à tabela completa</li>
+      <li>🔄 Atualizações automáticas</li>
+      <li>🚫 Sem propagandas</li>
+    </ul>
   </div>
+
+  <button
+    class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
+    data-plano="1 Mês"
+    onclick="pagar('1 Mês')"
+  >
+    💳 Comprar
+  </button>
+</div>
+
 
 <!-- Card 3 Meses (pisca) -->
 <div
@@ -301,8 +308,9 @@ body {
 
   <!-- Botão -->
   <button
-    onclick="window.open('https://mpago.la/1DTP1fB', '_blank')"
-    class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
+    class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
+    data-plano="3 Meses"
+    onclick="pagar('3 meses')"
   >
     💳 Comprar
   </button>
@@ -322,11 +330,14 @@ body {
         <li>🚫 Sem propagandas</li>
       </ul>
     </div>
-    <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')"
-            class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-      💳 Comprar
-    </button>
-  </div>
+  <button
+    class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
+    data-plano="6 Meses"
+    onclick="pagar('6 Meses')"
+  >
+    💳 Comprar
+  </button>
+</div>
 
   <!-- Card 1 Ano -->
 <div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
@@ -342,10 +353,13 @@ body {
         <li>🚫 Sem propagandas</li>
       </ul>
     </div>
-    <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')"
-            class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
-      💳 Comprar
-    </button>
+  <button
+    class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
+    data-plano="1 Ano"
+    onclick="pagar('1 Ano')"
+  >
+    💳 Comprar
+  </button>
   </div>
 </section>
 
@@ -1315,5 +1329,30 @@ function limparPedido() {
 
     /* --------------------- FIM --------------------- */
   </script>
+<!-- SDK JS do MercadoPago -->
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+<script>
+  const mp = new MercadoPago("APP_USR-8e690c73-d4e4-4e6d-8db1-b46fcf41446d", { locale: "pt-BR" });
+
+  async function pagar(plano) {
+    // 1) Cria preferência no backend
+    const res = await fetch("https://<seu-projeto>.functions.supabase.co/create-preference", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-user-email": localStorage.getItem("user_email") || ""
+      },
+      body: JSON.stringify({ plano })
+    });
+    const { id } = await res.json();
+    // 2) Renderiza o botão de checkout
+    mp.checkout({
+      preference: { id },
+      render: { container: `.btn-pagar[data-plano="${plano}"]`, label: "💳 Pagar" }
+    });
+  }
+
+</script>
+
 </body>
 </html>
