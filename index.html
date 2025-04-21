@@ -382,6 +382,11 @@ body {
         class="mt-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
   Limpar Pedido
 </button>
+<button id="btnSalvarPedido"
+        class="mt-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded text-sm sm:text-base">
+  💾 Salvar Pedido
+</button>
+
 
     </div>
   </section>
@@ -551,6 +556,9 @@ body {
   </section>
 
   <script>
+const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+
     /* 1) Funções generateToken e formatarData */
     function generateToken() {
       return Date.now().toString() + Math.random().toString(36).substr(2, 8);
@@ -730,7 +738,10 @@ function debugLog(msg) {
         html += `
           <li id="pedidoItem-${index}" class="flex items-center gap-2">
             <span class="text-yellow-300 font-bold">${item.modeloDigitado.toUpperCase()}</span>
-            <span class="text-white">– Qtd: ${item.quantidade}</span>
+            <span class="text-white">
+  – <strong>QTD:</strong> ${String(item.quantidade).padStart(2, '0')}
+</span>
+
             <button onclick="removerItemPedido(${index})" class="bg-red-600 hover:bg-red-700 text-white ml-3 px-2 rounded text-xs">
               Remover
             </button>
@@ -820,6 +831,43 @@ function alterarQtdDuplicado() {
       doc.save("pedido-peliculas.pdf");
     }
 
+// 12) Função que faz o upsert em Supabase
+async function salvarDraft() {
+  const email = localStorage.getItem("user_email");
+  if (!email) return alert("Você precisa estar logado para salvar o pedido.");
+
+  // converte orderItems para JSON simples
+  const payload = orderItems.map(i => ({
+    modelo:     i.modeloDigitado,
+    quantidade: i.quantidade,
+    rowIndex:   i.rowIndex
+  }));
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/draft_orders`, {
+      method:  "POST",
+      headers: {
+        apikey:        supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type":  "application/json",
+        Prefer:          "resolution=merge-duplicates"
+      },
+      body: JSON.stringify([{ email, items: payload }])
+    });
+    if (!res.ok) throw await res.text();
+    alert("✅ Pedido salvo com sucesso!");
+  } catch (err) {
+    console.error(err);
+    alert("❌ Falha ao salvar o pedido: " + err);
+  }
+}
+
+// ─── Registra o listener UMA ÚNICA VEZ, fora da função ───
+document
+  .getElementById("btnSalvarPedido")
+  .addEventListener("click", salvarDraft);
+
+
+
     /* 12) LOGIN / LOGOUT */
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
@@ -830,8 +878,7 @@ function alterarQtdDuplicado() {
         alert('Digite um e‑mail válido.');
         return;
       }
-      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+
       try {
         const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
           method: "GET",
@@ -906,22 +953,52 @@ function alterarQtdDuplicado() {
           alert("Erro ao criar sessão. Tente novamente.");
           return;
         }
-        localStorage.setItem("user_email", email);
-        localStorage.setItem("login_date", new Date().toISOString());
-        localStorage.setItem("session_token", sessionToken);
-        document.getElementById('introSection').style.display = 'none';
-        document.getElementById('planosSection').classList.add('hidden');
-        document.getElementById('loginArea').classList.add('hidden');
-        document.getElementById('searchSection').classList.remove('hidden');
-        document.querySelector('a[href="#introSection"]').style.display = 'none';
-        document.querySelector('a[href="#planosSection"]').style.display = 'none';
-        document.getElementById('menuLogin').innerText = 'Sair';
-        document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-        document.querySelector("#searchSection .bg-gray-800").innerHTML =
-          `<strong>Bem-vindo(a), ${registro.nome}!</strong><br>` +
-          `Plano: ${registro.plano}<br>` +
-          `Válido até: ${formatarData(registro.data_expiracao)}`;
-        loadData();
+       // … após salvar no localStorage …
+localStorage.setItem("user_email", email);
+localStorage.setItem("login_date", new Date().toISOString());
+localStorage.setItem("session_token", sessionToken);
+
+// Esconde as seções anteriores
+document.getElementById('introSection').style.display = 'none';
+document.getElementById('planosSection').classList.add('hidden');
+document.getElementById('loginArea').classList.add('hidden');
+
+// Mostra a área de busca
+document.getElementById('searchSection').classList.remove('hidden');
+
+// Aqui você dá o foco no campo de digitação
+const inputBusca = document.getElementById('searchModel');
+if (inputBusca) inputBusca.focus();
+
+// Ajusta o menu e a mensagem de boas‑vindas
+document.querySelector('a[href="#introSection"]').style.display = 'none';
+document.querySelector('a[href="#planosSection"]').style.display = 'none';
+document.getElementById('menuLogin').innerText = 'Sair';
+document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+document.querySelector("#searchSection .bg-gray-800").innerHTML =
+  `<strong>Bem-vindo(a), ${registro.nome}!</strong><br>` +
+  `Plano: ${registro.plano}<br>` +
+  `Válido até: ${formatarData(registro.data_expiracao)}`;
+
+// Carrega os dados para pesquisa
+loadData();
+// busca draft existente
+const draftRes = await fetch(
+  `${supabaseUrl}/rest/v1/draft_orders?email=eq.${email}`,
+  { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } }
+);
+const [draft] = await draftRes.json();
+if (draft && Array.isArray(draft.items)) {
+  // converte o JSON de volta para orderItems
+  orderItems = draft.items.map(i => ({
+    rowIndex: i.rowIndex,
+    modeloDigitado: i.modelo,
+    quantidade: i.quantidade
+  }));
+  atualizarListaPedidos();
+}
+
+
       } catch (err) {
         console.error(err);
         alert("❌ Ocorreu um erro ao verificar o e‑mail.");
@@ -1063,27 +1140,39 @@ function logout() {
   localStorage.removeItem('session_token');
 }
 
-    function mostrarPedidos() {
-      document.getElementById('introSection').style.display = 'none';
-      document.getElementById('planosSection').classList.add('hidden');
-      document.getElementById('loginArea').classList.add('hidden');
-      document.getElementById('searchSection').classList.add('hidden');
-      document.getElementById('orderSection').classList.remove('hidden');
-      const modeloPesquisado = document.getElementById('searchModel').value.trim();
-      if (modeloPesquisado) {
-        document.getElementById('orderModelo').value = modeloPesquisado;
-	document.getElementById('promoPedido').classList.add('hidden');
-      }
-    }
+function mostrarPedidos() {
+  // Esconde seções anteriores
+  document.getElementById('introSection').style.display = 'none';
+  document.getElementById('planosSection').classList.add('hidden');
+  document.getElementById('loginArea').classList.add('hidden');
+  document.getElementById('searchSection').classList.add('hidden');
+
+  // Exibe a área de pedido
+  document.getElementById('orderSection').classList.remove('hidden');
+
+  // Preenche o modelo buscado (se houver)
+  const modeloPesquisado = document.getElementById('searchModel').value.trim();
+  if (modeloPesquisado) {
+    document.getElementById('orderModelo').value = modeloPesquisado;
+  }
+
+  // **Foca o cursor no campo de modelo para o usuário digitar a quantidade**
+  const inputPedido = document.getElementById('orderModelo');
+  if (inputPedido) {
+    inputPedido.focus();
+  }
+}
+
 
 
 // 17) Voltar à consulta de modelos mantendo o pedido atual
 function voltarConsulta() {
-  // oculta a área de pedido
   document.getElementById('orderSection').classList.add('hidden');
-  // mostra a área de busca (consulta de modelos)
   document.getElementById('searchSection').classList.remove('hidden');
+  const inputBusca = document.getElementById('searchModel');
+  if (inputBusca) inputBusca.focus();
 }
+
 
 // 18) Limpar todo o pedido e atualizar a lista
 function limparPedido() {
