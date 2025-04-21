@@ -473,7 +473,9 @@ body {
     <p id="duplicateMessage" class="mb-4 text-sm"></p>
     <div class="flex justify-end space-x-2">
       <button onclick="cancelarDuplicata()" class="bg-gray-300 …">Cancelar</button>
-      <button onclick="alterarQuantidades()" class="bg-blue-600 …">Alterar Quantidade</button>
+    <button onclick="alterarQtdDuplicado()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+  Alterar Quantidade
+</button>
       <button onclick="adicionarMesmoModelo()" class="bg-green-600 …">Adicionar Mesmo</button>
     </div>
   </div>
@@ -562,11 +564,11 @@ body {
     }
 
     /* 2) Variáveis e Estruturas */
-let data           = [];
-let orderItems     = [];
-let duplicateMode  = '';      // ESSE CARA
-let duplicateIndex = -1;
-let duplicateGroup = [];
+    let data = [];        // Base de compatibilidade
+    let orderItems = [];  // Itens do pedido
+	let duplicateGroup = [];
+    let duplicateIndex = -1;
+
 
 
 
@@ -685,26 +687,36 @@ function debugLog(msg) {
 
 
  /* 7) ADICIONAR PEDIDO */
-    function adicionarPedido() {
-      const modeloDigitado = document.getElementById('orderModelo').value.trim();
-      const quantidade = document.getElementById('orderQuantidade').value.trim();
-      if (!modeloDigitado || !quantidade) {
-        alert("Preencha o modelo e a quantidade antes de adicionar!");
-        return;
-      }
-      const rowIndex = findRowIndexForModel(modeloDigitado);
-      const itemExistenteIndex = orderItems.findIndex(item => item.rowIndex === rowIndex && rowIndex !== -1);
-      if (itemExistenteIndex !== -1) {
-        duplicateIndex = itemExistenteIndex;
-        const itemExistente = orderItems[itemExistenteIndex];
-        const msg = `O modelo "${itemExistente.modeloDigitado.toUpperCase()}" que é compatível ou igual já foi adicionado, o que deseja fazer?`;
-        document.getElementById('duplicateMessage').innerText = msg;
-        document.getElementById('modalDuplicate').classList.remove('hidden');
-      } else {
-        orderItems.push({ rowIndex, modeloDigitado, quantidade });
-        atualizarListaPedidos();
-      }
-    }
+   function adicionarPedido() {
+  const modeloDigitado = document.getElementById('orderModelo').value.trim();
+  const quantidade = document.getElementById('orderQuantidade').value.trim();
+  if (!modeloDigitado || !quantidade) {
+    alert("Preencha o modelo e a quantidade antes de adicionar!");
+    return;
+  }
+  const rowIndex = findRowIndexForModel(modeloDigitado);
+  if (rowIndex === -1) {
+    alert("Modelo não encontrado na base de compatibilidade.");
+    return;
+  }
+
+  // coleta TODOS os índices já adicionados com este mesmo rowIndex
+  duplicateGroup = orderItems
+    .map((item, idx) => item.rowIndex === rowIndex ? idx : -1)
+    .filter(idx => idx !== -1);
+
+  if (duplicateGroup.length > 0) {
+    // há pelo menos 1 item igual/compatível: exibe o modal
+    document.getElementById('duplicateMessage').innerText =
+      `O modelo "${modeloDigitado.toUpperCase()}" que é compatível ou igual já foi adicionado, o que deseja fazer?`;
+    document.getElementById('modalDuplicate').classList.remove('hidden');
+  } else {
+    // nenhum duplicado: adiciona normalmente
+    orderItems.push({ rowIndex, modeloDigitado, quantidade });
+    atualizarListaPedidos();
+  }
+}
+
 
     /* 8) Atualizar lista de pedidos */
     function atualizarListaPedidos() {
@@ -772,19 +784,17 @@ function debugLog(msg) {
       document.getElementById('modalDuplicate').classList.add('hidden');
       duplicateIndex = -1;
     }
-    function alterarQtdDuplicado() {
-      document.getElementById('modalDuplicate').classList.add('hidden');
-      if (duplicateIndex < 0) return;
-      destacarItemNoPedido(duplicateIndex);
-      const inputQtd = document.getElementById(`editInput-${duplicateIndex}`);
-      const saveBtn = document.getElementById(`saveBtn-${duplicateIndex}`);
-      if (inputQtd && saveBtn) {
-        inputQtd.classList.remove('hidden');
-        saveBtn.classList.remove('hidden');
-        inputQtd.focus();
-      }
-      duplicateIndex = -1;
-    }
+function alterarQtdDuplicado() {
+  document.getElementById('modalDuplicate').classList.add('hidden');
+  if (duplicateGroup.length === 0) return;
+  // destaca cada item duplicado
+  duplicateGroup.forEach(idx => destacarItemNoPedido(idx));
+  // opcional: já abre edição no primeiro
+  exibirInputEdicao(duplicateGroup[0]);
+  // limpa o array
+  duplicateGroup = [];
+}
+
 
 
     /* 11) Gerar PDF do Pedido */
