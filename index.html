@@ -248,8 +248,31 @@ body {
 
 
   <!-- Seção de Planos -->
-  <section
-  id="planosSection"
+<script>
+async function criarPreference({ email, plano, valor, duracaoDias }) {
+  // se você salvou o e‑mail no localStorage no login...
+  email = email || localStorage.getItem('user_email');
+  if (!email) {
+    alert('Você precisa estar logado para comprar.');
+    return;
+  }
+  try {
+const res = await fetch('/functions/v1/create-preference', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email, plano, valor, duracaoDias })
+});
+const { init_point } = await res.json();
+window.location.href = init_point;
+
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao criar preferência: ' + err.message);
+  }
+}
+</script>
+
+  <section id="planosSection"
   class="flex overflow-x-auto gap-4 px-4 sm:px-8 py-8 lg:grid lg:grid-cols-4 max-w-7xl mx-auto"
 >
 <!-- Card 1 Mês -->
@@ -268,15 +291,18 @@ body {
     </ul>
   </div>
 
-  <button
+<button
     class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
-    data-plano="1 Mês"
-    onclick="pagar('1 Mês')"
+    onclick="criarPreference({
+      email: document.getElementById('email').value.trim().toLowerCase(),
+      plano: '1 Mês',
+      valor: 16,
+      duracaoDias: 30
+    })"
   >
     💳 Comprar
   </button>
 </div>
-
 
 <!-- Card 3 Meses (pisca) -->
 <div
@@ -310,7 +336,12 @@ body {
   <button
     class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
     data-plano="3 Meses"
-    onclick="pagar('3 meses')"
+   onclick="criarPreference({
+      email: document.getElementById('email').value.trim().toLowerCase(),
+      plano: '3 Meses',
+      valor: 42,
+      duracaoDias: 90
+    })"
   >
     💳 Comprar
   </button>
@@ -333,7 +364,12 @@ body {
   <button
     class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
     data-plano="6 Meses"
-    onclick="pagar('6 Meses')"
+    onclick="criarPreference({
+      email: document.getElementById('email').value.trim().toLowerCase(),
+      plano: '6 Meses',
+      valor: 78,
+      duracaoDias: 180
+    })"
   >
     💳 Comprar
   </button>
@@ -356,11 +392,16 @@ body {
   <button
     class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
     data-plano="1 Ano"
-    onclick="pagar('1 Ano')"
+    onclick="criarPreference({
+      email: document.getElementById('email').value.trim().toLowerCase(),
+      plano: '1 Ano',
+      valor: 144,
+      duracaoDias: 365
+    })"
   >
     💳 Comprar
   </button>
-  </div>
+</div>
 </section>
 
 
