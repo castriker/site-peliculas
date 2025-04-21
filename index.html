@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+1<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <!--
@@ -247,62 +247,68 @@ body {
 
 
 
-  <!-- Seção de Planos -->
 <script>
+// 1) Envia a preferência ao seu endpoint e redireciona pro MP
 async function criarPreference({ email, plano, valor, duracaoDias }) {
-  // se você salvou o e‑mail no localStorage no login...
-  email = email || localStorage.getItem('user_email');
-  if (!email) {
-    alert('Você precisa estar logado para comprar.');
-    return;
-  }
   try {
-const res = await fetch('/functions/v1/create-preference', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email, plano, valor, duracaoDias })
-});
-const { init_point } = await res.json();
-window.location.href = init_point;
-
+    const res = await fetch('/functions/v1/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, plano, valor, duracaoDias })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const { init_point } = await res.json();
+    // leva o usuário ao checkout do Mercado Pago
+    window.location.href = init_point;
   } catch (err) {
     console.error(err);
     alert('Erro ao criar preferência: ' + err.message);
   }
 }
+
+// 2) Controla o clique em “Comprar”: pede e‑mail (se necessário) e chama criarPreference
+async function handlePurchase(plano, valor, duracaoDias) {
+  // tenta pegar e‑mail que já esteja salvo
+  let email = localStorage.getItem('user_email');
+  // se não tiver, pergunta com um prompt simples
+  if (!email) {
+    email = window.prompt('Digite seu e‑mail para iniciar a compra:');
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+      alert('E‑mail inválido. Compra cancelada.');
+      return;
+    }
+    // salva para as próximas compras e para o login
+    localStorage.setItem('user_email', email);
+  }
+  // finalmente, toca o fluxo de preferência + redirecionamento
+  await criarPreference({ email, plano, valor, duracaoDias });
+}
 </script>
 
-  <section id="planosSection"
+
+ <!-- Seção de Planos -->
+  <section
+  id="planosSection"
   class="flex overflow-x-auto gap-4 px-4 sm:px-8 py-8 lg:grid lg:grid-cols-4 max-w-7xl mx-auto"
 >
-<!-- Card 1 Mês -->
-<div
-  class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center"
->
-  <div>
-    <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
-    <h3 class="text-lg sm:text-xl font-bold">1 Mês</h3>
-    <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 16,00</p>
-    <p class="text-sm text-gray-600 mb-3">Total: R$ 16,00</p>
-    <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
-      <li>📄 Acesso à tabela completa</li>
-      <li>🔄 Atualizações automáticas</li>
-      <li>🚫 Sem propagandas</li>
-    </ul>
+  <!-- Card 1 Mês -->
+  <div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
+    <div>
+      <div class="badge bg-gray-300 text-gray-800 absolute top-2 right-2">0% OFF</div>
+      <h3 class="text-lg sm:text-xl font-bold">1 Mês</h3>
+      <p class="text-3xl sm:text-4xl font-extrabold mt-2">R$ 16,00</p>
+      <p class="text-sm text-gray-600 mb-3">Total: R$ 16,00</p>
+      <ul class="text-sm sm:text-base mb-6 text-left space-y-1">
+        <li>📄 Acesso à tabela completa</li>
+        <li>🔄 Atualizações automáticas</li>
+        <li>🚫 Sem propagandas</li>
+      </ul>
+    </div>
+    <button onclick="handlePurchase('1 Mês', 16, 30, 'https://mpago.la/1CFqLVk')"
+            class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      💳 Comprar
+    </button>
   </div>
-
-<button
-    class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
-    onclick="criarPreference({
-      email: document.getElementById('email').value.trim().toLowerCase(),
-      plano: '1 Mês',
-      valor: 16,
-      duracaoDias: 30
-    })"
-  >
-    💳 Comprar
-  </button>
-</div>
 
 <!-- Card 3 Meses (pisca) -->
 <div
@@ -334,14 +340,8 @@ window.location.href = init_point;
 
   <!-- Botão -->
   <button
-    class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
-    data-plano="3 Meses"
-   onclick="criarPreference({
-      email: document.getElementById('email').value.trim().toLowerCase(),
-      plano: '3 Meses',
-      valor: 42,
-      duracaoDias: 90
-    })"
+    <button onclick="handlePurchase('3 Meses', 42, 90, 'https://mpago.la/1DTP1fB')"
+    class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
   >
     💳 Comprar
   </button>
@@ -361,19 +361,11 @@ window.location.href = init_point;
         <li>🚫 Sem propagandas</li>
       </ul>
     </div>
-  <button
-    class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
-    data-plano="6 Meses"
-    onclick="criarPreference({
-      email: document.getElementById('email').value.trim().toLowerCase(),
-      plano: '6 Meses',
-      valor: 78,
-      duracaoDias: 180
-    })"
-  >
-    💳 Comprar
-  </button>
-</div>
+   <button onclick="handlePurchase('6 Meses', 78, 180, 'https://mpago.la/2yYjQtG')"
+            class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      💳 Comprar
+    </button>
+  </div>
 
   <!-- Card 1 Ano -->
 <div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
@@ -389,19 +381,11 @@ window.location.href = init_point;
         <li>🚫 Sem propagandas</li>
       </ul>
     </div>
-  <button
-    class="btn-pagar w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
-    data-plano="1 Ano"
-    onclick="criarPreference({
-      email: document.getElementById('email').value.trim().toLowerCase(),
-      plano: '1 Ano',
-      valor: 144,
-      duracaoDias: 365
-    })"
-  >
-    💳 Comprar
-  </button>
-</div>
+    <button onclick="handlePurchase('1 ano', 144, 365, 'https://mpago.la/2e4ENYH')"
+            class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
+      💳 Comprar
+    </button>
+  </div>
 </section>
 
 
