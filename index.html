@@ -829,6 +829,10 @@ function alterarQtdDuplicado() {
       offsetY += 10;
       doc.text("Pedido gerado pelo site www.peliculasuti.com.br", 20, offsetY);
       doc.save("pedido-peliculas.pdf");
+  // **limpa local e remoto**
+  orderItems = [];
+  atualizarListaPedidos();
+  deleteDraft();
     }
 
 // 12) Função que faz o upsert em Supabase
@@ -1173,11 +1177,31 @@ function voltarConsulta() {
   if (inputBusca) inputBusca.focus();
 }
 
-
-// 18) Limpar todo o pedido e atualizar a lista
+// 1) Função auxiliar para apagar o draft do Supabase
+async function deleteDraft() {
+  const email = localStorage.getItem("user_email");
+  if (!email) return;
+  try {
+    const res = await fetch(
+      `${supabaseUrl}/rest/v1/draft_orders?email=eq.${email}`,
+      {
+        method: "DELETE",
+        headers: {
+          apikey:        supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`
+        }
+      }
+    );
+    if (!res.ok) throw await res.text();
+  } catch (err) {
+    console.error("Erro ao deletar rascunho:", err);
+  }
+}
+// 2) Limpar pedido local **e** no Supabase
 function limparPedido() {
   orderItems = [];
   atualizarListaPedidos();
+  deleteDraft();            // ← apaga o rascunho remoto
 }
 
     /* 14) Seções Legais */
