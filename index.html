@@ -251,7 +251,7 @@ body {
 // 1) Envia a preferência ao seu endpoint e redireciona pro MP
 async function criarPreference({ email, plano, valor, duracaoDias }) {
   try {
-    const res = await fetch('/functions/v1/create-preference', {
+    const res = await fetch('https://chjdjfycylqhxtfrbdxm.supabase.co/functions/v1/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, plano, valor, duracaoDias })
