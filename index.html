@@ -247,52 +247,7 @@ body {
 
 
 
-<script>
-const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-
-async function criarPreference({ email, plano, valor, duracaoDias }) {
-  try {
-    const res = await fetch(`${supabaseUrl}/functions/v1/create-preference`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`
-      },
-      body: JSON.stringify({ email, plano, valor, duracaoDias })
-    });
-
-    if (!res.ok) throw new Error(await res.text());
-    const { init_point } = await res.json();
-    window.location.href = init_point;
-  } catch (err) {
-    console.error(err);
-    alert('Erro ao criar preferência: ' + err.message);
-  }
-}
-
-// 2) Controla o clique em “Comprar”: pede e‑mail (se necessário) e chama criarPreference
-async function handlePurchase(plano, valor, duracaoDias) {
-  // tenta pegar e‑mail que já esteja salvo
-  let email = localStorage.getItem('user_email');
-  // se não tiver, pergunta com um prompt simples
-  if (!email) {
-    email = window.prompt('Digite seu e‑mail para iniciar a compra:');
-    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
-      alert('E‑mail inválido. Compra cancelada.');
-      return;
-    }
-    // salva para as próximas compras e para o login
-    localStorage.setItem('user_email', email);
-  }
-  // finalmente, toca o fluxo de preferência + redirecionamento
-  await criarPreference({ email, plano, valor, duracaoDias });
-}
-</script>
-
-
- <!-- Seção de Planos -->
+  <!-- Seção de Planos -->
   <section
   id="planosSection"
   class="flex overflow-x-auto gap-4 px-4 sm:px-8 py-8 lg:grid lg:grid-cols-4 max-w-7xl mx-auto"
@@ -310,7 +265,7 @@ async function handlePurchase(plano, valor, duracaoDias) {
         <li>🚫 Sem propagandas</li>
       </ul>
     </div>
-    <button onclick="handlePurchase('1 Mês', 16, 30)"
+    <button onclick="window.open('https://mpago.la/1CFqLVk', '_blank')"
             class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
       💳 Comprar
     </button>
@@ -345,7 +300,8 @@ async function handlePurchase(plano, valor, duracaoDias) {
   </ul>
 
   <!-- Botão -->
-    <button onclick="handlePurchase('3 Meses', 42, 90)"
+  <button
+    onclick="window.open('https://mpago.la/1DTP1fB', '_blank')"
     class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base"
   >
     💳 Comprar
@@ -366,7 +322,7 @@ async function handlePurchase(plano, valor, duracaoDias) {
         <li>🚫 Sem propagandas</li>
       </ul>
     </div>
-   <button onclick="handlePurchase('6 Meses', 78, 180)"
+    <button onclick="window.open('https://mpago.la/2yYjQtG', '_blank')"
             class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
       💳 Comprar
     </button>
@@ -386,7 +342,7 @@ async function handlePurchase(plano, valor, duracaoDias) {
         <li>🚫 Sem propagandas</li>
       </ul>
     </div>
-    <button onclick="handlePurchase('1 ano', 144, 365)"
+    <button onclick="window.open('https://mpago.la/2e4ENYH', '_blank')"
             class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80 transition text-sm sm:text-base">
       💳 Comprar
     </button>
@@ -1359,30 +1315,5 @@ function limparPedido() {
 
     /* --------------------- FIM --------------------- */
   </script>
-<!-- SDK JS do MercadoPago -->
-<script src="https://sdk.mercadopago.com/js/v2"></script>
-<script>
-  const mp = new MercadoPago("APP_USR-8e690c73-d4e4-4e6d-8db1-b46fcf41446d", { locale: "pt-BR" });
-
-  async function pagar(plano) {
-    // 1) Cria preferência no backend
-    const res = await fetch("https://chjdjfycylqhxtfrbdxm.functions.supabase.co/create-preference", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-user-email": localStorage.getItem("user_email") || ""
-      },
-      body: JSON.stringify({ plano })
-    });
-    const { id } = await res.json();
-    // 2) Renderiza o botão de checkout
-    mp.checkout({
-      preference: { id },
-      render: { container: `.btn-pagar[data-plano="${plano}"]`, label: "💳 Pagar" }
-    });
-  }
-
-</script>
-
 </body>
 </html>
