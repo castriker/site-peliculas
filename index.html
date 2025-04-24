@@ -481,7 +481,7 @@ body {
     <button onclick="alterarQtdDuplicado()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
   Alterar Quantidade
 </button>
-      <button onclick="adicionarMesmoModelo()" class="bg-green-600 …">Adicionar Mesmo</button>
+      <button onclick="adicionarMesmoModelo()" class="bg-green-600 …">Adicionar Mesmo Assim</button>
     </div>
   </div>
 </div>
@@ -703,10 +703,20 @@ function debugLog(msg) {
     return;
   }
   const rowIndex = findRowIndexForModel(modeloDigitado);
-  if (rowIndex === -1) {
-    alert("Modelo não encontrado na base de compatibilidade.");
-    return;
+ if (rowIndex === -1) {
+  // Pergunta se o usuário quer adicionar mesmo assim
+  const confirma = confirm(
+    `O modelo "${modeloDigitado.toUpperCase()}" não está na base de compatibilidade.\n` +
+    `Deseja adicionar mesmo assim?`
+  );
+  if (confirma) {
+    // adiciona manualmente
+    orderItems.push({ rowIndex, modeloDigitado, quantidade });
+    atualizarListaPedidos();
   }
+  return;
+}
+
 
   // coleta TODOS os índices já adicionados com este mesmo rowIndex
   duplicateGroup = orderItems
