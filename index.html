@@ -185,7 +185,7 @@ body {
       </div>
       <!-- Imagem -->
       <div class="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-        <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
+        <img src="pelicula3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
       </div>
     </div>
   </section> <!-- fim de #introSection -->
@@ -894,20 +894,49 @@ document
       }
 
       try {
-        const resSessoes = await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-          method: "GET",
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          }
-        });
-        const autorizacoes = await resSessoes.json();
-        if (!autorizacoes || autorizacoes.length === 0) {
-          alert("E‑mail não autorizado. Por favor, adquira o plano para acessar.");
-          return;
-        }
+       // 1) pega as autorizações existentes
+const resSessoes = await fetch(
+  `${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}`,
+  {
+    method: "GET",
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    }
+  }
+);
+const autorizacoes = await resSessoes.json();
+
+// 2) se não tiver autorização, registra tentativa falha
+if (!autorizacoes || autorizacoes.length === 0) {
+  await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
+    method: "POST",
+    headers: {
+      apikey:        supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+      "Content-Type": "application/json"
+    },
+body: JSON.stringify({
+  email,
+  session_token: null,
+  ativa: false,
+  login_date: new Date().toISOString(),
+  device_info: navigator.userAgent,
+  ip_address: ipAddress
+})
+
+  });
+  alert("E-mail não autorizado. Por favor, adquira o plano para acessar.");
+  return;
+}
+// — buscando o IP antes de registrar tentativa de login —
+const ipResp = await fetch('https://api.ipify.org?format=json');
+const ipData = await ipResp.json();
+const ipAddress = ipData.ip;
+
+
         const registro = autorizacoes[0];
         const hoje = new Date();
         const expira = new Date(registro.data_expiracao);
@@ -1019,39 +1048,6 @@ if (draft && Array.isArray(draft.items)) {
       }
     }
 
-    async function logout() {
-      const email = localStorage.getItem("user_email");
-      const sessionToken = localStorage.getItem("session_token");
-      if (!email || !sessionToken) return;
-      const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-      try {
-        await fetch(`${supabaseUrl}/rest/v1/login_sessions?session_token=eq.${sessionToken}`, {
-          method: "PATCH",
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ ativa: false })
-        });
-      } catch (err) {
-        console.error("Erro ao encerrar a sessão:", err);
-      }
-      localStorage.removeItem("user_email");
-      localStorage.removeItem("login_date");
-      localStorage.removeItem("session_token");
-      document.querySelector('a[href="#introSection"]').style.display = '';
-      document.querySelector('a[href="#planosSection"]').style.display = '';
-      document.getElementById('introSection').style.display = 'block';
-      document.getElementById('planosSection').classList.remove('hidden');
-      document.getElementById('loginArea').classList.add('hidden');
-      document.getElementById('searchSection').classList.add('hidden');
-      document.getElementById('orderSection').classList.add('hidden');
-      document.getElementById('menuLogin').innerText = 'Login';
-      document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
-    }
-
     async function validateSession() {
       const email = localStorage.getItem("user_email");
       const storedToken = localStorage.getItem("session_token");
@@ -1120,7 +1116,25 @@ if (draft && Array.isArray(draft.items)) {
 	document.getElementById('promoPedido').classList.add('hidden');
     }
 
-function logout() {
+async function logout() {
+  // — grava o logout na tabela login_sessions —
+  const sessionToken = localStorage.getItem("session_token");
+  if (sessionToken) {
+    try {
+      await fetch(`${supabaseUrl}/rest/v1/login_sessions?session_token=eq.${sessionToken}`, {
+        method: "PATCH",
+        headers: {
+          apikey:        supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ ativa: false })
+      });
+    } catch (err) {
+      console.error("Erro ao marcar logout em login_sessions:", err);
+    }
+  }
+
   // 1) Esconder as áreas restritas
   ['loginArea','searchSection','orderSection']
     .forEach(id => document.getElementById(id).classList.add('hidden'));
