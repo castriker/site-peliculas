@@ -153,7 +153,12 @@ body {
         <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
         <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
         <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
-        <a href="javascript:void(0)" id="menuLogin" onclick="goToLogin()" class="premium-link hover:text-yellow-400 transition">Login</a>
+        <a href="#loginArea"
+   id="menuLogin"
+   onclick="event.preventDefault(); goToLogin();"
+   class="premium-link hover:text-yellow-400 transition">
+  Login
+</a>
       </nav>
     </div>
   </header>
@@ -185,7 +190,7 @@ body {
       </div>
       <!-- Imagem -->
       <div class="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-        <img src="pelicula3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
+        <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
       </div>
     </div>
   </section> <!-- fim de #introSection -->
