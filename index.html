@@ -916,11 +916,17 @@ document
         const registro = autorizacoes[0];
         const hoje = new Date();
         const expira = new Date(registro.data_expiracao);
-        if (hoje > expira) {
-          alert(`Seu plano ${registro.plano} expirou em ${formatarData(registro.data_expiracao)}. Realize um novo pagamento para continuar o acesso.`);
-          mostrarPlanos();
-          return;
-        }
+       if (hoje > expira) {
+  if (confirm(`Seu plano ${registro.plano} expirou em ${formatarData(registro.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
+    mostrarPlanos();
+    window.location.hash = '#planosSection';
+  }
+  return;
+}
+
+
+
+
         const ipResp = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipResp.json();
         const ipAddress = ipData.ip;
@@ -977,13 +983,24 @@ localStorage.setItem("user_email", email);
 localStorage.setItem("login_date", new Date().toISOString());
 localStorage.setItem("session_token", sessionToken);
 
-// Esconde as seções anteriores
-document.getElementById('introSection').style.display = 'none';
-document.getElementById('planosSection').classList.add('hidden');
-document.getElementById('loginArea').classList.add('hidden');
+// 1) Oculta todas as seções que não são a busca
+['introSection','promoPedido','planosSection','loginArea','orderSection']
+  .forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('hidden');
+    el.style.display = 'none';
+  });
 
-// Mostra a área de busca
-document.getElementById('searchSection').classList.remove('hidden');
+// 2) Exibe corretamente a área de busca
+const busca = document.getElementById('searchSection');
+busca.classList.remove('hidden');
+busca.style.display = '';             // limpa qualquer inline que escondia
+busca.scrollIntoView({                // rola até o campo de pesquisa
+  behavior: 'smooth',
+  block: 'start'
+});
+
 
 // Aqui você dá o foco no campo de digitação
 const inputBusca = document.getElementById('searchModel');
@@ -1102,28 +1119,68 @@ if (draft && Array.isArray(draft.items)) {
     });
 
     /** 13) Exibir/Ocultar Seções */
- function mostrarInicio() {
-      document.getElementById('introSection').style.display = 'block';
-      document.getElementById('planosSection').classList.remove('hidden');
-      document.getElementById('loginArea').classList.add('hidden');
-      document.getElementById('searchSection').classList.add('hidden');
-      document.getElementById('orderSection').classList.add('hidden');
-	document.getElementById('promoPedido').classList.remove('hidden');
-    }
+function mostrarInicio() {
+  // 1) Esconder apenas as áreas restritas / pós-login
+  ['loginArea','searchSection','orderSection']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    });
+
+  // 2) Mostrar completa a home: intro + promo + planos
+  ['introSection','promoPedido','planosSection']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('hidden');
+      el.style.display = '';
+    });
+
+  // 3) Rolar suavemente até o topo da intro
+  document.getElementById('introSection')
+          .scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+
     function mostrarPlanos() {
-      ['introSection','planosSection','promoPedido','loginArea','searchSection','orderSection']
-        .forEach(id => document.getElementById(id).classList.add('hidden'));
-      document.getElementById('planosSection').classList.remove('hidden');
-    
-    }
+  // Esconde tudo, usando classes e inline
+  ['introSection','promoPedido','loginArea','searchSection','orderSection']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    });
+
+  // Mostra a seção de Planos
+  const planos = document.getElementById('planosSection');
+  planos.classList.remove('hidden');
+  planos.style.display = '';        // limpa o display inline
+  planos.scrollIntoView({ behavior: 'smooth' });
+}
+
     function goToLogin() {
-      document.getElementById('introSection').style.display = 'none';
-  document.getElementById('planosSection').style.display = 'none';
-      document.getElementById('searchSection').classList.add('hidden');
-      document.getElementById('orderSection').classList.add('hidden');
-      document.getElementById('loginArea').classList.remove('hidden');
-	document.getElementById('promoPedido').classList.add('hidden');
-    }
+  // 1) Esconder todas as seções da home e pós-login
+  ['introSection','promoPedido','planosSection','searchSection','orderSection']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      // oculta via classe e inline
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    });
+
+  // 2) Mostrar apenas o formulário de login
+  const login = document.getElementById('loginArea');
+  login.classList.remove('hidden');
+  login.style.display = '';             // limpa qualquer inline que escondia
+  login.scrollIntoView({                // rola até o login
+    behavior: 'smooth',
+    block: 'start'
+  });
+}
+
 
 function logout() {
   // 1) Esconder as áreas restritas
