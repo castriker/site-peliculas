@@ -1217,37 +1217,56 @@ function logout() {
 }
 
 function mostrarPedidos() {
-  // Esconde seções anteriores
-  document.getElementById('introSection').style.display = 'none';
-  document.getElementById('planosSection').classList.add('hidden');
-  document.getElementById('loginArea').classList.add('hidden');
-  document.getElementById('searchSection').classList.add('hidden');
+  // 1) Esconde todas as seções anteriores (classe e inline)
+  ['introSection','planosSection','loginArea','searchSection'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('hidden');
+    el.style.display = 'none';
+  });
 
-  // Exibe a área de pedido
-  document.getElementById('orderSection').classList.remove('hidden');
+  // 2) Exibe a área de pedido (removendo hidden e inline display)
+  const order = document.getElementById('orderSection');
+  order.classList.remove('hidden');
+  order.style.display = '';             // limpa qualquer display:none inline
+  order.scrollIntoView({                // rola até a seção (opcional)
+    behavior: 'smooth',
+    block: 'start'
+  });
 
-  // Preenche o modelo buscado (se houver)
+  // 3) Pré-preenche o modelo buscado (se houver)
   const modeloPesquisado = document.getElementById('searchModel').value.trim();
   if (modeloPesquisado) {
     document.getElementById('orderModelo').value = modeloPesquisado;
   }
 
-  // **Foca o cursor no campo de modelo para o usuário digitar a quantidade**
-  const inputPedido = document.getElementById('orderModelo');
-  if (inputPedido) {
-    inputPedido.focus();
-  }
+  // 4) Foca no input de modelo para digitar a quantidade
+  document.getElementById('orderModelo')?.focus();
 }
+
 
 
 
 // 17) Voltar à consulta de modelos mantendo o pedido atual
 function voltarConsulta() {
-  document.getElementById('orderSection').classList.add('hidden');
-  document.getElementById('searchSection').classList.remove('hidden');
-  const inputBusca = document.getElementById('searchModel');
-  if (inputBusca) inputBusca.focus();
+  // 1) Esconde a seção de pedidos (classe + inline)
+  const order = document.getElementById('orderSection');
+  order.classList.add('hidden');
+  order.style.display = 'none';
+
+  // 2) Exibe a seção de busca (remove hidden + limpa inline)
+  const search = document.getElementById('searchSection');
+  search.classList.remove('hidden');
+  search.style.display = '';
+  search.scrollIntoView({              // opcional: rola até a busca
+    behavior: 'smooth',
+    block: 'start'
+  });
+
+  // 3) Foca no campo de busca
+  document.getElementById('searchModel')?.focus();
 }
+
 
 // 1) Função auxiliar para apagar o draft do Supabase
 async function deleteDraft() {
