@@ -791,37 +791,49 @@ function blinkAndFocus(el) {
 
 
     /* 8) Atualizar lista de pedidos */
-    function atualizarListaPedidos() {
-      const pedidoItensDiv = document.getElementById('pedidoItens');
-      if (orderItems.length === 0) {
-        pedidoItensDiv.innerHTML = "<p class='text-gray-300'>Nenhum item adicionado ainda.</p>";
-        return;
-      }
-      let html = "<ul class='list-disc ml-5 space-y-1'>";
-      orderItems.forEach((item, index) => {
-        html += `
-          <li id="pedidoItem-${index}" class="flex items-center gap-2">
-            <span class="text-yellow-300 font-bold">${item.modeloDigitado.toUpperCase()}</span>
-            <span class="text-white">
-  – <strong>QTD:</strong> ${String(item.quantidade).padStart(2, '0')}
-</span>
+function atualizarListaPedidos() {
+  const pedidoItensDiv = document.getElementById('pedidoItens');
+  if (orderItems.length === 0) {
+    pedidoItensDiv.innerHTML = "<p class='text-gray-300'>Nenhum item adicionado ainda.</p>";
+    return;
+  }
 
-            <button onclick="removerItemPedido(${index})" class="bg-red-600 hover:bg-red-700 text-white ml-3 px-2 rounded text-xs">
-              Remover
-            </button>
-            <button onclick="exibirInputEdicao(${index})" class="bg-blue-600 hover:bg-blue-700 text-white ml-2 px-2 rounded text-xs">
-              Alterar Qtde
-            </button>
-            <input type="number" id="editInput-${index}" class="hidden w-16 p-1 text-black rounded text-xs ml-2" value="${item.quantidade}" min="1" onkeydown="if(event.key==='Enter'){salvarNovaQuantidade(${index})}">
-            <button id="saveBtn-${index}" class="hidden bg-green-500 hover:bg-green-600 text-white px-2 rounded text-xs ml-1" onclick="salvarNovaQuantidade(${index})">
-              OK
-            </button>
-          </li>
-        `;
-      });
-      html += "</ul>";
-      pedidoItensDiv.innerHTML = html;
-    }
+  // 1) Empacota cada item com seu índice original
+  const itemsWithIdx = orderItems
+    .map((item, idx) => ({
+      modelo: item.modeloDigitado.toUpperCase(),
+      quantidade: item.quantidade,
+      idx
+    }))
+    // 2) Ordena pelo modelo
+    .sort((a, b) => a.modelo.localeCompare(b.modelo));
+
+  // 3) Renderiza em lista
+  let html = "<ul class='list-disc ml-5 space-y-1'>";
+  itemsWithIdx.forEach(({ modelo, quantidade, idx }) => {
+    html += `
+      <li id="pedidoItem-${idx}" class="flex items-center gap-2">
+        <span class="text-yellow-300 font-bold">${modelo}</span>
+        <span class="text-white">– <strong>QTD:</strong> ${String(quantidade).padStart(2,'0')}</span>
+        <button onclick="removerItemPedido(${idx})" class="bg-red-600 hover:bg-red-700 text-white ml-3 px-2 rounded text-xs">
+          Remover
+        </button>
+        <button onclick="exibirInputEdicao(${idx})" class="bg-blue-600 hover:bg-blue-700 text-white ml-2 px-2 rounded text-xs">
+          Alterar Qtde
+        </button>
+        <input type="number" id="editInput-${idx}" class="hidden w-16 p-1 text-black rounded text-xs ml-2"
+               value="${quantidade}" min="1"
+               onkeydown="if(event.key==='Enter'){salvarNovaQuantidade(${idx})}">
+        <button id="saveBtn-${idx}" class="hidden bg-green-500 hover:bg-green-600 text-white px-2 rounded text-xs ml-1"
+                onclick="salvarNovaQuantidade(${idx})">
+          OK
+        </button>
+      </li>`;
+  });
+  html += "</ul>";
+
+  pedidoItensDiv.innerHTML = html;
+}
 
     /* 9) Edição e remoção de itens */
     function exibirInputEdicao(index) {
