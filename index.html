@@ -884,32 +884,71 @@ function alterarQtdDuplicado() {
 
 
 
-    /* 11) Gerar PDF do Pedido */
-    function gerarPDFPedido() {
-      if (orderItems.length === 0) {
-        alert("Nenhum item no pedido para gerar PDF!");
-        return;
-      }
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.text("Pedido de Películas", 20, 20);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      let offsetY = 40;
-      orderItems.forEach((item, i) => {
-        doc.text(`${i+1}. Modelo: ${item.modeloDigitado.toUpperCase()} | Qtd: ${item.quantidade}`, 20, offsetY);
-        offsetY += 10;
-      });
-      offsetY += 10;
-      doc.text("Pedido gerado pelo site www.peliculasuti.com.br", 20, offsetY);
-      doc.save("pedido-peliculas.pdf");
-  // **limpa local e remoto**
-  orderItems = [];
-  atualizarListaPedidos();
-  deleteDraft();
+/* 11) Gerar PDF do Pedido (com paginação automática) */
+function gerarPDFPedido() {
+  if (orderItems.length === 0) {
+    alert("Nenhum item no pedido para gerar PDF!");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Configurações de paginação (mesmo código de antes)…
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const marginTop = 20;
+  const marginBottom = 20;
+  const lineHeight = 10;
+  const leftMargin = 20;
+  let offsetY = marginTop;
+
+  function drawHeader() {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Pedido de Películas", leftMargin, offsetY);
+    offsetY += lineHeight;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+  }
+
+  drawHeader();
+
+  orderItems.forEach((item, i) => {
+    if (offsetY + marginBottom > pageHeight) {
+      doc.addPage();
+      offsetY = marginTop;
+      drawHeader();
     }
+    const text = `${i + 1}. Modelo: ${item.modeloDigitado.toUpperCase()} | Qtd: ${item.quantidade}`;
+    doc.text(text, leftMargin, offsetY);
+    offsetY += lineHeight;
+  });
+
+  if (offsetY + lineHeight + marginBottom > pageHeight) {
+    doc.addPage();
+    offsetY = marginTop;
+  }
+  offsetY += lineHeight;
+  doc.text("Pedido gerado pelo site www.peliculasuti.com.br", leftMargin, offsetY);
+
+  // Gera o PDF
+  doc.save("pedido-peliculas.pdf");
+
+  // AQUI: pergunta antes de limpar
+  const desejaLimpar = confirm(
+    "PDF gerado com sucesso!\n\n" +
+    "*Clique em OK se tem CERTEZA que está tudo correto (PDF SERÁ GERADO) após seus itens apagados.\n" +
+
+    "*Clique em Cancelar para manter os itens e continuar editando mesmo após gerar o PDF (PDF SERÁ GERADO)."
+  );
+
+  if (desejaLimpar) {
+    orderItems = [];
+    atualizarListaPedidos();
+    deleteDraft();
+  }
+}
+
 
 // 12) Função que faz o upsert em Supabase
 async function salvarDraft() {
