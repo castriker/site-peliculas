@@ -185,11 +185,11 @@ body {
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
   </svg>
 </button>
-  <a href="#introSection" id="mobileMenuInicio" class="block ...">Início</a>
-  <a href="#planosSection" id="mobileMenuPlanos" class="block ...">Planos</a>
-  <a href="https://wa.me/utidatecnologia" id="mobileMenuContato" target="_blank" class="block ...">Contato</a>
-  <a href="javascript:void(0)" id="mobileMenuLogin" class="block ...">Login</a>
-  <a href="javascript:void(0)" id="mobileMenuLogout" class="block ... hidden">Sair</a>
+<a href="#introSection" id="mobileMenuInicio" class="block py-2 text-lg hover:text-yellow-400">Início</a>
+<a href="#planosSection" id="mobileMenuPlanos" class="block py-2 text-lg hover:text-yellow-400">Planos</a>
+<a href="https://wa.me/utidatecnologia" id="mobileMenuContato" target="_blank" class="block py-2 text-lg hover:text-yellow-400">Contato</a>
+<a href="javascript:void(0)" id="mobileMenuLogin" class="block py-2 text-lg hover:text-yellow-400">Login</a>
+<a href="javascript:void(0)" id="mobileMenuLogout" class="block py-2 text-lg hover:text-yellow-400 hidden">Sair</a>
 </div>
 
 
@@ -1173,13 +1173,33 @@ const deviceAlreadyLogged = activeSessions.some(sess => sess.device_id === devic
 // 3. Usa o maxDevices da tabela para liberar ou bloquear
 if (deviceAlreadyLogged || activeSessions.length < maxDevices) {
   // Libera login normalmente (segue fluxo original, insere nova sessão)
-  // ... segue o código normal de criação de sessão
+  const sessionToken = generateToken();
+  const novaSessao = {
+    email: email,
+    session_token: sessionToken,
+    ativa: true,
+    login_date: getBrasiliaISOString(), // Agora salva em horário de Brasília!
+    device_info: deviceInfo,
+    ip_address: ipAddress,
+    device_id: deviceId
+  };
+  // Chame aqui a função/fetch para inserir a sessão no Supabase!
+  await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
+    method: "POST",
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(novaSessao)
+  });
+  // Segue o fluxo do login...
 } else {
   // BLOQUEIA: limite de dispositivos diferentes atingido
-alert(`Você já atingiu o limite de ${maxDevices} dispositivos diferentes cadastrados neste plano. Para liberar acesso a mais dispositivos, adquira um novo plano utilizando outro e-mail.`);
-
+  alert(`Você já atingiu o limite de ${maxDevices} dispositivos diferentes cadastrados neste plano. Para liberar acesso a mais dispositivos, adquira um novo plano utilizando outro e-mail.`);
   return;
 }
+
 
 // No momento de inserir a sessão, inclua device_id:
 const sessionToken = generateToken();
