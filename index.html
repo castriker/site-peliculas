@@ -104,6 +104,17 @@ body {
     .modal-duplicate-title {
       color: red;
     }
+/* Efeito de slide para o menu mobile */
+#mobileMenu {
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.2s;
+  transform: translateX(100%);
+  opacity: 0;
+}
+#mobileMenu.slide-in {
+  transform: translateX(0);
+  opacity: 1;
+}
+
   </style>
 
   <!-- Bloqueia clique direito, atalhos para DevTools e Ctrl+C -->
@@ -175,17 +186,25 @@ body {
 </div>
 
 <script>
-  // Mostra o menu mobile
+  // Mostra o menu mobile com efeito slide
   document.getElementById('menuBtn').onclick = () => {
-    document.getElementById('mobileMenu').classList.remove('hidden');
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.add('slide-in');
+    menu.classList.remove('hidden');
   };
-  // Esconde o menu mobile
+  // Esconde o menu mobile com efeito slide
   document.getElementById('closeMenu').onclick = () => {
-    document.getElementById('mobileMenu').classList.add('hidden');
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => menu.classList.add('hidden'), 300); // espera animação terminar
   };
   // Esconde menu mobile ao clicar em link
   document.querySelectorAll('#mobileMenu a').forEach(link => {
-    link.onclick = () => document.getElementById('mobileMenu').classList.add('hidden');
+    link.onclick = () => {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.remove('slide-in');
+      setTimeout(() => menu.classList.add('hidden'), 300);
+    }
   });
   // Sincroniza texto "Login/Sair" entre desktop/mobile
   document.getElementById('menuLogin').addEventListener('click', function() {
