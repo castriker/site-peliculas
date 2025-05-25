@@ -1035,7 +1035,7 @@ document
           allowedIPs = registro.allowed_ip.split(",").map(ip => ip.trim());
         }
         if (!allowedIPs.includes(ipAddress)) {
-          if (allowedIPs.length < 2) {
+          if (allowedIPs.length < 6) {
             allowedIPs.push(ipAddress);
             let newAllowed = allowedIPs.join(", ");
             await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
