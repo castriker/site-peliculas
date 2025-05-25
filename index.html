@@ -177,53 +177,78 @@ body {
   </button>
 </nav>
 <!-- Mobile menu (sidebar) -->
-<div id="mobileMenu" class="md:hidden fixed top-0 right-0 w-2/3 max-w-xs h-full bg-gray-800 text-white p-8 z-50 hidden flex-col gap-6 shadow-xl">
-  <button id="closeMenu" class="absolute top-4 right-6 text-2xl font-bold">&times;</button>
-  <a href="#introSection" onclick="mostrarInicio()" class="block py-2 text-lg hover:text-yellow-400">Início</a>
-  <a href="#planosSection" onclick="mostrarPlanos()" class="block py-2 text-lg hover:text-yellow-400">Planos</a>
-  <a href="https://wa.me/utidatecnologia" target="_blank" class="block py-2 text-lg hover:text-yellow-400">Contato</a>
-  <a href="javascript:void(0)" id="mobileMenuLogin" class="block py-2 text-lg hover:text-yellow-400">Login</a>
+<div id="mobileMenu" ...>
+  <button id="closeMenu" ...>&times;</button>
+  <a href="#introSection" id="mobileMenuInicio" class="block ...">Início</a>
+  <a href="#planosSection" id="mobileMenuPlanos" class="block ...">Planos</a>
+  <a href="https://wa.me/utidatecnologia" id="mobileMenuContato" target="_blank" class="block ...">Contato</a>
+  <a href="javascript:void(0)" id="mobileMenuLogin" class="block ...">Login</a>
+  <a href="javascript:void(0)" id="mobileMenuLogout" class="block ... hidden">Sair</a>
 </div>
 
+
 <script>
-  // Mostra o menu mobile com efeito slide
+  // Slide menu
   document.getElementById('menuBtn').onclick = () => {
     const menu = document.getElementById('mobileMenu');
     menu.classList.add('slide-in');
     menu.classList.remove('hidden');
   };
-  // Esconde o menu mobile com efeito slide
   document.getElementById('closeMenu').onclick = () => {
     const menu = document.getElementById('mobileMenu');
     menu.classList.remove('slide-in');
-    setTimeout(() => menu.classList.add('hidden'), 300); // espera animação terminar
+    setTimeout(() => menu.classList.add('hidden'), 300);
   };
-  // Esconde menu mobile ao clicar em link
-  document.querySelectorAll('#mobileMenu a').forEach(link => {
-    link.onclick = () => {
+
+  // Fecha menu ao clicar em qualquer link (menos login/logout)
+  ['mobileMenuInicio', 'mobileMenuPlanos', 'mobileMenuContato'].forEach(id => {
+    document.getElementById(id).onclick = () => {
       const menu = document.getElementById('mobileMenu');
       menu.classList.remove('slide-in');
       setTimeout(() => menu.classList.add('hidden'), 300);
     }
   });
-// Login mobile: fecha menu e mostra área de login
-document.getElementById('mobileMenuLogin').onclick = function(e) {
-  e.preventDefault();
-  const menu = document.getElementById('mobileMenu');
-  menu.classList.remove('slide-in');
-  setTimeout(() => {
-    menu.classList.add('hidden');
-    goToLogin(); // chama a função de login!
-  }, 300); // espera menu fechar antes de exibir login
-};
 
-  // Sincroniza texto "Login/Sair" entre desktop/mobile
-  document.getElementById('menuLogin').addEventListener('click', function() {
-    document.getElementById('mobileMenuLogin').innerText = this.innerText;
-  });
-  document.getElementById('mobileMenuLogin').addEventListener('click', function() {
-    document.getElementById('menuLogin').innerText = this.innerText;
-  });
+  // Login mobile: fecha menu e mostra área de login
+  document.getElementById('mobileMenuLogin').onclick = function(e) {
+    e.preventDefault();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      goToLogin(); // chama a função de login!
+    }, 300);
+  };
+
+  // Logout mobile: fecha menu e executa logout
+  document.getElementById('mobileMenuLogout').onclick = function(e) {
+    e.preventDefault();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      // Chame sua função real de logout aqui:
+      logout(); // troque pelo nome exato da sua função de logout, se for diferente!
+    }, 300);
+  };
+
+  // Função para mostrar só os links corretos APÓS LOGIN
+  function mostrarMenuMobileAposLogin() {
+    document.getElementById('mobileMenuInicio').classList.add('hidden');
+    document.getElementById('mobileMenuPlanos').classList.add('hidden');
+    document.getElementById('mobileMenuLogin').classList.add('hidden');
+    document.getElementById('mobileMenuLogout').classList.remove('hidden');
+    document.getElementById('mobileMenuContato').classList.remove('hidden');
+  }
+
+  // Função para mostrar todos os links APÓS LOGOUT
+  function mostrarMenuMobileAposLogout() {
+    document.getElementById('mobileMenuInicio').classList.remove('hidden');
+    document.getElementById('mobileMenuPlanos').classList.remove('hidden');
+    document.getElementById('mobileMenuLogin').classList.remove('hidden');
+    document.getElementById('mobileMenuLogout').classList.add('hidden');
+    document.getElementById('mobileMenuContato').classList.remove('hidden');
+  }
 </script>
 
 
@@ -1199,7 +1224,6 @@ busca.scrollIntoView({                // rola até o campo de pesquisa
   block: 'start'
 });
 
-
 // Aqui você dá o foco no campo de digitação
 const inputBusca = document.getElementById('searchModel');
 if (inputBusca) inputBusca.focus();
@@ -1213,6 +1237,10 @@ document.querySelector("#searchSection .bg-gray-800").innerHTML =
   `<strong>Bem-vindo(a), ${registro.nome}!</strong><br>` +
   `Plano: ${registro.plano}<br>` +
   `Válido até: ${formatarData(registro.data_expiracao)}`;
+
+// <-- COLE AQUI:
+mostrarMenuMobileAposLogin();
+
 
 // Carrega os dados para pesquisa
 loadData();
@@ -1258,18 +1286,20 @@ if (draft && Array.isArray(draft.items)) {
       } catch (err) {
         console.error("Erro ao encerrar a sessão:", err);
       }
-      localStorage.removeItem("user_email");
-      localStorage.removeItem("login_date");
-      localStorage.removeItem("session_token");
-      document.querySelector('a[href="#introSection"]').style.display = '';
-      document.querySelector('a[href="#planosSection"]').style.display = '';
-      document.getElementById('introSection').style.display = 'block';
-      document.getElementById('planosSection').classList.remove('hidden');
-      document.getElementById('loginArea').classList.add('hidden');
-      document.getElementById('searchSection').classList.add('hidden');
-      document.getElementById('orderSection').classList.add('hidden');
-      document.getElementById('menuLogin').innerText = 'Login';
-      document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
+ localStorage.removeItem("user_email");
+localStorage.removeItem("login_date");
+localStorage.removeItem("session_token");
+document.querySelector('a[href="#introSection"]').style.display = '';
+document.querySelector('a[href="#planosSection"]').style.display = '';
+document.getElementById('introSection').style.display = 'block';
+document.getElementById('planosSection').classList.remove('hidden');
+document.getElementById('loginArea').classList.add('hidden');
+document.getElementById('searchSection').classList.add('hidden');
+document.getElementById('orderSection').classList.add('hidden');
+document.getElementById('menuLogin').innerText = 'Login';
+document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
+mostrarMenuMobileAposLogout()
+
     }
 
     async function validateSession() {
