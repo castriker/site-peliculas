@@ -1027,33 +1027,34 @@ document
 
 
 
-        const ipResp = await fetch('https://api.ipify.org?format=json');
-        const ipData = await ipResp.json();
-        const ipAddress = ipData.ip;
-        let allowedIPs = [];
-        if (registro.allowed_ip && registro.allowed_ip.trim() !== "") {
-          allowedIPs = registro.allowed_ip.split(",").map(ip => ip.trim());
-        }
-        if (!allowedIPs.includes(ipAddress)) {
-          if (allowedIPs.length < 6) {
-            allowedIPs.push(ipAddress);
-            let newAllowed = allowedIPs.join(", ");
-            await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${email}`, {
-              method: "PATCH",
-              headers: {
-                apikey: supabaseKey,
-                Authorization: `Bearer ${supabaseKey}`,
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({ allowed_ip: newAllowed })
-            });
-          } else {
-            let whatsappMsg = encodeURIComponent(`Olá meu nome é ${registro.nome} e meu e‑mail é ${email}, gostaria de excluir um dos IPs cadastrados. Estou ciente que somente posso fazer essa alteração uma única vez!`);
-            alert("Excedido o limite de IPs permitidos para seu e‑mail. Você já está logado com os IPs: " + allowedIPs.join(", ") + ". Para solicitar a alteração, clique no botão.");
-            document.getElementById('loginArea').innerHTML = '<p style="text-align:center; margin-top:20px;"><a href="https://wa.me/5537999625138?text=' + whatsappMsg + '" target="_blank" style="background:#25D366; padding:10px 20px; border-radius:5px; color:#fff; text-decoration:none;">Solicitar Exclusão de IP</a></p>';
-            return;
-          }
-        }
+        // PEGA O IP E DEVICE INFO
+const ipResp = await fetch('https://api.ipify.org?format=json');
+const ipData = await ipResp.json();
+const ipAddress = ipData.ip;
+const deviceInfo = navigator.userAgent;
+
+// BUSCA TODAS AS SESSÕES ATIVAS DESTE USUÁRIO
+const resDevices = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&ativa=eq.true`, {
+  headers: {
+    apikey: supabaseKey,
+    Authorization: `Bearer ${supabaseKey}`,
+    "Content-Type": "application/json"
+  }
+});
+const activeSessions = await resDevices.json();
+
+// APLICA SUA LÓGICA NOVA (device + ip)
+const deviceAlreadyLogged = activeSessions.some(sess => sess.device_info === deviceInfo);
+
+if (deviceAlreadyLogged || activeSessions.length < 2) {
+  // Libera login normalmente (segue fluxo original, insere nova sessão)
+  // ... segue o código normal de criação de sessão
+} else {
+  // BLOQUEIA: limite de dispositivos diferentes atingido
+  alert("Você já atingiu o limite de 2 dispositivos diferentes logados simultaneamente neste plano. Para liberar acesso, encerre a sessão de algum dispositivo antigo.");
+  return;
+}
+
         const sessionToken = generateToken();
         const deviceInfo = navigator.userAgent;
         const novaSessao = {
