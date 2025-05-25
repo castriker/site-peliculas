@@ -197,10 +197,19 @@ body {
 <script>
   // Slide menu
   document.getElementById('menuBtn').onclick = () => {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.add('slide-in');
-    menu.classList.remove('hidden');
-  };
+  // Garante que o menu sempre mostra o estado correto
+  const email = localStorage.getItem("user_email");
+  if (email) {
+    mostrarMenuMobileAposLogin();
+  } else {
+    mostrarMenuMobileAposLogout();
+  }
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.add('slide-in');
+  menu.classList.remove('hidden');
+};
+
+
   document.getElementById('closeMenu').onclick = () => {
     const menu = document.getElementById('mobileMenu');
     menu.classList.remove('slide-in');
@@ -230,15 +239,16 @@ body {
   // Logout mobile: fecha menu e executa logout
 document.getElementById('mobileMenuLogout').onclick = function(e) {
   e.preventDefault();
+  logout(); // agora o menu mobile já atualiza antes de sumir
   const menu = document.getElementById('mobileMenu');
   menu.classList.remove('slide-in');
   setTimeout(() => {
     menu.classList.add('hidden');
-    logout(); // chama sua função logout, que já reseta tudo!
-    // Opcional: força rolar pro topo/início
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, 300);
 };
+
+
 
 
   // Função para mostrar só os links corretos APÓS LOGIN
@@ -251,13 +261,14 @@ document.getElementById('mobileMenuLogout').onclick = function(e) {
   }
 
   // Função para mostrar todos os links APÓS LOGOUT
-  function mostrarMenuMobileAposLogout() {
-    document.getElementById('mobileMenuInicio').classList.remove('hidden');
-    document.getElementById('mobileMenuPlanos').classList.remove('hidden');
-    document.getElementById('mobileMenuLogin').classList.remove('hidden');
-    document.getElementById('mobileMenuLogout').classList.add('hidden');
-    document.getElementById('mobileMenuContato').classList.remove('hidden');
-  }
+function mostrarMenuMobileAposLogout() {
+  document.getElementById('mobileMenuInicio').classList.remove('hidden');
+  document.getElementById('mobileMenuPlanos').classList.remove('hidden');
+  document.getElementById('mobileMenuLogin').classList.remove('hidden');
+  document.getElementById('mobileMenuLogout').classList.add('hidden');
+  document.getElementById('mobileMenuContato').classList.remove('hidden');
+}
+
 </script>
 
 
@@ -1336,8 +1347,6 @@ document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
 mostrarMenuMobileAposLogout();
 // Rola para o topo
 window.scrollTo({ top: 0, behavior: 'smooth' });
-
-
     }
 
     async function validateSession() {
