@@ -177,8 +177,14 @@ body {
   </button>
 </nav>
 <!-- Mobile menu (sidebar) -->
-<div id="mobileMenu" ...>
-  <button id="closeMenu" ...>&times;</button>
+<div id="mobileMenu"
+  class="md:hidden fixed top-0 right-0 w-2/3 max-w-xs h-full bg-gradient-to-br from-gray-900/95 to-gray-800/95 text-white p-8 z-50 hidden flex-col gap-6 shadow-2xl backdrop-blur-lg rounded-l-2xl">
+  <!-- Por este SVG premium (ícone X) -->
+<button id="closeMenu" class="absolute top-4 right-6">
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-400 hover:text-yellow-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+  </svg>
+</button>
   <a href="#introSection" id="mobileMenuInicio" class="block ...">Início</a>
   <a href="#planosSection" id="mobileMenuPlanos" class="block ...">Planos</a>
   <a href="https://wa.me/utidatecnologia" id="mobileMenuContato" target="_blank" class="block ...">Contato</a>
@@ -221,16 +227,18 @@ body {
   };
 
   // Logout mobile: fecha menu e executa logout
-  document.getElementById('mobileMenuLogout').onclick = function(e) {
-    e.preventDefault();
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.remove('slide-in');
-    setTimeout(() => {
-      menu.classList.add('hidden');
-      // Chame sua função real de logout aqui:
-      logout(); // troque pelo nome exato da sua função de logout, se for diferente!
-    }, 300);
-  };
+document.getElementById('mobileMenuLogout').onclick = function(e) {
+  e.preventDefault();
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.remove('slide-in');
+  setTimeout(() => {
+    menu.classList.add('hidden');
+    logout(); // chama sua função logout, que já reseta tudo!
+    // Opcional: força rolar pro topo/início
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 300);
+};
+
 
   // Função para mostrar só os links corretos APÓS LOGIN
   function mostrarMenuMobileAposLogin() {
