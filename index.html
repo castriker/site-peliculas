@@ -1701,35 +1701,47 @@ document.getElementById('email').addEventListener('keydown', function(event) {
   }
 });
 
-  </script>
-
 <script>
-function autoScrollPlanos() {
-  // Só faz o efeito se for mobile (telas menores que 1024px)
+function animateScroll(element, to, duration = 1500, callback) {
+  const start = element.scrollLeft;
+  const change = to - start;
+  const startTime = performance.now();
+
+  function animate(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    element.scrollLeft = start + change * progress;
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else if (callback) {
+      callback();
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function autoScrollPlanosSuave() {
   if (window.innerWidth < 1024) {
     const planos = document.getElementById('planosSection');
     if (planos) {
-      planos.scrollTo({
-        left: planos.scrollWidth / 2.3,
-        behavior: 'smooth'
+      // Rola suavemente até o meio
+      animateScroll(planos, planos.scrollWidth / 2.2, 1500, () => {
+        // Depois de 1.3s parado, volta suavemente ao início
+        setTimeout(() => {
+          animateScroll(planos, 0, 900);
+        }, 1300);
       });
-      setTimeout(() => {
-        planos.scrollTo({
-          left: 0,
-          behavior: 'smooth'
-        });
-      }, 1600);
     }
   }
 }
 
-// Roda ao carregar a página
-window.addEventListener('DOMContentLoaded', autoScrollPlanos);
-// E quando clicar em "Planos"
+window.addEventListener('DOMContentLoaded', autoScrollPlanosSuave);
+// Se quiser que role de novo ao clicar em "Planos":
 document.querySelectorAll('a[href="#planosSection"], #mobileMenuPlanos').forEach(el => {
-  el.addEventListener('click', () => setTimeout(autoScrollPlanos, 350));
+  el.addEventListener('click', () => setTimeout(autoScrollPlanosSuave, 350));
 });
 </script>
+
 
 </body>
 </html>
