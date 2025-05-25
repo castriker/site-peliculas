@@ -1050,6 +1050,18 @@ if (!deviceId) {
 }
 
 // BUSCA TODAS AS SESSÕES ATIVAS DESTE USUÁRIO
+// 1. Busca o valor de max_devices para este usuário (tabela usuarios ou clientes)
+const userRes = await fetch(`${supabaseUrl}/rest/v1/usuarios?email=eq.${email}`, {
+  headers: {
+    apikey: supabaseKey,
+    Authorization: `Bearer ${supabaseKey}`,
+    "Content-Type": "application/json"
+  }
+});
+const usuarios = await userRes.json();
+const maxDevices = (usuarios.length && usuarios[0].max_devices) ? usuarios[0].max_devices : 2; // padrão 2, se não achar
+
+// 2. Busca sessões ativas desse usuário
 const resDevices = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&ativa=eq.true`, {
   headers: {
     apikey: supabaseKey,
@@ -1059,15 +1071,16 @@ const resDevices = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.$
 });
 const activeSessions = await resDevices.json();
 
-// AGORA LIMITE PELO DEVICE_ID
 const deviceAlreadyLogged = activeSessions.some(sess => sess.device_id === deviceId);
 
-if (deviceAlreadyLogged || activeSessions.length < 3) {
+// 3. Usa o maxDevices da tabela para liberar ou bloquear
+if (deviceAlreadyLogged || activeSessions.length < maxDevices) {
   // Libera login normalmente (segue fluxo original, insere nova sessão)
   // ... segue o código normal de criação de sessão
 } else {
   // BLOQUEIA: limite de dispositivos diferentes atingido
-  alert("Você já atingiu o limite de 3 dispositivos diferentes cadastrados neste plano. Para liberar acesso, encerre a sessão de algum dispositivo antigo.");
+alert(`Você já atingiu o limite de ${maxDevices} dispositivos diferentes cadastrados neste plano. Para liberar acesso a mais dispositivos, adquira um novo plano utilizando outro e-mail.`);
+
   return;
 }
 
