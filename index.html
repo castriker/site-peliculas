@@ -1314,19 +1314,28 @@ if (draft && Array.isArray(draft.items)) {
       } catch (err) {
         console.error("Erro ao encerrar a sessão:", err);
       }
- localStorage.removeItem("user_email");
+localStorage.removeItem("user_email");
 localStorage.removeItem("login_date");
 localStorage.removeItem("session_token");
+// Mostra todos os menus principais (desktop)
 document.querySelector('a[href="#introSection"]').style.display = '';
 document.querySelector('a[href="#planosSection"]').style.display = '';
+document.getElementById('introSection').classList.remove('hidden');
 document.getElementById('introSection').style.display = 'block';
 document.getElementById('planosSection').classList.remove('hidden');
-document.getElementById('loginArea').classList.add('hidden');
+document.getElementById('planosSection').style.display = '';
+document.getElementById('loginArea').classList.remove('hidden');
+document.getElementById('loginArea').style.display = '';
 document.getElementById('searchSection').classList.add('hidden');
+document.getElementById('searchSection').style.display = 'none';
 document.getElementById('orderSection').classList.add('hidden');
 document.getElementById('menuLogin').innerText = 'Login';
 document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
-mostrarMenuMobileAposLogout()
+// Ajusta o menu mobile para não logado
+mostrarMenuMobileAposLogout();
+// Rola para o topo
+window.scrollTo({ top: 0, behavior: 'smooth' });
+
 
     }
 
