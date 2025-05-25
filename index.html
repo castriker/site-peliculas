@@ -144,24 +144,58 @@ body {
   font-size: 12px; padding: 4px; z-index: 9999;
 "></div>
 
-  <!-- Cabeçalho -->
-  <header class="bg-gradient-to-r from-black to-gray-800 p-6 shadow-xl text-white">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <!-- Logo / Título -->
-      <div class="flex items-center space-x-2">
-        <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
-             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"></svg>
-        <h1 class="text-3xl font-black tracking-widest text-shadow">PELÍCULA COMPATÍVEL</h1>
-      </div>
-      <!-- Menu -->
-      <nav class="space-x-6 text-base font-semibold">
-        <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
-        <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
-        <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
-        <a href="javascript:void(0)" id="menuLogin" onclick="goToLogin()" class="premium-link hover:text-yellow-400 transition">Login</a>
-      </nav>
-    </div>
-  </header>
+  <!-- Cabeçalho responsivo -->
+<nav class="flex items-center justify-between p-4 bg-gradient-to-r from-black to-gray-800 shadow-xl text-white">
+  <div class="text-2xl font-black tracking-widest text-shadow flex items-center gap-2">
+    <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"></svg>
+    PELÍCULA COMPATÍVEL
+  </div>
+  <!-- Menu desktop -->
+  <div class="hidden md:flex gap-6 text-base font-semibold">
+    <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
+    <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
+    <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
+    <a href="javascript:void(0)" id="menuLogin" onclick="goToLogin()" class="premium-link hover:text-yellow-400 transition">Login</a>
+  </div>
+  <!-- Menu mobile (hambúrguer) -->
+  <button id="menuBtn" class="md:hidden">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+</nav>
+<!-- Mobile menu (sidebar) -->
+<div id="mobileMenu" class="md:hidden fixed top-0 right-0 w-2/3 max-w-xs h-full bg-gray-800 text-white p-8 z-50 hidden flex-col gap-6 shadow-xl">
+  <button id="closeMenu" class="absolute top-4 right-6 text-2xl font-bold">&times;</button>
+  <a href="#introSection" onclick="mostrarInicio()" class="block py-2 text-lg hover:text-yellow-400">Início</a>
+  <a href="#planosSection" onclick="mostrarPlanos()" class="block py-2 text-lg hover:text-yellow-400">Planos</a>
+  <a href="https://wa.me/utidatecnologia" target="_blank" class="block py-2 text-lg hover:text-yellow-400">Contato</a>
+  <a href="javascript:void(0)" id="mobileMenuLogin" onclick="goToLogin()" class="block py-2 text-lg hover:text-yellow-400">Login</a>
+</div>
+
+<script>
+  // Mostra o menu mobile
+  document.getElementById('menuBtn').onclick = () => {
+    document.getElementById('mobileMenu').classList.remove('hidden');
+  };
+  // Esconde o menu mobile
+  document.getElementById('closeMenu').onclick = () => {
+    document.getElementById('mobileMenu').classList.add('hidden');
+  };
+  // Esconde menu mobile ao clicar em link
+  document.querySelectorAll('#mobileMenu a').forEach(link => {
+    link.onclick = () => document.getElementById('mobileMenu').classList.add('hidden');
+  });
+  // Sincroniza texto "Login/Sair" entre desktop/mobile
+  document.getElementById('menuLogin').addEventListener('click', function() {
+    document.getElementById('mobileMenuLogin').innerText = this.innerText;
+  });
+  document.getElementById('mobileMenuLogin').addEventListener('click', function() {
+    document.getElementById('menuLogin').innerText = this.innerText;
+  });
+</script>
+
 
   <!-- Página Inicial: Introdução -->
   <section id="introSection" class="py-12 bg-[#0b1120] text-white">
