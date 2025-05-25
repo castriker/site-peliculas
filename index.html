@@ -1445,26 +1445,6 @@ function mostrarInicio() {
           .scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function mostrarPlanos() {
-  // Esconde TODAS as seções que não são planos
-  ['introSection','promoPedido','loginArea','orderSection','searchSection'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add('hidden');
-    el.style.display = 'none';
-  });
-  // Mostra só a seção de planos
-  const planos = document.getElementById('planosSection');
-  if (planos) {
-    planos.classList.remove('hidden');
-    planos.style.display = '';
-    planos.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  window.location.hash = '';
-}
-
-
-
     function goToLogin() {
   // 1) Esconder todas as seções da home e pós-login
   ['introSection','promoPedido','planosSection','searchSection','orderSection']
@@ -1713,6 +1693,26 @@ document.getElementById('email').addEventListener('keydown', function(event) {
   }
 });
 
+function mostrarPlanos() {
+  // Esconde todas as seções principais que não são planos
+  ['introSection', 'promoPedido', 'loginArea', 'orderSection', 'searchSection'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    }
+  });
+  // Mostra só a de planos
+  const planos = document.getElementById('planosSection');
+  if (planos) {
+    planos.classList.remove('hidden');
+    planos.style.display = '';
+    planos.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  window.location.hash = '';
+}
+
+
 <script>
 function animateScroll(element, to, duration = 1600, callback) {
   const start = element.scrollLeft;
@@ -1730,6 +1730,19 @@ function animateScroll(element, to, duration = 1600, callback) {
     }
   }
   requestAnimationFrame(animate);
+}
+
+<!-- CSS da barra animada -->
+<style>
+@keyframes scrollbar {
+  0%   { left: 0; }
+  40%  { left: 65%; }
+  60%  { left: 65%; }
+  100% { left: 0; }
+}
+.animate-scrollbar {
+  animation: scrollbar 2.3s infinite;
+  transition: left 0.2s;
 }
 
 function autoScrollPlanosSuave() {
@@ -1753,20 +1766,9 @@ window.addEventListener('DOMContentLoaded', autoScrollPlanosSuave);
 document.querySelectorAll('a[href="#planosSection"], #mobileMenuPlanos').forEach(el => {
   el.addEventListener('click', () => setTimeout(autoScrollPlanosSuave, 350));
 });
+
 </script>
 
-<!-- CSS da barra animada -->
-<style>
-@keyframes scrollbar {
-  0%   { left: 0; }
-  40%  { left: 65%; }
-  60%  { left: 65%; }
-  100% { left: 0; }
-}
-.animate-scrollbar {
-  animation: scrollbar 2.3s infinite;
-  transition: left 0.2s;
-}
 </style>
 </body>
 </html>
