@@ -366,6 +366,11 @@ function mostrarMenuMobileAposLogout() {
   id="planosSection"
   class="flex overflow-x-auto gap-4 px-4 sm:px-8 py-8 lg:grid lg:grid-cols-4 max-w-7xl mx-auto"
 >
+<div class="w-full flex justify-center mb-2 lg:hidden">
+  <span class="animate-bounce text-3xl text-yellow-400">⬅️</span>
+  <span class="text-gray-500 ml-2 text-sm mt-2">Arraste para o lado</span>
+</div>
+
   <!-- Card 1 Mês -->
   <div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
     <div>
@@ -379,7 +384,7 @@ function mostrarMenuMobileAposLogout() {
         <li>🚫 Sem propagandas</li>
 <li>Permite acesso por até <b>2 dispositivos: 📱💻🖥️</b>.</li>
 <small class="text-xs text-gray-500">
-  Exemplo: 1 celulares, 1 computadores, ou da forma que preferir!
+  Exemplo: 1 celular, 1 computador, ou da forma que preferir!
 </small>
       </ul>
     </div>
@@ -1702,7 +1707,36 @@ document.getElementById('email').addEventListener('keydown', function(event) {
 
 
 
+
     /* --------------------- FIM --------------------- */
   </script>
+<script>
+function autoScrollPlanos() {
+  // Só faz o efeito se for mobile (telas menores que 1024px)
+  if (window.innerWidth < 1024) {
+    const planos = document.getElementById('planosSection');
+    if (planos) {
+      // Faz o scroll suave para mostrar que é carrossel
+      planos.scrollTo({
+        left: planos.scrollWidth / 2.5, // ajusta esse valor se quiser rolar mais ou menos
+        behavior: 'smooth'
+      });
+      // Depois de 2s, volta para o início (opcional)
+      setTimeout(() => {
+        planos.scrollTo({
+          left: 0,
+          behavior: 'smooth'
+        });
+      }, 1800);
+    }
+  }
+}
+// Chama quando a página carrega
+window.addEventListener('DOMContentLoaded', autoScrollPlanos);
+// E também toda vez que clicar em "Planos"
+document.querySelectorAll('a[href="#planosSection"], #mobileMenuPlanos').forEach(el => {
+  el.addEventListener('click', () => setTimeout(autoScrollPlanos, 350));
+});
+</script>
 </body>
 </html>
