@@ -182,7 +182,7 @@ body {
   <a href="#introSection" onclick="mostrarInicio()" class="block py-2 text-lg hover:text-yellow-400">Início</a>
   <a href="#planosSection" onclick="mostrarPlanos()" class="block py-2 text-lg hover:text-yellow-400">Planos</a>
   <a href="https://wa.me/utidatecnologia" target="_blank" class="block py-2 text-lg hover:text-yellow-400">Contato</a>
-  <a href="javascript:void(0)" id="mobileMenuLogin" onclick="goToLogin()" class="block py-2 text-lg hover:text-yellow-400">Login</a>
+  <a href="javascript:void(0)" id="mobileMenuLogin" class="block py-2 text-lg hover:text-yellow-400">Login</a>
 </div>
 
 <script>
@@ -206,6 +206,17 @@ body {
       setTimeout(() => menu.classList.add('hidden'), 300);
     }
   });
+// Login mobile: fecha menu e mostra área de login
+document.getElementById('mobileMenuLogin').onclick = function(e) {
+  e.preventDefault();
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.remove('slide-in');
+  setTimeout(() => {
+    menu.classList.add('hidden');
+    goToLogin(); // chama a função de login!
+  }, 300); // espera menu fechar antes de exibir login
+};
+
   // Sincroniza texto "Login/Sair" entre desktop/mobile
   document.getElementById('menuLogin').addEventListener('click', function() {
     document.getElementById('mobileMenuLogin').innerText = this.innerText;
