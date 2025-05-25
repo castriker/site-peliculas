@@ -595,17 +595,27 @@ body {
 const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
   const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
 
-    /* 1) Funções generateToken e formatarData */
-    function generateToken() {
-      return Date.now().toString() + Math.random().toString(36).substr(2, 8);
-    }
-    function formatarData(dataString) {
-      const partes = dataString.split("-");
-      if (partes.length === 3) {
-        return `${partes[2]}/${partes[1]}/${partes[0]}`;
-      }
-      return dataString;
-    }
+function generateToken() {
+  return Date.now().toString() + Math.random().toString(36).substr(2, 8);
+}
+function formatarData(dataString) {
+  const partes = dataString.split("-");
+  if (partes.length === 3) {
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+  return dataString;
+}
+function formatarDataHoraLocal(dataUtc) {
+  if (!dataUtc) return '';
+  const data = new Date(dataUtc);
+  // Exibe sempre no horário local do navegador do usuário
+  return data.toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+
 
     /* 2) Variáveis e Estruturas */
     let data = [];        // Base de compatibilidade
