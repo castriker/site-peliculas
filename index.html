@@ -1027,11 +1027,18 @@ document
 
 
 
-        // PEGA O IP E DEVICE INFO
+       // PEGA O IP E DEVICE INFO
 const ipResp = await fetch('https://api.ipify.org?format=json');
 const ipData = await ipResp.json();
 const ipAddress = ipData.ip;
 const deviceInfo = navigator.userAgent;
+
+// Gera ou recupera um device_id único salvo no navegador
+let deviceId = localStorage.getItem('device_id');
+if (!deviceId) {
+  deviceId = generateToken(); // Usa sua função existente
+  localStorage.setItem('device_id', deviceId);
+}
 
 // BUSCA TODAS AS SESSÕES ATIVAS DESTE USUÁRIO
 const resDevices = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.${email}&ativa=eq.true`, {
@@ -1043,8 +1050,8 @@ const resDevices = await fetch(`${supabaseUrl}/rest/v1/login_sessions?email=eq.$
 });
 const activeSessions = await resDevices.json();
 
-// APLICA SUA LÓGICA NOVA (device + ip)
-const deviceAlreadyLogged = activeSessions.some(sess => sess.device_info === deviceInfo);
+// AGORA LIMITE PELO DEVICE_ID
+const deviceAlreadyLogged = activeSessions.some(sess => sess.device_id === deviceId);
 
 if (deviceAlreadyLogged || activeSessions.length < 2) {
   // Libera login normalmente (segue fluxo original, insere nova sessão)
@@ -1054,6 +1061,33 @@ if (deviceAlreadyLogged || activeSessions.length < 2) {
   alert("Você já atingiu o limite de 2 dispositivos diferentes logados simultaneamente neste plano. Para liberar acesso, encerre a sessão de algum dispositivo antigo.");
   return;
 }
+
+// No momento de inserir a sessão, inclua device_id:
+const sessionToken = generateToken();
+const novaSessao = {
+  email: email,
+  session_token: sessionToken,
+  ativa: true,
+  login_date: new Date().toISOString(),
+  device_info: deviceInfo,
+  ip_address: ipAddress,
+  device_id: deviceId // ← ADICIONADO AQUI!
+};
+const resInsert = await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
+  method: "POST",
+  headers: {
+    apikey: supabaseKey,
+    Authorization: `Bearer ${supabaseKey}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(novaSessao)
+});
+if (!resInsert.ok) {
+  console.error("Erro ao criar a nova sessão:", resInsert.statusText);
+  alert("Erro ao criar sessão. Tente novamente.");
+  return;
+}
+
 
         const sessionToken = generateToken();
         const novaSessao = {
