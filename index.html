@@ -1099,30 +1099,7 @@ if (!resInsert.ok) {
 }
 
 
-        const sessionToken = generateToken();
-        const novaSessao = {
-          email: email,
-          session_token: sessionToken,
-          ativa: true,
-          login_date: new Date().toISOString(),
-          device_info: deviceInfo,
-          ip_address: ipAddress
-        };
-        const resInsert = await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
-          method: "POST",
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(novaSessao)
-        });
-        if (!resInsert.ok) {
-          console.error("Erro ao criar a nova sessão:", resInsert.statusText);
-          alert("Erro ao criar sessão. Tente novamente.");
-          return;
-        }
-       // … após salvar no localStorage …
+              // … após salvar no localStorage …
 localStorage.setItem("user_email", email);
 localStorage.setItem("login_date", new Date().toISOString());
 localStorage.setItem("session_token", sessionToken);
