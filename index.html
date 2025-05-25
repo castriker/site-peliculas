@@ -39,6 +39,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
+body, html, * {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+img, figure {
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
 body {
   background-color: #111;
   font-family: 'Montserrat', sans-serif;
@@ -119,6 +132,12 @@ body {
 
   <!-- Bloqueia clique direito, atalhos para DevTools e Ctrl+C -->
   <script>
+// Impede o menu ao tocar em imagens no mobile
+document.querySelectorAll('img').forEach(img => {
+  img.addEventListener('contextmenu', e => e.preventDefault());
+  img.addEventListener('touchstart', e => e.preventDefault());
+});
+
      document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
       if (
