@@ -1053,12 +1053,12 @@ const activeSessions = await resDevices.json();
 // AGORA LIMITE PELO DEVICE_ID
 const deviceAlreadyLogged = activeSessions.some(sess => sess.device_id === deviceId);
 
-if (deviceAlreadyLogged || activeSessions.length < 2) {
+if (deviceAlreadyLogged || activeSessions.length < 3) {
   // Libera login normalmente (segue fluxo original, insere nova sessão)
   // ... segue o código normal de criação de sessão
 } else {
   // BLOQUEIA: limite de dispositivos diferentes atingido
-  alert("Você já atingiu o limite de 2 dispositivos diferentes logados simultaneamente neste plano. Para liberar acesso, encerre a sessão de algum dispositivo antigo.");
+  alert("Você já atingiu o limite de 3 dispositivos diferentes cadastrados neste plano. Para liberar acesso, encerre a sessão de algum dispositivo antigo.");
   return;
 }
 
