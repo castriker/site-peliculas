@@ -199,8 +199,8 @@ body {
 
 
 <script>
-  // Slide menu
-  document.getElementById('menuBtn').onclick = () => {
+// Slide menu
+document.getElementById('menuBtn').onclick = () => {
   // Garante que o menu sempre mostra o estado correto
   const email = localStorage.getItem("user_email");
   if (email) {
@@ -213,37 +213,57 @@ body {
   menu.classList.remove('hidden');
 };
 
+document.getElementById('closeMenu').onclick = () => {
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.remove('slide-in');
+  setTimeout(() => menu.classList.add('hidden'), 300);
+};
 
-  document.getElementById('closeMenu').onclick = () => {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.remove('slide-in');
-    setTimeout(() => menu.classList.add('hidden'), 300);
-  };
+// Handler para "Planos"
+document.getElementById('mobileMenuPlanos').onclick = function(e) {
+  e.preventDefault();
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.remove('slide-in');
+  setTimeout(() => {
+    menu.classList.add('hidden');
+    mostrarPlanos();
+  }, 300);
+};
 
-  // Fecha menu ao clicar em qualquer link (menos login/logout)
-  ['mobileMenuInicio', 'mobileMenuPlanos', 'mobileMenuContato'].forEach(id => {
-    document.getElementById(id).onclick = () => {
-      const menu = document.getElementById('mobileMenu');
-      menu.classList.remove('slide-in');
-      setTimeout(() => menu.classList.add('hidden'), 300);
-    }
-  });
+// Handler para "Início"
+document.getElementById('mobileMenuInicio').onclick = function(e) {
+  e.preventDefault();
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.remove('slide-in');
+  setTimeout(() => {
+    menu.classList.add('hidden');
+    mostrarInicio();
+  }, 300);
+};
 
-  // Login mobile: fecha menu e mostra área de login
-  document.getElementById('mobileMenuLogin').onclick = function(e) {
-    e.preventDefault();
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.remove('slide-in');
-    setTimeout(() => {
-      menu.classList.add('hidden');
-      goToLogin(); // chama a função de login!
-    }, 300);
-  };
+// Handler para "Contato" (apenas fecha o menu)
+document.getElementById('mobileMenuContato').onclick = function(e) {
+  // Só fecha o menu, pois já vai pro WhatsApp
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.remove('slide-in');
+  setTimeout(() => menu.classList.add('hidden'), 300);
+};
 
-  // Logout mobile: fecha menu e executa logout
+// Login mobile: fecha menu e mostra área de login
+document.getElementById('mobileMenuLogin').onclick = function(e) {
+  e.preventDefault();
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.remove('slide-in');
+  setTimeout(() => {
+    menu.classList.add('hidden');
+    goToLogin();
+  }, 300);
+};
+
+// Logout mobile: fecha menu e executa logout
 document.getElementById('mobileMenuLogout').onclick = function(e) {
   e.preventDefault();
-  logout(); // agora o menu mobile já atualiza antes de sumir
+  logout();
   const menu = document.getElementById('mobileMenu');
   menu.classList.remove('slide-in');
   setTimeout(() => {
@@ -252,19 +272,16 @@ document.getElementById('mobileMenuLogout').onclick = function(e) {
   }, 300);
 };
 
+// Função para mostrar só os links corretos APÓS LOGIN
+function mostrarMenuMobileAposLogin() {
+  document.getElementById('mobileMenuInicio').classList.add('hidden');
+  document.getElementById('mobileMenuPlanos').classList.add('hidden');
+  document.getElementById('mobileMenuLogin').classList.add('hidden');
+  document.getElementById('mobileMenuLogout').classList.remove('hidden');
+  document.getElementById('mobileMenuContato').classList.remove('hidden');
+}
 
-
-
-  // Função para mostrar só os links corretos APÓS LOGIN
-  function mostrarMenuMobileAposLogin() {
-    document.getElementById('mobileMenuInicio').classList.add('hidden');
-    document.getElementById('mobileMenuPlanos').classList.add('hidden');
-    document.getElementById('mobileMenuLogin').classList.add('hidden');
-    document.getElementById('mobileMenuLogout').classList.remove('hidden');
-    document.getElementById('mobileMenuContato').classList.remove('hidden');
-  }
-
-  // Função para mostrar todos os links APÓS LOGOUT
+// Função para mostrar todos os links APÓS LOGOUT
 function mostrarMenuMobileAposLogout() {
   document.getElementById('mobileMenuInicio').classList.remove('hidden');
   document.getElementById('mobileMenuPlanos').classList.remove('hidden');
