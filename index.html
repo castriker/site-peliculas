@@ -362,11 +362,10 @@ function mostrarMenuMobileAposLogout() {
 
 
   <!-- Seção de Planos -->
-  <section id="planosSection"
+  <section
+  id="planosSection"
   class="flex overflow-x-auto gap-4 px-4 sm:px-8 py-8 lg:grid lg:grid-cols-4 max-w-7xl mx-auto"
 >
-
-
   <!-- Card 1 Mês -->
   <div class="relative min-w-[80%] lg:min-w-0 flex-shrink-0 bg-white text-black rounded-xl p-6 shadow-md flex flex-col justify-between text-center">
     <div>
@@ -380,7 +379,7 @@ function mostrarMenuMobileAposLogout() {
         <li>🚫 Sem propagandas</li>
 <li>Permite acesso por até <b>2 dispositivos: 📱💻🖥️</b>.</li>
 <small class="text-xs text-gray-500">
-  Exemplo: 1 celular, 1 computador, ou da forma que preferir!
+  Exemplo: 1 celulares, 1 computadores, ou da forma que preferir!
 </small>
       </ul>
     </div>
@@ -478,14 +477,6 @@ function mostrarMenuMobileAposLogout() {
       💳 Comprar
     </button>
   </div>
-
-<!-- Indicador visual de barra de rolagem -->
-<div class="flex justify-center mt-3 lg:hidden">
-  <div class="relative w-28 h-2 bg-gray-300 rounded-full overflow-hidden">
-    <div class="absolute left-0 top-0 h-2 bg-yellow-400 rounded-full animate-scrollbar w-12"></div>
-  </div>
-</div>
-
 </section>
 
 
@@ -728,8 +719,6 @@ function mostrarMenuMobileAposLogout() {
   <script>
 const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
   const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
-
-
 
 function generateToken() {
   return Date.now().toString() + Math.random().toString(36).substr(2, 8);
@@ -1445,6 +1434,23 @@ function mostrarInicio() {
           .scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+
+    function mostrarPlanos() {
+  // Esconde tudo, usando classes e inline
+  ['introSection','promoPedido','loginArea','searchSection','orderSection']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    });
+
+  // Mostra a seção de Planos
+  const planos = document.getElementById('planosSection');
+  planos.classList.remove('hidden');
+  planos.style.display = '';        // limpa o display inline
+  planos.scrollIntoView({ behavior: 'smooth' });
+}
+
     function goToLogin() {
   // 1) Esconder todas as seções da home e pós-login
   ['introSection','promoPedido','planosSection','searchSection','orderSection']
@@ -1693,82 +1699,10 @@ document.getElementById('email').addEventListener('keydown', function(event) {
   }
 });
 
-function mostrarPlanos() {
-  // Esconde todas as seções principais que não são planos
-  ['introSection', 'promoPedido', 'loginArea', 'orderSection', 'searchSection'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.classList.add('hidden');
-      el.style.display = 'none';
-    }
-  });
-  // Mostra só a de planos
-  const planos = document.getElementById('planosSection');
-  if (planos) {
-    planos.classList.remove('hidden');
-    planos.style.display = '';
-    planos.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  window.location.hash = '';
-}
 
 
-<script>
-function animateScroll(element, to, duration = 1600, callback) {
-  const start = element.scrollLeft;
-  const change = to - start;
-  const startTime = performance.now();
 
-  function animate(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    element.scrollLeft = start + change * progress;
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    } else if (callback) {
-      callback();
-    }
-  }
-  requestAnimationFrame(animate);
-}
-
-<!-- CSS da barra animada -->
-<style>
-@keyframes scrollbar {
-  0%   { left: 0; }
-  40%  { left: 65%; }
-  60%  { left: 65%; }
-  100% { left: 0; }
-}
-.animate-scrollbar {
-  animation: scrollbar 2.3s infinite;
-  transition: left 0.2s;
-}
-
-function autoScrollPlanosSuave() {
-  if (window.innerWidth < 1024) {
-    const planos = document.getElementById('planosSection');
-    if (planos) {
-      // ANIMA para o meio, devagar
-      animateScroll(planos, planos.scrollWidth / 2.3, 1600, () => {
-        // Volta pro início suavemente depois de 1.2s
-        setTimeout(() => {
-          animateScroll(planos, 0, 1200);
-        }, 1200);
-      });
-    }
-  }
-}
-
-// Chama quando carrega a página
-window.addEventListener('DOMContentLoaded', autoScrollPlanosSuave);
-// E sempre que clicar no menu de planos
-document.querySelectorAll('a[href="#planosSection"], #mobileMenuPlanos').forEach(el => {
-  el.addEventListener('click', () => setTimeout(autoScrollPlanosSuave, 350));
-});
-
-</script>
-
-</style>
+    /* --------------------- FIM --------------------- */
+  </script>
 </body>
 </html>
