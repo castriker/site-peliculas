@@ -362,8 +362,7 @@ function mostrarMenuMobileAposLogout() {
 
 
   <!-- Seção de Planos -->
-  <section
-  id="planosSection"
+  <section id="planosSection"
   class="flex overflow-x-auto gap-4 px-4 sm:px-8 py-8 lg:grid lg:grid-cols-4 max-w-7xl mx-auto"
 >
 
@@ -479,6 +478,14 @@ function mostrarMenuMobileAposLogout() {
       💳 Comprar
     </button>
   </div>
+
+<!-- Indicador visual de barra de rolagem -->
+<div class="flex justify-center mt-3 lg:hidden">
+  <div class="relative w-28 h-2 bg-gray-300 rounded-full overflow-hidden">
+    <div class="absolute left-0 top-0 h-2 bg-yellow-400 rounded-full animate-scrollbar w-12"></div>
+  </div>
+</div>
+
 </section>
 
 
@@ -1743,6 +1750,18 @@ document.querySelectorAll('a[href="#planosSection"], #mobileMenuPlanos').forEach
 });
 </script>
 
-
+<!-- CSS da barra animada -->
+<style>
+@keyframes scrollbar {
+  0%   { left: 0; }
+  40%  { left: 65%; }
+  60%  { left: 65%; }
+  100% { left: 0; }
+}
+.animate-scrollbar {
+  animation: scrollbar 2.3s infinite;
+  transition: left 0.2s;
+}
+</style>
 </body>
 </html>
