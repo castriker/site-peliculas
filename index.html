@@ -233,98 +233,132 @@ document.querySelectorAll('img').forEach(img => {
 
 </div>
 
+<!-- Modal de confirmação customizado -->
+<div id="confirmModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-gray-800 text-gray-100 p-4 rounded-lg w-80">
+    <p id="confirmMessage" class="mb-4 text-sm"></p>
+    <div class="flex justify-end space-x-2">
+    <button id="confirmCancel" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded">
+  Escolher
+</button>
+<button id="confirmOk" class="px-3 py-1 bg-green-600 hover:bg-green-500 rounded text-white">
+  Adicionar do meu jeito
+</button>
+    </div>
+  </div>
+</div>
+
 
 <script>
-// Slide menu
-document.getElementById('menuBtn').onclick = () => {
-  // Garante que o menu sempre mostra o estado correto
-  const email = localStorage.getItem("user_email");
-  if (email) {
-    mostrarMenuMobileAposLogin();
-  } else {
-    mostrarMenuMobileAposLogout();
+  // ─── 1) SLIDE MENU ────────────────────────────────────────────────────────────
+  document.getElementById('menuBtn').onclick = () => {
+    // Garante que o menu sempre mostra o estado correto
+    const email = localStorage.getItem("user_email");
+    if (email) {
+      mostrarMenuMobileAposLogin();
+    } else {
+      mostrarMenuMobileAposLogout();
+    }
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.add('slide-in');
+    menu.classList.remove('hidden');
+  };
+
+  document.getElementById('closeMenu').onclick = () => {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => menu.classList.add('hidden'), 300);
+  };
+
+  document.getElementById('mobileMenuPlanos').onclick = function(e) {
+    e.preventDefault();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      mostrarPlanos();
+    }, 300);
+  };
+
+  document.getElementById('mobileMenuInicio').onclick = function(e) {
+    e.preventDefault();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      mostrarInicio();
+    }, 300);
+  };
+
+  document.getElementById('mobileMenuContato').onclick = function() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => menu.classList.add('hidden'), 300);
+  };
+
+  document.getElementById('mobileMenuLogin').onclick = function(e) {
+    e.preventDefault();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      goToLogin();
+    }, 300);
+  };
+
+  document.getElementById('mobileMenuLogout').onclick = function(e) {
+    e.preventDefault();
+    logout();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300);
+  };
+
+  function mostrarMenuMobileAposLogin() {
+    document.getElementById('mobileMenuInicio').classList.add('hidden');
+    document.getElementById('mobileMenuPlanos').classList.add('hidden');
+    document.getElementById('mobileMenuLogin').classList.add('hidden');
+    document.getElementById('mobileMenuLogout').classList.remove('hidden');
+    document.getElementById('mobileMenuContato').classList.remove('hidden');
   }
-  const menu = document.getElementById('mobileMenu');
-  menu.classList.add('slide-in');
-  menu.classList.remove('hidden');
-};
 
-document.getElementById('closeMenu').onclick = () => {
-  const menu = document.getElementById('mobileMenu');
-  menu.classList.remove('slide-in');
-  setTimeout(() => menu.classList.add('hidden'), 300);
-};
+  function mostrarMenuMobileAposLogout() {
+    document.getElementById('mobileMenuInicio').classList.remove('hidden');
+    document.getElementById('mobileMenuPlanos').classList.remove('hidden');
+    document.getElementById('mobileMenuLogin').classList.remove('hidden');
+    document.getElementById('mobileMenuLogout').classList.add('hidden');
+    document.getElementById('mobileMenuContato').classList.remove('hidden');
+  }
 
-// Handler para "Planos"
-document.getElementById('mobileMenuPlanos').onclick = function(e) {
-  e.preventDefault();
-  const menu = document.getElementById('mobileMenu');
-  menu.classList.remove('slide-in');
-  setTimeout(() => {
-    menu.classList.add('hidden');
-    mostrarPlanos();
-  }, 300);
-};
+  // ─── 2) MODAL DE CONFIRMAÇÃO CUSTOMIZADO ──────────────────────────────────────
+  function showConfirm(message, onOk, onCancel) {
+    const modal = document.getElementById('confirmModal');
+    document.getElementById('confirmMessage').textContent = message;
 
-// Handler para "Início"
-document.getElementById('mobileMenuInicio').onclick = function(e) {
-  e.preventDefault();
-  const menu = document.getElementById('mobileMenu');
-  menu.classList.remove('slide-in');
-  setTimeout(() => {
-    menu.classList.add('hidden');
-    mostrarInicio();
-  }, 300);
-};
+    // Limpa event handlers antigos
+    const btnOk     = document.getElementById('confirmOk');
+    const btnCancel = document.getElementById('confirmCancel');
+    btnOk.replaceWith(btnOk.cloneNode(true));
+    btnCancel.replaceWith(btnCancel.cloneNode(true));
 
-// Handler para "Contato" (apenas fecha o menu)
-document.getElementById('mobileMenuContato').onclick = function(e) {
-  // Só fecha o menu, pois já vai pro WhatsApp
-  const menu = document.getElementById('mobileMenu');
-  menu.classList.remove('slide-in');
-  setTimeout(() => menu.classList.add('hidden'), 300);
-};
+    // Resgata de novo após clonagem
+    const ok     = document.getElementById('confirmOk');
+    const cancel = document.getElementById('confirmCancel');
 
-// Login mobile: fecha menu e mostra área de login
-document.getElementById('mobileMenuLogin').onclick = function(e) {
-  e.preventDefault();
-  const menu = document.getElementById('mobileMenu');
-  menu.classList.remove('slide-in');
-  setTimeout(() => {
-    menu.classList.add('hidden');
-    goToLogin();
-  }, 300);
-};
+    ok.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      onOk();
+    });
+    cancel.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      if (onCancel) onCancel();
+    });
 
-// Logout mobile: fecha menu e executa logout
-document.getElementById('mobileMenuLogout').onclick = function(e) {
-  e.preventDefault();
-  logout();
-  const menu = document.getElementById('mobileMenu');
-  menu.classList.remove('slide-in');
-  setTimeout(() => {
-    menu.classList.add('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 300);
-};
-
-// Função para mostrar só os links corretos APÓS LOGIN
-function mostrarMenuMobileAposLogin() {
-  document.getElementById('mobileMenuInicio').classList.add('hidden');
-  document.getElementById('mobileMenuPlanos').classList.add('hidden');
-  document.getElementById('mobileMenuLogin').classList.add('hidden');
-  document.getElementById('mobileMenuLogout').classList.remove('hidden');
-  document.getElementById('mobileMenuContato').classList.remove('hidden');
-}
-
-// Função para mostrar todos os links APÓS LOGOUT
-function mostrarMenuMobileAposLogout() {
-  document.getElementById('mobileMenuInicio').classList.remove('hidden');
-  document.getElementById('mobileMenuPlanos').classList.remove('hidden');
-  document.getElementById('mobileMenuLogin').classList.remove('hidden');
-  document.getElementById('mobileMenuLogout').classList.add('hidden');
-  document.getElementById('mobileMenuContato').classList.remove('hidden');
-}
+    modal.classList.remove('hidden');
+  }
 
 </script>
 
@@ -819,173 +853,285 @@ function getBrasiliaISOString() {
       fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
         .then(response => response.json())
         .then(jsonData => {
-          data = jsonData.map(row =>
-            row[0].trim().toUpperCase().split(',').map(m => m.trim())
-          );
+          // row[0] → coluna A, row[1] → coluna B
+data = jsonData.map(row => ({
+  procurado:  row[0].trim(),   // modelo procurado
+  compatíveis: row[1].trim()    // lista de compatíveis
+}));
         });
     }
 
-    /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
-    document.getElementById('searchModel').addEventListener('input', function() {
-      const input = this.value.toUpperCase().trim();
-      const resultElement = document.getElementById('result');
-      if (!input) {
-        resultElement.classList.add('hidden');
-        return;
-      }
-     let foundRows = data.flatMap(row =>
-  row.some(model => model.includes(input))
-    ? [`<span class="font-bold">Modelo Procurado:</span> <span class="font-bold">${input}</span><br>
-<span class="font-bold">Modelos Compatíveis:</span>
- ${row.map(m =>
-        m.includes(input)
-          ? m.replace(new RegExp(input, 'g'),
-              match => `<span class="highlight animate-blink">${match}</span>`)
-          : m
-      ).join(', ')}`]
-    : []
-);
+ /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
+document
+  .getElementById('searchModel')
+  .addEventListener('input', function() {
+    const raw = this.value;
+    const resultEl = document.getElementById('result');
+    if (!raw.trim()) {
+      resultEl.classList.add('hidden');
+      return;
+    }
+
+    // função de normalização, tokenização, etc...
+    const normalize = str =>
+      str.normalize('NFD')
+         .replace(/[\u0300-\u036f]/g, '')
+         .replace(/\s+/g, ' ')
+         .toLowerCase()
+         .trim();
+    const tokens = normalize(raw).split(' ').filter(t => t);
+
+    // filtra todos que contêm cada token
+    const matches = data.filter(item => {
+      const norm = normalize(item.procurado);
+      return tokens.every(token => norm.includes(token));
+    });
+    if (!matches.length) {
+      resultEl.textContent = 'MODELO NÃO ENCONTRADO';
+      resultEl.classList.remove('hidden');
+      return;
+    }
+
+    // prepara regex para highlight nos tokens
+    const escRe = s => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const tokensRe = tokens.map(t => new RegExp(`(${escRe(t)})`, 'gi'));
+
+    resultEl.innerHTML = matches
+      .map(item => {
+        // 1) texto puro e highlight apenas nele
+        let proc = item.procurado.toUpperCase();
+        tokensRe.forEach(re => {
+          proc = proc.replace(
+            re,
+            '<span class="highlight animate-blink">$1</span>'
+          );
+        });
+        // 2) monta o card com os labels em amarelo+negrito
+        return `
+          <div class="bg-gray-800 text-gray-100 p-4 rounded-lg mb-3">
+            <p class="mb-1">
+              <span class="text-yellow-300 font-bold">MODELO PROCURADO:</span>
+              ${proc}
+            </p>
+            <p>
+              <span class="text-yellow-300 font-bold">MODELOS COMPATÍVEIS:</span>
+              ${item.compatíveis.toUpperCase()}
+            </p>
+          </div>
+        `;
+      })
+      .join('');
+
+    resultEl.classList.remove('hidden');
+  });
 
 
-      resultElement.innerHTML = foundRows.length > 0 ? foundRows.join('<br><br>') : "<strong>Modelo não encontrado</strong>";
-      resultElement.classList.remove('hidden');
+// ao clicar em uma das opções, preenche o campo e esconde o result
+function selectModel(procurado) {
+  document.getElementById('searchModel').value = procurado.toUpperCase();
+  document.getElementById('result').classList.add('hidden');
+}
+
+
+
+/* 5) PESQUISA NA ABA DE PEDIDOS (orderModelo) */
+document
+  .getElementById('orderModelo')
+  .addEventListener('input', function() {
+    const raw = this.value;
+    const orderResult = document.getElementById('orderResult');
+
+    if (!raw.trim()) {
+      orderResult.classList.add('hidden');
+      orderResult.innerHTML = '';
+      return;
+    }
+
+    // 1) Helpers de normalização e escape
+    const normalize = str =>
+      str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ')
+        .toLowerCase()
+        .trim();
+    const escRe = s => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+    // 2) Quebra em tokens
+    const tokens = normalize(raw).split(' ').filter(t => t);
+
+    // 3) Filtra TODOS que contêm todos os tokens
+    const matches = data.filter(item => {
+      const norm = normalize(item.procurado);
+      return tokens.every(token => norm.includes(token));
     });
 
-        /* 5) PESQUISA NA ABA DE PEDIDOS (orderModelo) */
-document.getElementById('orderModelo').addEventListener('input', function() {
-  const input = this.value.toUpperCase().trim();
-  const orderResult = document.getElementById('orderResult');
-  if (!input) {
+    // 4) Se achou correspondências, mostra opções clicáveis
+    if (matches.length > 0) {
+      const tokensRe = tokens.map(t => new RegExp(`(${escRe(t)})`, 'gi'));
+
+      orderResult.innerHTML = matches
+        .map(item => {
+          // 4.1) Texto puro em UPPERCASE
+          let proc = item.procurado.toUpperCase();
+          // 4.2) Aplica highlight apenas no texto puro
+          tokensRe.forEach(re => {
+            proc = proc.replace(
+              re,
+              '<span class="highlight animate-blink">$1</span>'
+            );
+          });
+          // 4.3) Monta o card com rótulos em amarelo+negrito
+          return `
+            <div
+              class="bg-gray-800 text-gray-100 p-3 rounded-lg mb-2 cursor-pointer hover:bg-gray-700"
+              onclick="preencherModelo('${item.procurado.replace(/'/g,"\\'")}')"
+            >
+              <p>
+                <span class="text-yellow-300 font-bold">MODELO:</span>
+                ${proc}
+              </p>
+              <p class="text-sm mt-1">
+                <span class="text-yellow-300 font-bold">COMPATÍVEIS:</span>
+                ${item.compatíveis.toUpperCase()}
+              </p>
+            </div>
+          `;
+        })
+        .join('');
+
+      orderResult.classList.remove('hidden');
+      return;
+    }
+
+    // 5) Se não achar nenhum match, apenas esconde o painel
     orderResult.classList.add('hidden');
-    orderResult.innerHTML = "";
-    return;
-  }
-  // monta as linhas encontradas, só com input destacado e piscando
-  let foundRows = data.flatMap(row =>
-    row.some(model => model.includes(input))
-      ? [
-          row.map(m => {
-            // apenas o trecho exato input fica em highlight+piscando
-            const display = m.includes(input)
-              ? m.replace(new RegExp(input, 'g'),
-                  match => `<span class="highlight animate-blink">${match}</span>`)
-              : m;
-            return `<span class="cursor-pointer" onclick="preencherModelo('${m}')">${display}</span>`;
-          }).join(', ')
-        ]
-      : []
-  );
-  if (foundRows.length > 0) {
-    orderResult.classList.remove('hidden');
-    orderResult.innerHTML = foundRows.join('<br><br>');
-  } else {
-    orderResult.classList.add('hidden');
-  }
-});
+    orderResult.innerHTML = '';
+  });
+
+/* função para preencher o input ao clicar na sugestão */
 function preencherModelo(valor) {
-  document.getElementById('orderModelo').value = valor;
+  document.getElementById('orderModelo').value = valor.toUpperCase();
+  document.getElementById('orderResult').classList.add('hidden');
 }
-  function cancelarDuplicata() {
-      document.getElementById('modalDuplicate').classList.add('hidden');
-      duplicateIndex = -1;
-      duplicateGroup = [];
-    }
 
-    function alterarQuantidades() {
-      document.getElementById('modalDuplicate').classList.add('hidden');
-      if (duplicateMode === 'exact' && duplicateIndex >= 0) {
-        exibirInputEdicao(duplicateIndex);
-      }
-      if (duplicateMode === 'group') {
-        duplicateGroup.forEach(i => exibirInputEdicao(i));
-      }
-      duplicateIndex = -1;
-      duplicateGroup = [];
-    }
+/* 6) findRowIndexForModel */
+function findRowIndexForModel(input) {
+  return data.findIndex(
+    item => item.procurado.toLowerCase() === input.trim().toLowerCase()
+  );
+}
 
-    function adicionarMesmoModelo() {
-      document.getElementById('modalDuplicate').classList.add('hidden');
-      const modelo = document.getElementById('orderModelo').value.trim();
-      const qtd    = document.getElementById('orderQuantidade').value.trim();
-      const row    = findRowIndexForModel(modelo);
-      orderItems.push({ rowIndex: row, modeloDigitado: modelo, quantidade: qtd });
-      atualizarListaPedidos();
-      duplicateIndex = -1;
-      duplicateGroup = [];
-    }
 
-    /* 6) findRowIndexForModel */
-    function findRowIndexForModel(input) {
-      return data.findIndex(row => row.includes(input.toUpperCase()));
-    }
-function debugLog(msg) {
-  const log = document.getElementById('debugLog');
-  if (log) {
-    log.innerText += msg + '\n';
-  } else {
-    console.log(msg);
+
+// helper de normalização (mesma lógica do listener)
+function normalize(str) {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .toLowerCase()
+    .trim();
+}
+  // ─── 2) MODAL DE CONFIRMAÇÃO CUSTOMIZADO ──────────────────────────────────────
+  function showConfirm(message, onOk, onCancel) {
+    const modal = document.getElementById('confirmModal');
+    document.getElementById('confirmMessage').textContent = message;
+
+    // Limpa event handlers antigos
+    const btnOk     = document.getElementById('confirmOk');
+    const btnCancel = document.getElementById('confirmCancel');
+    btnOk.replaceWith(btnOk.cloneNode(true));
+    btnCancel.replaceWith(btnCancel.cloneNode(true));
+
+    // Resgata de novo após clonagem
+    const ok     = document.getElementById('confirmOk');
+    const cancel = document.getElementById('confirmCancel');
+
+    ok.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      onOk();
+    });
+    cancel.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      if (onCancel) onCancel();
+    });
+
+    modal.classList.remove('hidden');
   }
-}
 
-function blinkAndFocus(el) {
-      el.classList.add('animate-blink');
-      el.focus();
-      // depois de 1,5s remove a classe
-      setTimeout(() => el.classList.remove('animate-blink'), 1500);
-    }
 
- /* 7) ADICIONAR PEDIDO */
-   function adicionarPedido() {
+function adicionarPedido() {
   const modeloInput = document.getElementById('orderModelo');
   const qtdInput    = document.getElementById('orderQuantidade');
-  const modelo      = modeloInput.value.trim();
+  const raw         = modeloInput.value.trim();
   const quantidade  = qtdInput.value.trim();
+  const upperRaw    = raw.toUpperCase();
 
-  // Validação básica
-  if (!modelo || !quantidade) {
+  // 1) Validação básica
+  if (!raw || !quantidade) {
     alert("Preencha o modelo e a quantidade antes de adicionar!");
-    if (!modelo)      blinkAndFocus(modeloInput);
+    if (!raw)      blinkAndFocus(modeloInput);
     else if (!quantidade) blinkAndFocus(qtdInput);
     return;
   }
 
-  // Encontra índice na tabela
-  const rowIndex       = findRowIndexForModel(modelo);
-  const modeloDigitado = modelo.toUpperCase();
+  // ─── 2) CHECAGEM DE DUPLICATA PELO TEXTO DIGITADO ───────────────────────────
+  if (orderItems.some(item => item.modeloDigitado === upperRaw)) {
+    // Se já existe um item com o mesmo modeloDigitado
+    duplicateGroup = orderItems
+      .map((item, idx) => item.modeloDigitado === upperRaw ? idx : -1)
+      .filter(idx => idx !== -1);
+    duplicateIndex = duplicateGroup[0];
 
-  // Se não existir na base, pergunta
-  if (rowIndex === -1) {
-    const confirma = confirm(
-      `O modelo "${modeloDigitado}" não está na base de compatibilidade.\n` +
-      `Deseja adicionar mesmo assim?`
-    );
-    if (!confirma) {
-      // se cancelar, pisca o input de modelo e sai
-      blinkAndFocus(modeloInput);
-      return;
-    }
-    // Se confirmou, adiciona direto e encerra
-    orderItems.push({ rowIndex, modeloDigitado, quantidade });
-    atualizarListaPedidos();
+    document.getElementById('duplicateMessage').innerText =
+      `O modelo "${upperRaw}" já foi adicionado. O que deseja fazer?`;
+    document.getElementById('modalDuplicate').classList.remove('hidden');
     return;
   }
 
-  // Checa duplicatas
-  duplicateGroup = orderItems
-    .map((item, idx) => item.rowIndex === rowIndex ? idx : -1)
-    .filter(idx => idx !== -1);
+  // ─── 3) Índice exato (se existir na base) ─────────────────────────────────
+  const rowIndex = findRowIndexForModel(raw);
 
-  if (duplicateGroup.length > 0) {
-    document.getElementById('duplicateMessage').innerText =
-      `O modelo "${modeloDigitado}" já foi adicionado. O que deseja fazer?`;
-    document.getElementById('modalDuplicate').classList.remove('hidden');
-  } else {
-    // Caso normal: adiciona e atualiza lista
-    orderItems.push({ rowIndex, modeloDigitado, quantidade });
-    atualizarListaPedidos();
-  }
+  // ─── 4) NORMALIZAÇÃO & SUGESTÕES ──────────────────────────────────────────
+  const tokens      = normalize(raw).split(' ').filter(t => t);
+  const suggestions = data.filter(item => {
+    const norm = normalize(item.procurado);
+    return tokens.every(token => norm.includes(token));
+  });
+
+// ─── 5) SE HOUVER SUGESTÕES, MOSTRA MODAL DE COMPATIBILIDADE ─────────────
+if (rowIndex === -1 && suggestions.length > 0) {
+  showConfirm(
+    `Compatibilidades encontradas para "${upperRaw}".`,
+    // onOk: adicionar mesmo sem ser exato
+    () => {
+      orderItems.push({ rowIndex, modeloDigitado: upperRaw, quantidade });
+      atualizarListaPedidos();
+    },
+    // onCancel: volta o foco para escolher
+    () => blinkAndFocus(modeloInput)
+  );
+  return;
 }
 
+  // ─── 6) SE NÃO HOUVER NEM SUGESTÕES, MOSTRA MODAL “NÃO ESTÁ NA BASE” ─────
+  if (rowIndex === -1 && suggestions.length === 0) {
+    showConfirm(
+      `O modelo "${upperRaw}" não está na base de compatibilidade.`,
+      () => {
+        orderItems.push({ rowIndex, modeloDigitado: upperRaw, quantidade });
+        atualizarListaPedidos();
+      },
+      () => blinkAndFocus(modeloInput)
+    );
+    return;
+  }
+
+  // ─── 7) CASO NORMAL: ADICIONA DIRETO (exato e sem confirmações) ────────────
+  orderItems.push({ rowIndex, modeloDigitado: upperRaw, quantidade });
+  atualizarListaPedidos();
+}
 
 
     /* 8) Atualizar lista de pedidos */
@@ -1065,18 +1211,39 @@ function atualizarListaPedidos() {
     }
 
     /* 10) Modal de Duplicata */
-    function cancelarDuplicado() {
+    function cancelarDuplicata() {
       document.getElementById('modalDuplicate').classList.add('hidden');
       duplicateIndex = -1;
     }
 function alterarQtdDuplicado() {
   document.getElementById('modalDuplicate').classList.add('hidden');
   if (duplicateGroup.length === 0) return;
-  // destaca cada item duplicado
   duplicateGroup.forEach(idx => destacarItemNoPedido(idx));
-  // opcional: já abre edição no primeiro
   exibirInputEdicao(duplicateGroup[0]);
-  // limpa o array
+  duplicateGroup = [];
+}
+
+function adicionarMesmoModelo() {
+  // Esconde o modal
+  document.getElementById('modalDuplicate').classList.add('hidden');
+
+  // Captura o texto bruto e a quantidade
+  const raw = document.getElementById('orderModelo').value.trim();
+  const qtd = document.getElementById('orderQuantidade').value.trim();
+
+  // Usa o findRowIndexForModel atual (que busca em item.procurado)
+  const rowIndex = findRowIndexForModel(raw);
+
+  // Adiciona aos itens do pedido
+  orderItems.push({
+    rowIndex,
+    modeloDigitado: raw.toUpperCase(),
+    quantidade: qtd
+  });
+
+  // Atualiza a lista e limpa os estados de duplicata
+  atualizarListaPedidos();
+  duplicateIndex = -1;
   duplicateGroup = [];
 }
 
