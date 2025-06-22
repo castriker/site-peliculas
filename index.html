@@ -1336,24 +1336,28 @@ document
 
 
     /* 12) LOGIN / LOGOUT */
-            async function checkEmail() {
+              // --- FUNÇÃO DE LOGIN REESCRITA COM A LÓGICA CORRETA ---
+    async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
-      const rememberEmailChecked = document.getElementById('rememberEmail').checked;
-      if (rememberEmailChecked && email) localStorage.setItem('saved_email', email);
-      else localStorage.removeItem('saved_email');
       if (!email) {
         alert('Digite um e‑mail válido.');
         return;
       }
 
+      // Salva o e-mail se a opção "lembrar" estiver marcada
+      const rememberEmailChecked = document.getElementById('rememberEmail').checked;
+      if (rememberEmailChecked) localStorage.setItem('saved_email', email);
+      else localStorage.removeItem('saved_email');
+
       try {
         console.log("Iniciando verificação para o e-mail:", email);
-        // --- ETAPA 1: Obter o limite de dispositivos e dados do plano ---
+        
+        // --- ETAPA 1: Buscar os dados do plano do usuário (incluindo max_devices) ---
         const resPlano = await fetch(
           `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}&timestamp=${Date.now()}`, {
             method: "GET",
             headers: { apikey: supabaseKey },
-            cache: 'no-cache' 
+            cache: 'no-cache'
           }
         );
         if (!resPlano.ok) throw new Error("Falha ao buscar dados do plano.");
@@ -1365,10 +1369,9 @@ document
         
         const registroPlano = autorizacoes[0];
         const maxDevices = parseInt(registroPlano.max_devices, 10);
-        console.log(`Limite de dispositivos para este plano (max_devices): ${maxDevices}`);
+        console.log(`Este usuário (${email}) tem um limite de ${maxDevices} dispositivo(s).`);
 
-
-        // Validar data de expiração
+        // Validação da data de expiração
         const hoje = new Date();
         const expira = new Date(registroPlano.data_expiracao);
         if (hoje > expira) {
@@ -1379,47 +1382,44 @@ document
           return;
         }
 
-        // --- ETAPA 2: Obter o ID do dispositivo atual e a lista de dispositivos já registrados ---
+        // --- ETAPA 2: Contar quantos dispositivos ESTE usuário já registrou ---
+        const userDevicesUrl = `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}&timestamp=${Date.now()}`;
+        const resUserDevices = await fetch(userDevicesUrl, {
+            method: 'GET',
+            headers: { apikey: supabaseKey },
+            cache: 'no-cache'
+        });
+        if (!resUserDevices.ok) throw new Error("Falha ao contar dispositivos do usuário.");
+        
+        const userSessions = await resUserDevices.json();
+        const userUniqueDevices = new Set(userSessions.map(s => s.device_id));
+        const registeredDeviceCount = userUniqueDevices.size;
+        console.log(`Este usuário já registrou ${registeredDeviceCount} dispositivo(s) único(s).`);
+
+        // --- ETAPA 3: Verificar se o dispositivo ATUAL já é um dos registrados POR ESTE USUÁRIO ---
         let currentDeviceId = localStorage.getItem('device_id');
         if (!currentDeviceId) {
           currentDeviceId = generateToken();
           localStorage.setItem('device_id', currentDeviceId);
         }
-        console.log("ID deste dispositivo:", currentDeviceId);
-
-        const resSessions = await fetch(
-            `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}&timestamp=${Date.now()}`, {
-            method: 'GET',
-            headers: { apikey: supabaseKey },
-            cache: 'no-cache'
-        });
-
-        if (!resSessions.ok) throw new Error('Falha ao buscar sessões existentes.');
+        console.log("ID do dispositivo atual:", currentDeviceId);
         
-        const allSessions = await resSessions.json();
-        const uniqueDeviceIds = new Set(allSessions.map(s => s.device_id));
-        const registeredDeviceCount = uniqueDeviceIds.size;
-        console.log(`Dispositivos únicos já registrados: ${registeredDeviceCount}`, uniqueDeviceIds);
+        const isDeviceAlreadyRegisteredForThisUser = userUniqueDevices.has(currentDeviceId);
 
-
-        // --- ETAPA 3: A LÓGICA DE DECISÃO ---
-        const isDeviceAlreadyRegistered = uniqueDeviceIds.has(currentDeviceId);
-        
-        if (isDeviceAlreadyRegistered) {
-          console.log("Decisão: Permitir login. Dispositivo já é conhecido.");
-          await proceedWithLogin(email, currentDeviceId, registroPlano);
-        
-        } else if (registeredDeviceCount < maxDevices) {
-          console.log(`Decisão: Permitir login. Novo dispositivo e há vaga (${registeredDeviceCount} < ${maxDevices}).`);
-          await proceedWithLogin(email, currentDeviceId, registroPlano);
-
+        // --- ETAPA 4: LÓGICA DE DECISÃO FINAL ---
+        if (isDeviceAlreadyRegisteredForThisUser) {
+            // Se este dispositivo já foi usado por este e-mail, permite o acesso.
+            console.log("Decisão: Permitir. Dispositivo já conhecido para esta conta.");
+            await proceedWithLogin(email, currentDeviceId, registroPlano);
         } else {
-          console.log(`Decisão: BLOQUEAR login. Novo dispositivo e NÃO há vaga (${registeredDeviceCount} >= ${maxDevices}).`);
-          alert(
-            `Você já atingiu o limite de ${maxDevices} dispositivo(s) diferente(s) cadastrado(s) neste plano. ` +
-            `Para acessar por este novo dispositivo, remova um dos antigos ou adquira um plano com mais acessos.`
-          );
-          return;
+            // Se é um dispositivo novo para este e-mail, verifica se ainda há vagas no plano.
+            if (registeredDeviceCount < maxDevices) {
+                console.log(`Decisão: Permitir. Novo dispositivo e há vaga (${registeredDeviceCount} < ${maxDevices}).`);
+                await proceedWithLogin(email, currentDeviceId, registroPlano);
+            } else {
+                console.log(`Decisão: BLOQUEAR. Novo dispositivo, mas o limite do plano foi atingido (${registeredDeviceCount} >= ${maxDevices}).`);
+                alert(`A sua conta já atingiu o limite de ${maxDevices} dispositivo(s) cadastrado(s).`);
+            }
         }
 
       } catch (err) {
@@ -1427,6 +1427,7 @@ document
         alert("Ocorreu um erro ao tentar fazer login. Verifique o console para mais detalhes.");
       }
     }
+
 
 
 
