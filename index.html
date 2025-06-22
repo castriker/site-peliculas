@@ -204,7 +204,13 @@ document.querySelectorAll('img').forEach(img => {
     <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
     <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
     <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
-    <a href="javascript:void(0)" id="menuLogin" onclick="goToLogin()" class="premium-link hover:text-yellow-400 transition">Login</a>
+    <a href="javascript:void(0)"
+   id="menuLogin"
+   onclick="goToLogin()"
+   class="premium-link hover:text-yellow-400 transition">
+  Login
+</a>
+
   </div>
   <!-- Menu mobile (hambúrguer) -->
   <button id="menuBtn" class="md:hidden">
@@ -227,9 +233,6 @@ document.querySelectorAll('img').forEach(img => {
 <a href="https://wa.me/utidatecnologia" id="mobileMenuContato" target="_blank" class="block w-full mb-2 px-4 py-3 rounded-xl text-lg font-semibold text-center transition bg-gray-900/80 hover:bg-yellow-400 hover:text-gray-900 shadow-lg">Contato</a>
 <a href="javascript:void(0)" id="mobileMenuLogin" class="block w-full mb-2 px-4 py-3 rounded-xl text-lg font-semibold text-center transition bg-gray-900/80 hover:bg-yellow-400 hover:text-gray-900 shadow-lg">Login</a>
 <a href="javascript:void(0)" id="mobileMenuLogout" class="block w-full mb-2 px-4 py-3 rounded-xl text-lg font-semibold text-center transition bg-gray-900/80 hover:bg-yellow-400 hover:text-gray-900 shadow-lg hidden">Sair</a>
-<a href="#planosSection" id="mobileMenuPlanos" ... onclick="mostrarPlanos()">
-</a>
-
 
 </div>
 
@@ -836,7 +839,18 @@ function getBrasiliaISOString() {
   return now.toISOString().slice(0, 19).replace('T', ' ');
 }
 
-
+// **NOVO** Função para piscar e focar um elemento
+function blinkAndFocus(element) {
+    if (!element) return;
+    element.focus();
+    const originalClass = element.className;
+    // Adiciona classes para um destaque visual
+    element.classList.add('border-red-500', 'border-2', 'shadow-lg', 'shadow-red-500/50');
+    // Remove as classes de destaque após 1 segundo
+    setTimeout(() => {
+        element.className = originalClass;
+    }, 1000);
+}
 
 
     /* 2) Variáveis e Estruturas */
@@ -844,9 +858,6 @@ function getBrasiliaISOString() {
     let orderItems = [];  // Itens do pedido
 	let duplicateGroup = [];
     let duplicateIndex = -1;
-
-
-
 
     /* 3) Carregar dados da planilha */
     function loadData() {
@@ -1033,33 +1044,6 @@ function normalize(str) {
     .toLowerCase()
     .trim();
 }
-  // ─── 2) MODAL DE CONFIRMAÇÃO CUSTOMIZADO ──────────────────────────────────────
-  function showConfirm(message, onOk, onCancel) {
-    const modal = document.getElementById('confirmModal');
-    document.getElementById('confirmMessage').textContent = message;
-
-    // Limpa event handlers antigos
-    const btnOk     = document.getElementById('confirmOk');
-    const btnCancel = document.getElementById('confirmCancel');
-    btnOk.replaceWith(btnOk.cloneNode(true));
-    btnCancel.replaceWith(btnCancel.cloneNode(true));
-
-    // Resgata de novo após clonagem
-    const ok     = document.getElementById('confirmOk');
-    const cancel = document.getElementById('confirmCancel');
-
-    ok.addEventListener('click', () => {
-      modal.classList.add('hidden');
-      onOk();
-    });
-    cancel.addEventListener('click', () => {
-      modal.classList.add('hidden');
-      if (onCancel) onCancel();
-    });
-
-    modal.classList.remove('hidden');
-  }
-
 
 function adicionarPedido() {
   const modeloInput = document.getElementById('orderModelo');
@@ -1331,7 +1315,6 @@ async function salvarDraft() {
       method:  "POST",
       headers: {
         apikey:        supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
         "Content-Type":  "application/json",
         Prefer:          "resolution=merge-duplicates"
       },
@@ -1363,177 +1346,151 @@ document
         return;
       }
 
+      // Bloco TRY/CATCH para capturar qualquer erro no processo
       try {
-        // 0. Busca dados do usuário (nome, plano, vencimento e max_devices)
-const resSessoes = await fetch(
-  `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}`,
-  {
-    method: "GET",
-    headers: {
-      apikey:        supabaseKey,
-      Authorization: `Bearer ${supabaseKey}`,
-      "Content-Type":"application/json"
-    }
-  }
-);
-if (!resSessoes.ok) throw new Error("Falha ao buscar dados do usuário");
-const autorizacoes = await resSessoes.json();
-if (!autorizacoes.length) {
-  alert("E-mail não cadastrado em nenhum plano.");
-  return;
-}
-const registro = autorizacoes[0];
+        // --- ETAPA 1: Obter o limite de dispositivos e dados do plano ---
+        const resPlano = await fetch(
+          `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}`, {
+            method: "GET",
+            headers: { apikey: supabaseKey }
+          }
+        );
+        if (!resPlano.ok) throw new Error("Falha ao buscar dados do plano.");
+        const autorizacoes = await resPlano.json();
+        if (!autorizacoes.length) {
+          alert("E-mail não cadastrado em nenhum plano.");
+          return;
+        }
+        
+        const registroPlano = autorizacoes[0];
+        const maxDevices = registroPlano.max_devices;
 
+        // Validar data de expiração
         const hoje = new Date();
-        const expira = new Date(registro.data_expiracao);
-       if (hoje > expira) {
-  if (confirm(`Seu plano ${registro.plano} expirou em ${formatarData(registro.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
-    mostrarPlanos();
-    window.location.hash = '#planosSection';
-  }
-  return;
-}
+        const expira = new Date(registroPlano.data_expiracao);
+        if (hoje > expira) {
+          if (confirm(`Seu plano ${registroPlano.plano} expirou em ${formatarData(registroPlano.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
+            mostrarPlanos();
+            window.location.hash = '#planosSection';
+          }
+          return;
+        }
 
+        // --- ETAPA 2: Obter o ID do dispositivo atual e a lista de dispositivos já registrados ---
+        let currentDeviceId = localStorage.getItem('device_id');
+        if (!currentDeviceId) {
+          currentDeviceId = generateToken();
+          localStorage.setItem('device_id', currentDeviceId);
+        }
 
+        // Chama a função que criamos no Supabase
+        const resDevices = await fetch(`${supabaseUrl}/rpc/get_registered_devices`, {
+            method: 'POST',
+            headers: {
+                apikey: supabaseKey,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_email: email })
+        });
+        if (!resDevices.ok) throw new Error('Falha ao buscar dispositivos registrados.');
+        
+        const registeredDevices = await resDevices.json();
+        const registeredDeviceIds = registeredDevices.map(d => d.device_id);
+        
+        // --- ETAPA 3: A LÓGICA DE DECISÃO ---
+        const isDeviceAlreadyRegistered = registeredDeviceIds.includes(currentDeviceId);
+        const registeredDeviceCount = registeredDeviceIds.length;
 
+        // Se o dispositivo já foi registrado antes, permite o login.
+        if (isDeviceAlreadyRegistered) {
+          await proceedWithLogin(email, currentDeviceId, registroPlano);
+        
+        // Se é um NOVO dispositivo, verifica se ainda há vagas.
+        } else if (registeredDeviceCount < maxDevices) {
+          await proceedWithLogin(email, currentDeviceId, registroPlano);
 
-       // PEGA O IP E DEVICE INFO
-const ipResp = await fetch('https://api.ipify.org?format=json');
-const ipData = await ipResp.json();
-const ipAddress = ipData.ip;
-const deviceInfo = navigator.userAgent;
+        // Se é um NOVO dispositivo e NÃO há vagas, bloqueia.
+        } else {
+          alert(
+            `Você já atingiu o limite de ${maxDevices} dispositivos diferentes cadastrados neste plano. ` +
+            `Para acessar por este novo dispositivo, adquira um plano com mais acessos.`
+          );
+          return;
+        }
 
-// Gera ou recupera um device_id único salvo no navegador
-let deviceId = localStorage.getItem('device_id');
-if (!deviceId) {
-  deviceId = generateToken(); // Usa sua função existente
-  localStorage.setItem('device_id', deviceId);
-}
-
-// BUSCA TODAS AS SESSÕES ATIVAS DESTE USUÁRIO
-// 1. // busca na tabela que guarda o plano e o limite de dispositivos
-const userRes = await fetch(
-  `${supabaseUrl}/rest/v1/sessoes?select=max_devices&email=eq.${encodeURIComponent(email)}`,
-  { method: 'GET', headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type':'application/json' } }
-);
-const [{ max_devices: maxDevices }] = await userRes.json();
-
-
-// 2. Busca sessões ativas desse usuário
-const resDevices = await fetch(
-  `${supabaseUrl}/rest/v1/login_sessions?select=device_id,ativa&email=eq.${encodeURIComponent(email)}&ativa=eq.true`,
-  {
-    method: 'GET',
-    headers: {
-      apikey: supabaseKey,
-      Authorization: `Bearer ${supabaseKey}`,
-      'Content-Type': 'application/json'
-    }
-  }
-);
-
-if (!resDevices.ok) throw new Error('Falha ao buscar sessões ativas');
-const activeSessions = await resDevices.json();
-
-// 3. Verifica se este device_id já está logado
-const deviceAlreadyLogged = activeSessions.some(sess => sess.device_id === deviceId);
-
-// 4. Usa o maxDevices da tabela para liberar ou bloquear
-if (deviceAlreadyLogged || activeSessions.length < maxDevices) {
-  // Libera login normalmente (segue fluxo original, insere nova sessão)
-  const sessionToken = generateToken();
-const novaSessao = {
-  email:        email,
-  session_token: sessionToken,
-  ativa:         true,
-  login_date:    getBrasiliaISOString(),
-  device_info:   deviceInfo,
-  ip_address:    ipAddress,    // conforme sua coluna em login_sessions
-  device_id:     deviceId      // coluna criada exatamente como no screenshot
-};
-
-const resInsert = await fetch(
-  `${supabaseUrl}/rest/v1/login_sessions`,
-  {
-    method: 'POST',
-    headers: {
-      apikey:    supabaseKey,
-      Authorization:`Bearer ${supabaseKey}`,
-      'Content-Type':'application/json'
-    },
-    body: JSON.stringify(novaSessao)
-  }
-);
-
-  if (!resInsert.ok) {
-    console.error('Erro ao criar a nova sessão:', resInsert.statusText);
-    alert('Erro ao criar sessão. Tente novamente.');
-    return;
-  }
-
-  // … após salvar no localStorage …
-  localStorage.setItem('user_email', email);
-  localStorage.setItem('login_date', new Date().toISOString());
-  localStorage.setItem('session_token', sessionToken);
-
-  // 5. Oculta seções e exibe a busca
-  ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'orderSection']
-    .forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.classList.add('hidden');
-      el.style.display = 'none';
-    });
-
-  const busca = document.getElementById('searchSection');
-  busca.classList.remove('hidden');
-  busca.style.display = '';
-  busca.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  const inputBusca = document.getElementById('searchModel');
-  if (inputBusca) inputBusca.focus();
-
-  // Ajusta menu e boas-vindas
-  document.querySelector('a[href="#introSection"]').style.display = 'none';
-  document.querySelector('a[href="#planosSection"]').style.display = 'none';
-  document.getElementById('menuLogin').innerText = 'Sair';
-  document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-  document.querySelector('#searchSection .bg-gray-800').innerHTML =
-    `<strong>Bem-vindo(a), ${registro.nome}!</strong><br>` +
-    `Plano: ${registro.plano}<br>` +
-    `Válido até: ${formatarData(registro.data_expiracao)}`;
-
-  mostrarMenuMobileAposLogin();
-
-  // 6. Carrega draft de pedidos, se existir
-  const draftRes = await fetch(
-    `${supabaseUrl}/rest/v1/draft_orders?select=items&email=eq.${encodeURIComponent(email)}`,
-    {
-      method: 'GET',
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json'
+      } catch (err) {
+        console.error("Erro durante o processo de login:", err);
+        alert("Ocorreu um erro ao tentar fazer login. Verifique o console para mais detalhes.");
       }
     }
-  );
-  const [draft] = await draftRes.json();
-  if (draft && Array.isArray(draft.items)) {
-    orderItems = draft.items.map(i => ({
-      rowIndex: i.rowIndex,
-      modeloDigitado: i.modelo,
-      quantidade: i.quantidade
-    }));
-    atualizarListaPedidos();
-  }
-} else {
-  // Bloqueia acesso
-  alert(
-    `Você já atingiu o limite de ${maxDevices} dispositivos diferentes cadastrados neste plano. ` +
-    `Para liberar acesso a mais dispositivos, adquira um novo plano utilizando outro e-mail.`
-  );
-  return;
-}
 
+    // --- FUNÇÃO AUXILIAR PARA EVITAR REPETIÇÃO DE CÓDIGO ---
+    async function proceedWithLogin(email, deviceId, registroPlano) {
+        const ipResp = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResp.json();
+        const ipAddress = ipData.ip;
+        const deviceInfo = navigator.userAgent;
+        const sessionToken = generateToken();
+        
+        const novaSessao = {
+            email: email,
+            session_token: sessionToken,
+            login_date: getBrasiliaISOString(),
+            device_info: deviceInfo,
+            ip_address: ipAddress,
+            device_id: deviceId
+        };
+
+        await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
+            method: 'POST',
+            headers: { apikey: supabaseKey, 'Content-Type': 'application/json' },
+            body: JSON.stringify(novaSessao)
+        });
+
+        localStorage.setItem('user_email', email);
+        localStorage.setItem('session_token', sessionToken);
+
+        // --- ATUALIZA A INTERFACE ---
+        ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'orderSection'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+
+        const busca = document.getElementById('searchSection');
+        busca.classList.remove('hidden');
+        busca.style.display = '';
+        busca.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        document.querySelector('a[href="#introSection"]').style.display = 'none';
+        document.querySelector('a[href="#planosSection"]').style.display = 'none';
+        document.getElementById('menuLogin').innerText = 'Sair';
+        document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+        document.querySelector('#searchSection .bg-gray-800').innerHTML =
+            `<strong>Bem-vindo(a), ${registroPlano.nome}!</strong><br>` +
+            `Plano: ${registroPlano.plano}<br>` +
+            `Válido até: ${formatarData(registroPlano.data_expiracao)}`;
+
+        mostrarMenuMobileAposLogin();
+
+        // **CARREGAR PEDIDO SALVO (LUGAR CORRETO)**
+        const draftRes = await fetch(
+          `${supabaseUrl}/rest/v1/draft_orders?select=items&email=eq.${encodeURIComponent(email)}`, {
+            method: 'GET',
+            headers: {
+              apikey: supabaseKey,
+            }
+          }
+        );
+        const [draft] = await draftRes.json();
+        if (draft && Array.isArray(draft.items)) {
+          orderItems = draft.items.map(i => ({
+            rowIndex: i.rowIndex,
+            modeloDigitado: i.modelo,
+            quantidade: i.quantidade
+          }));
+          atualizarListaPedidos();
+        }
+    }
 
 // Função de logout
 async function logout() {
@@ -1541,23 +1498,7 @@ async function logout() {
   const sessionToken = localStorage.getItem('session_token');
   if (!email || !sessionToken) return;
 
-  try {
-    await fetch(
-      `${supabaseUrl}/rest/v1/login_sessions?session_token=eq.${encodeURIComponent(sessionToken)}`,
-      {
-        method: 'PATCH',
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ativa: false })
-      }
-    );
-  } catch (err) {
-    console.error('Erro ao encerrar a sessão:', err);
-  }
-
+  // Limpa os dados locais imediatamente para uma experiência de usuário mais rápida
   localStorage.removeItem('user_email');
   localStorage.removeItem('login_date');
   localStorage.removeItem('session_token');
@@ -1565,15 +1506,28 @@ async function logout() {
   // Restaura visibilidade das seções
   document.querySelector('a[href="#introSection"]').style.display = '';
   document.querySelector('a[href="#planosSection"]').style.display = '';
-  document.getElementById('introSection').classList.remove('hidden');
-  document.getElementById('introSection').style.display = 'block';
-  document.getElementById('planosSection').classList.remove('hidden');
-  document.getElementById('planosSection').style.display = '';
-  document.getElementById('loginArea').classList.remove('hidden');
-  document.getElementById('loginArea').style.display = '';
-  document.getElementById('searchSection').classList.add('hidden');
-  document.getElementById('searchSection').style.display = 'none';
-  document.getElementById('orderSection').classList.add('hidden');
+  ['introSection', 'promoPedido', 'planosSection'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+          el.classList.remove('hidden');
+          el.style.display = ''; 
+      }
+  });
+  
+  // Esconde as seções de logado
+  ['searchSection', 'orderSection'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+          el.classList.add('hidden');
+          el.style.display = 'none';
+      }
+  });
+
+  // Mostra a área de login novamente
+  const loginArea = document.getElementById('loginArea');
+  loginArea.classList.remove('hidden');
+  loginArea.style.display = '';
+
   document.getElementById('menuLogin').innerText = 'Login';
   document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
 
@@ -1582,7 +1536,7 @@ async function logout() {
 }
 
 
-// Função de validação periódica de sessão
+// Função de validação periódica de sessão (opcional, pode ser removida se não desejar)
 async function validateSession() {
   const email = localStorage.getItem('user_email');
   const storedToken = localStorage.getItem('session_token');
@@ -1595,70 +1549,46 @@ async function validateSession() {
         method: 'GET',
         headers: {
           apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json'
         }
       }
     );
     const result = await res.json();
-    if (!result || result.length === 0 || result[0].ativa !== true) {
-      console.warn('Sessão inválida ou não encontrada; ignorando logout imediato.');
+    if (!result || result.length === 0) {
+      // Se a sessão não é válida no backend, força o logout no frontend
+      // logout(); 
+      // Comentado para não deslogar o usuário abruptamente, mas pode ser ativado
     }
   } catch (err) {
     console.error('Erro na validação da sessão:', err);
   }
 }
-setInterval(validateSession, 60000);
+// setInterval(validateSession, 60000); // Executa a cada 1 minuto
 
-window.addEventListener('beforeunload', async () => {
-  const sessionToken = localStorage.getItem('session_token');
-  if (!sessionToken) return;
-  try {
-    await fetch(
-      `${supabaseUrl}/rest/v1/login_sessions?session_token=eq.${encodeURIComponent(sessionToken)}`,
-      {
-        method: 'PATCH',
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ativa: false })
-      }
-    );
-  } catch (err) {
-    console.error('Erro no beforeunload:', err);
-  }
-});
 
     /** 13) Exibir/Ocultar Seções */
 function mostrarInicio() {
-  // 1) Esconder apenas as áreas restritas / pós-login
-  ['loginArea','searchSection','orderSection']
-    .forEach(id => {
+  ['loginArea','searchSection','orderSection'].forEach(id => {
       const el = document.getElementById(id);
-      if (!el) return;
-      el.classList.add('hidden');
-      el.style.display = 'none';
-    });
+      if (el) {
+          el.classList.add('hidden');
+          el.style.display = 'none';
+      }
+  });
 
-  // 2) Mostrar completa a home: intro + promo + planos
-  ['introSection','promoPedido','planosSection']
-    .forEach(id => {
+  ['introSection','promoPedido','planosSection'].forEach(id => {
       const el = document.getElementById(id);
-      if (!el) return;
-      el.classList.remove('hidden');
-      el.style.display = '';
-    });
+      if (el) {
+          el.classList.remove('hidden');
+          el.style.display = '';
+      }
+  });
 
-  // 3) Rolar suavemente até o topo da intro
   document.getElementById('introSection')
           .scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 
     function mostrarPlanos() {
-  // Esconde tudo, usando classes e inline
   ['introSection','promoPedido','loginArea','searchSection','orderSection']
     .forEach(id => {
       const el = document.getElementById(id);
@@ -1666,117 +1596,71 @@ function mostrarInicio() {
       el.style.display = 'none';
     });
 
-  // Mostra a seção de Planos
   const planos = document.getElementById('planosSection');
   planos.classList.remove('hidden');
-  planos.style.display = '';        // limpa o display inline
+  planos.style.display = '';
   planos.scrollIntoView({ behavior: 'smooth' });
 }
 
     function goToLogin() {
-  // 1) Esconder todas as seções da home e pós-login
   ['introSection','promoPedido','planosSection','searchSection','orderSection']
     .forEach(id => {
       const el = document.getElementById(id);
-      if (!el) return;
-      // oculta via classe e inline
-      el.classList.add('hidden');
-      el.style.display = 'none';
+      if (el) {
+        el.classList.add('hidden');
+        el.style.display = 'none';
+      }
     });
 
-  // 2) Mostrar apenas o formulário de login
   const login = document.getElementById('loginArea');
   login.classList.remove('hidden');
-  login.style.display = '';             // limpa qualquer inline que escondia
-  login.scrollIntoView({                // rola até o login
+  login.style.display = '';
+  login.scrollIntoView({
     behavior: 'smooth',
     block: 'start'
   });
 }
 
-
-function logout() {
-  // 1) Esconder as áreas restritas
-  ['loginArea','searchSection','orderSection']
-    .forEach(id => document.getElementById(id).classList.add('hidden'));
-
-  // 2) Exibir Intro, PromoPedido e Planos
-  const intro = document.getElementById('introSection');
-  const promo = document.getElementById('promoPedido');
-  const planos = document.getElementById('planosSection');
-
-  // Remove a classe hidden
-  [intro, promo, planos].forEach(el => el.classList.remove('hidden'));
-  // Limpa qualquer inline style que estava escondendo
-  [intro, promo, planos].forEach(el => el.style.display = '');
-
-  // 2.1) Reexibir links de navegação
-  const linkInicio = document.querySelector('a[href="#introSection"]');
-  const linkPlanos = document.querySelector('a[href="#planosSection"]');
-  if (linkInicio) linkInicio.style.display = '';
-  if (linkPlanos) linkPlanos.style.display = '';
-
-  // 3) Rolar até o início
-  intro.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  // 4) Resetar o menu para “Login”
-  const btn = document.getElementById('menuLogin');
-  btn.innerText = 'Login';
-  btn.onclick = goToLogin;
-
-  // 5) Limpar credenciais (opcional)
-  localStorage.removeItem('user_email');
-  localStorage.removeItem('session_token');
-}
 
 function mostrarPedidos() {
-  // 1) Esconde todas as seções anteriores (classe e inline)
-  ['introSection','planosSection','loginArea','searchSection'].forEach(id => {
+  ['introSection', 'promoPedido', 'planosSection','loginArea','searchSection'].forEach(id => {
     const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add('hidden');
-    el.style.display = 'none';
+    if (el) {
+        el.classList.add('hidden');
+        el.style.display = 'none';
+    }
   });
 
-  // 2) Exibe a área de pedido (removendo hidden e inline display)
   const order = document.getElementById('orderSection');
   order.classList.remove('hidden');
-  order.style.display = '';             // limpa qualquer display:none inline
-  order.scrollIntoView({                // rola até a seção (opcional)
+  order.style.display = '';
+  order.scrollIntoView({
     behavior: 'smooth',
     block: 'start'
   });
 
-  // 3) Pré-preenche o modelo buscado (se houver)
   const modeloPesquisado = document.getElementById('searchModel').value.trim();
   if (modeloPesquisado) {
     document.getElementById('orderModelo').value = modeloPesquisado;
   }
 
-  // 4) Foca no input de modelo para digitar a quantidade
   document.getElementById('orderModelo')?.focus();
 }
 
-
-
-
 // 17) Voltar à consulta de modelos mantendo o pedido atual
 function voltarConsulta() {
-  // 1) Esconde a seção de pedidos (classe + inline)
   const order = document.getElementById('orderSection');
   order.classList.add('hidden');
   order.style.display = 'none';
 
-  // 2) Exibe a seção de busca (remove hidden + limpa inline)
   const search = document.getElementById('searchSection');
   search.classList.remove('hidden');
   search.style.display = '';
-  search.scrollIntoView({              // opcional: rola até a busca
+  search.scrollIntoView({
     behavior: 'smooth',
     block: 'start'
   });
 
-  // 3) Foca no campo de busca
   document.getElementById('searchModel')?.focus();
 }
 
@@ -1786,26 +1670,26 @@ async function deleteDraft() {
   const email = localStorage.getItem("user_email");
   if (!email) return;
   try {
-    const res = await fetch(
+    await fetch(
       `${supabaseUrl}/rest/v1/draft_orders?email=eq.${email}`,
       {
         method: "DELETE",
         headers: {
           apikey:        supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`
         }
       }
     );
-    if (!res.ok) throw await res.text();
   } catch (err) {
     console.error("Erro ao deletar rascunho:", err);
   }
 }
 // 2) Limpar pedido local **e** no Supabase
 function limparPedido() {
-  orderItems = [];
-  atualizarListaPedidos();
-  deleteDraft();            // ← apaga o rascunho remoto
+  if (confirm("Tem certeza que deseja limpar todos os itens do pedido? Esta ação não pode ser desfeita.")) {
+    orderItems = [];
+    atualizarListaPedidos();
+    deleteDraft();
+  }
 }
 
     /* 14) Seções Legais */
@@ -1831,8 +1715,6 @@ function limparPedido() {
       document.getElementById('modalIncompatibilidade').classList.add('hidden');
     }
     async function enviarIncompatibilidade() {
-  const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
   const modeloTestado = document.getElementById('modeloTestado').value.trim();
   const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
   const email = localStorage.getItem("user_email") || null;
@@ -1846,7 +1728,6 @@ function limparPedido() {
       method: "POST",
       headers: {
         apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify([{
@@ -1878,8 +1759,6 @@ function limparPedido() {
       document.getElementById('modalCompatibilidade').classList.add('hidden');
     }
     async function enviarCompatibilidade() {
-  const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
   const modeloProcurado = document.getElementById('modeloProcuradoCompat').value.trim();
   const modeloCompativel = document.getElementById('modeloCompativel').value.trim();
   const email = localStorage.getItem("user_email") || null;
@@ -1888,12 +1767,11 @@ function limparPedido() {
     return alert("Preencha ambos os campos antes de enviar!");
   }
 
-  try {
+   try {
     const res = await fetch(`${supabaseUrl}/rest/v1/relatorios_pelicula`, {
       method: "POST",
       headers: {
         apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify([{
@@ -1904,15 +1782,19 @@ function limparPedido() {
       }])
     });
 
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      throw new Error(await res.text());
+    }
 
     alert("📥 Registro de compatibilidade enviado com sucesso!");
     fecharModalCompatibilidade();
+
   } catch (err) {
     console.error(err);
     alert("❌ Falha ao enviar. Tente novamente.");
   }
 }
+
 // Permite login ao pressionar ENTER no campo de e-mail
 document.getElementById('email').addEventListener('keydown', function(event) {
   if (event.key === 'Enter') {
@@ -1921,10 +1803,32 @@ document.getElementById('email').addEventListener('keydown', function(event) {
   }
 });
 
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    // Verifica se já existe uma sessão ao carregar a página
+    const email = localStorage.getItem('user_email');
+    if (email) {
+        // Se houver um e-mail, tenta revalidar o login silenciosamente
+        // ou diretamente mostra a tela de logado.
+        // Por simplicidade, vamos chamar a função de login de novo,
+        // mas com o email já preenchido.
+        checkEmailOnLoad();
+    }
+});
 
+async function checkEmailOnLoad() {
+    const email = localStorage.getItem('user_email');
+    if (!email) return;
 
+    // Coloca o e-mail no campo para a função `checkEmail` funcionar
+    const emailInput = document.getElementById('email');
+    if (emailInput) emailInput.value = email;
 
-    /* --------------------- FIM --------------------- */
+    // Roda a verificação de login
+    await checkEmail();
+}
+
   </script>
 </body>
-</html>
+</ht
