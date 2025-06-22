@@ -1336,7 +1336,7 @@ document
 
 
     /* 12) LOGIN / LOGOUT */
-   async function checkEmail() {
+       async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       const rememberEmailChecked = document.getElementById('rememberEmail').checked;
       if (rememberEmailChecked && email) localStorage.setItem('saved_email', email);
@@ -1382,8 +1382,6 @@ document
           localStorage.setItem('device_id', currentDeviceId);
         }
 
-        // **AQUI ESTÁ A CORREÇÃO PRINCIPAL**
-        // Em vez de chamar a função RPC com POST, fazemos um GET simples na tabela.
         const resSessions = await fetch(
             `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}`, {
             method: 'GET',
@@ -1393,11 +1391,9 @@ document
         if (!resSessions.ok) throw new Error('Falha ao buscar sessões existentes.');
         
         const allSessions = await resSessions.json();
-        
-        // Agora, criamos a lista de dispositivos únicos aqui no código
         const uniqueDeviceIds = new Set(allSessions.map(s => s.device_id));
 
-        // --- ETAPA 3: A LÓGICA DE DECISÃO (permanece a mesma) ---
+        // --- ETAPA 3: A LÓGICA DE DECISÃO ---
         const isDeviceAlreadyRegistered = uniqueDeviceIds.has(currentDeviceId);
         const registeredDeviceCount = uniqueDeviceIds.size;
 
@@ -1405,15 +1401,17 @@ document
         if (isDeviceAlreadyRegistered) {
           await proceedWithLogin(email, currentDeviceId, registroPlano);
         
+        // **AQUI ESTÁ A CORREÇÃO**
         // Se é um NOVO dispositivo, verifica se ainda há vagas.
+        // A condição deve ser ESTRITAMENTE MENOR QUE (<).
         } else if (registeredDeviceCount < maxDevices) {
           await proceedWithLogin(email, currentDeviceId, registroPlano);
 
         // Se é um NOVO dispositivo e NÃO há vagas, bloqueia.
         } else {
           alert(
-            `Você já atingiu o limite de ${maxDevices} dispositivos diferentes cadastrados neste plano. ` +
-            `Para acessar por este novo dispositivo, adquira um plano com mais acessos.`
+            `Você já atingiu o limite de ${maxDevices} dispositivo(s) diferente(s) cadastrado(s) neste plano. ` +
+            `Para acessar por este novo dispositivo, remova um dos antigos ou adquira um plano com mais acessos.`
           );
           return;
         }
