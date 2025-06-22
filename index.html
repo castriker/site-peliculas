@@ -1337,6 +1337,7 @@ document
 
     /* 12) LOGIN / LOGOUT */
               // --- FUNÇÃO DE LOGIN REESCRITA COM A LÓGICA CORRETA ---
+       // --- FUNÇÃO DE LOGIN REESCRITA COM A LÓGICA CORRETA ---
     async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       if (!email) {
@@ -1354,9 +1355,12 @@ document
         
         // --- ETAPA 1: Buscar os dados do plano do usuário (incluindo max_devices) ---
         const resPlano = await fetch(
-          `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}&timestamp=${Date.now()}`, {
+          `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}`, {
             method: "GET",
-            headers: { apikey: supabaseKey },
+            headers: { 
+                apikey: supabaseKey,
+                Authorization: `Bearer ${supabaseKey}` // Cabeçalho restaurado
+            },
             cache: 'no-cache'
           }
         );
@@ -1383,10 +1387,13 @@ document
         }
 
         // --- ETAPA 2: Contar quantos dispositivos ESTE usuário já registrou ---
-        const userDevicesUrl = `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}&timestamp=${Date.now()}`;
+        const userDevicesUrl = `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}`;
         const resUserDevices = await fetch(userDevicesUrl, {
             method: 'GET',
-            headers: { apikey: supabaseKey },
+            headers: { 
+                apikey: supabaseKey,
+                Authorization: `Bearer ${supabaseKey}` // Cabeçalho restaurado
+            },
             cache: 'no-cache'
         });
         if (!resUserDevices.ok) throw new Error("Falha ao contar dispositivos do usuário.");
@@ -1427,6 +1434,7 @@ document
         alert("Ocorreu um erro ao tentar fazer login. Verifique o console para mais detalhes.");
       }
     }
+
 
 
 
