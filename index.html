@@ -1336,7 +1336,7 @@ document
 
 
     /* 12) LOGIN / LOGOUT */
-         async function checkEmail() {
+            async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       const rememberEmailChecked = document.getElementById('rememberEmail').checked;
       if (rememberEmailChecked && email) localStorage.setItem('saved_email', email);
@@ -1347,12 +1347,13 @@ document
       }
 
       try {
+        console.log("Iniciando verificação para o e-mail:", email);
         // --- ETAPA 1: Obter o limite de dispositivos e dados do plano ---
         const resPlano = await fetch(
-          `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}`, {
+          `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}&timestamp=${Date.now()}`, {
             method: "GET",
             headers: { apikey: supabaseKey },
-            cache: 'no-cache' // Força a busca de dados novos
+            cache: 'no-cache' 
           }
         );
         if (!resPlano.ok) throw new Error("Falha ao buscar dados do plano.");
@@ -1363,8 +1364,9 @@ document
         }
         
         const registroPlano = autorizacoes[0];
-        // **CORREÇÃO**: Garante que maxDevices é um número
         const maxDevices = parseInt(registroPlano.max_devices, 10);
+        console.log(`Limite de dispositivos para este plano (max_devices): ${maxDevices}`);
+
 
         // Validar data de expiração
         const hoje = new Date();
@@ -1383,33 +1385,36 @@ document
           currentDeviceId = generateToken();
           localStorage.setItem('device_id', currentDeviceId);
         }
+        console.log("ID deste dispositivo:", currentDeviceId);
 
         const resSessions = await fetch(
-            `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}`, {
+            `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}&timestamp=${Date.now()}`, {
             method: 'GET',
             headers: { apikey: supabaseKey },
-            cache: 'no-cache' // **CORREÇÃO**: Força a busca de dados novos
+            cache: 'no-cache'
         });
 
         if (!resSessions.ok) throw new Error('Falha ao buscar sessões existentes.');
         
         const allSessions = await resSessions.json();
         const uniqueDeviceIds = new Set(allSessions.map(s => s.device_id));
+        const registeredDeviceCount = uniqueDeviceIds.size;
+        console.log(`Dispositivos únicos já registrados: ${registeredDeviceCount}`, uniqueDeviceIds);
+
 
         // --- ETAPA 3: A LÓGICA DE DECISÃO ---
         const isDeviceAlreadyRegistered = uniqueDeviceIds.has(currentDeviceId);
-        const registeredDeviceCount = uniqueDeviceIds.size;
-
-        // Se o dispositivo já foi registrado antes, permite o login.
+        
         if (isDeviceAlreadyRegistered) {
+          console.log("Decisão: Permitir login. Dispositivo já é conhecido.");
           await proceedWithLogin(email, currentDeviceId, registroPlano);
         
-        // Se é um NOVO dispositivo, verifica se ainda há vagas.
         } else if (registeredDeviceCount < maxDevices) {
+          console.log(`Decisão: Permitir login. Novo dispositivo e há vaga (${registeredDeviceCount} < ${maxDevices}).`);
           await proceedWithLogin(email, currentDeviceId, registroPlano);
 
-        // Se é um NOVO dispositivo e NÃO há vagas, bloqueia.
         } else {
+          console.log(`Decisão: BLOQUEAR login. Novo dispositivo e NÃO há vaga (${registeredDeviceCount} >= ${maxDevices}).`);
           alert(
             `Você já atingiu o limite de ${maxDevices} dispositivo(s) diferente(s) cadastrado(s) neste plano. ` +
             `Para acessar por este novo dispositivo, remova um dos antigos ou adquira um plano com mais acessos.`
@@ -1422,6 +1427,7 @@ document
         alert("Ocorreu um erro ao tentar fazer login. Verifique o console para mais detalhes.");
       }
     }
+
 
 
     // --- FUNÇÃO AUXILIAR PARA EVITAR REPETIÇÃO DE CÓDIGO ---
