@@ -252,6 +252,120 @@ document.querySelectorAll('img').forEach(img => {
 </div>
 
 
+<script>
+  // ─── 1) SLIDE MENU ────────────────────────────────────────────────────────────
+  document.getElementById('menuBtn').onclick = () => {
+    // Garante que o menu sempre mostra o estado correto
+    const email = localStorage.getItem("user_email");
+    if (email) {
+      mostrarMenuMobileAposLogin();
+    } else {
+      mostrarMenuMobileAposLogout();
+    }
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.add('slide-in');
+    menu.classList.remove('hidden');
+  };
+
+  document.getElementById('closeMenu').onclick = () => {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => menu.classList.add('hidden'), 300);
+  };
+
+  document.getElementById('mobileMenuPlanos').onclick = function(e) {
+    e.preventDefault();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      mostrarPlanos();
+    }, 300);
+  };
+
+  document.getElementById('mobileMenuInicio').onclick = function(e) {
+    e.preventDefault();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      mostrarInicio();
+    }, 300);
+  };
+
+  document.getElementById('mobileMenuContato').onclick = function() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => menu.classList.add('hidden'), 300);
+  };
+
+  document.getElementById('mobileMenuLogin').onclick = function(e) {
+    e.preventDefault();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      goToLogin();
+    }, 300);
+  };
+
+  document.getElementById('mobileMenuLogout').onclick = function(e) {
+    e.preventDefault();
+    logout();
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('slide-in');
+    setTimeout(() => {
+      menu.classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300);
+  };
+
+  function mostrarMenuMobileAposLogin() {
+    document.getElementById('mobileMenuInicio').classList.add('hidden');
+    document.getElementById('mobileMenuPlanos').classList.add('hidden');
+    document.getElementById('mobileMenuLogin').classList.add('hidden');
+    document.getElementById('mobileMenuLogout').classList.remove('hidden');
+    document.getElementById('mobileMenuContato').classList.remove('hidden');
+  }
+
+  function mostrarMenuMobileAposLogout() {
+    document.getElementById('mobileMenuInicio').classList.remove('hidden');
+    document.getElementById('mobileMenuPlanos').classList.remove('hidden');
+    document.getElementById('mobileMenuLogin').classList.remove('hidden');
+    document.getElementById('mobileMenuLogout').classList.add('hidden');
+    document.getElementById('mobileMenuContato').classList.remove('hidden');
+  }
+
+  // ─── 2) MODAL DE CONFIRMAÇÃO CUSTOMIZADO ──────────────────────────────────────
+  function showConfirm(message, onOk, onCancel) {
+    const modal = document.getElementById('confirmModal');
+    document.getElementById('confirmMessage').textContent = message;
+
+    // Limpa event handlers antigos
+    const btnOk     = document.getElementById('confirmOk');
+    const btnCancel = document.getElementById('confirmCancel');
+    btnOk.replaceWith(btnOk.cloneNode(true));
+    btnCancel.replaceWith(btnCancel.cloneNode(true));
+
+    // Resgata de novo após clonagem
+    const ok     = document.getElementById('confirmOk');
+    const cancel = document.getElementById('confirmCancel');
+
+    ok.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      onOk();
+    });
+    cancel.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      if (onCancel) onCancel();
+    });
+
+    modal.classList.remove('hidden');
+  }
+
+</script>
+
+
   <!-- Página Inicial: Introdução -->
   <section id="introSection" class="py-12 bg-[#0b1120] text-white">
     <div class="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center px-4 lg:px-8">
@@ -329,7 +443,14 @@ document.querySelectorAll('img').forEach(img => {
     <button id="closeModal" class="absolute top-6 right-6 text-white text-3xl font-bold">×</button>
     <img id="modalImage" class="max-w-[90vw] max-h-[90vh] object-contain" alt="Imagem ampliada">
   </div>
-  
+  <script>
+    document.querySelectorAll('.promo-image').forEach(el => el.addEventListener('click', () => {
+      document.getElementById('modalImage').src = el.getAttribute('data-src');
+      document.getElementById('imageModal').classList.remove('hidden');
+    }));
+    document.getElementById('closeModal').addEventListener('click', () => document.getElementById('imageModal').classList.add('hidden'));
+    document.getElementById('imageModal').addEventListener('click', e => { if (e.target.id === 'imageModal') e.currentTarget.classList.add('hidden'); });
+  </script>
 </section>
 
 
@@ -533,7 +654,7 @@ document.querySelectorAll('img').forEach(img => {
   </section>
 
   <!-- Área de Login -->
-  <section id="loginArea" class="hidden max-w-4xl mx-auto p-4 sm:p-6">
+  <section id="loginArea" class="max-w-4xl mx-auto p-4 sm:p-6 hidden">
     <label class="block mb-2 font-medium text-sm sm:text-base">Digite seu e‑mail para acessar</label>
     <input type="email" id="email" placeholder="Digite seu e‑mail" class="w-full p-3 text-black rounded-lg mb-2 text-sm sm:text-base" />
     <div class="mb-4">
@@ -697,43 +818,45 @@ document.querySelectorAll('img').forEach(img => {
   </section>
 
   <script>
-    const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
+const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
 
-    function generateToken() {
-      return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
-    }
+function generateToken() {
+  return Date.now().toString() + Math.random().toString(36).substr(2, 8);
+}
 
-    function formatarData(dataString) {
-      const partes = dataString.split("-");
-      if (partes.length === 3) {
-        return `${partes[2]}/${partes[1]}/${partes[0]}`;
-      }
-      return dataString;
-    }
+function formatarData(dataString) {
+  const partes = dataString.split("-");
+  if (partes.length === 3) {
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+  return dataString;
+}
 
-    function getBrasiliaISOString() {
-      const now = new Date();
-      const offset = -3; // Fuso horário de Brasília
-      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-      const brasiliaTime = new Date(utc + (3600000 * offset));
-      return brasiliaTime.toISOString().slice(0, 19).replace('T', ' ');
-    }
+function getBrasiliaISOString() {
+  const now = new Date();
+  now.setHours(now.getHours() - 3);
+  return now.toISOString().slice(0, 19).replace('T', ' ');
+}
 
-    function blinkAndFocus(element) {
-        if (!element) return;
-        element.focus();
-        const originalClass = element.className;
-        element.classList.add('border-red-500', 'border-2', 'shadow-lg', 'shadow-red-500/50');
-        setTimeout(() => {
-            element.className = originalClass;
-        }, 1000);
-    }
+// **NOVO** Função para piscar e focar um elemento
+function blinkAndFocus(element) {
+    if (!element) return;
+    element.focus();
+    const originalClass = element.className;
+    // Adiciona classes para um destaque visual
+    element.classList.add('border-red-500', 'border-2', 'shadow-lg', 'shadow-red-500/50');
+    // Remove as classes de destaque após 1 segundo
+    setTimeout(() => {
+        element.className = originalClass;
+    }, 1000);
+}
+
 
     /* 2) Variáveis e Estruturas */
-    let data = [];
-    let orderItems = [];
-    let duplicateGroup = [];
+    let data = [];        // Base de compatibilidade
+    let orderItems = [];  // Itens do pedido
+	let duplicateGroup = [];
     let duplicateIndex = -1;
 
     /* 3) Carregar dados da planilha */
@@ -741,162 +864,317 @@ document.querySelectorAll('img').forEach(img => {
       fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
         .then(response => response.json())
         .then(jsonData => {
-          data = jsonData.map(row => ({
-            procurado:  row[0].trim(),
-            compatíveis: row[1].trim()
-          }));
+          // row[0] → coluna A, row[1] → coluna B
+data = jsonData.map(row => ({
+  procurado:  row[0].trim(),   // modelo procurado
+  compatíveis: row[1].trim()    // lista de compatíveis
+}));
         });
     }
 
-    /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
-    document.getElementById('searchModel').addEventListener('input', function() {
-        const raw = this.value;
-        const resultEl = document.getElementById('result');
-        if (!raw.trim()) {
-          resultEl.classList.add('hidden');
-          return;
-        }
-        const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
-        const tokens = normalize(raw).split(' ').filter(t => t);
-        const matches = data.filter(item => {
-          const norm = normalize(item.procurado);
-          return tokens.every(token => norm.includes(token));
+ /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
+document
+  .getElementById('searchModel')
+  .addEventListener('input', function() {
+    const raw = this.value;
+    const resultEl = document.getElementById('result');
+    if (!raw.trim()) {
+      resultEl.classList.add('hidden');
+      return;
+    }
+
+    // função de normalização, tokenização, etc...
+    const normalize = str =>
+      str.normalize('NFD')
+         .replace(/[\u0300-\u036f]/g, '')
+         .replace(/\s+/g, ' ')
+         .toLowerCase()
+         .trim();
+    const tokens = normalize(raw).split(' ').filter(t => t);
+
+    // filtra todos que contêm cada token
+    const matches = data.filter(item => {
+      const norm = normalize(item.procurado);
+      return tokens.every(token => norm.includes(token));
+    });
+    if (!matches.length) {
+      resultEl.textContent = 'MODELO NÃO ENCONTRADO';
+      resultEl.classList.remove('hidden');
+      return;
+    }
+
+    // prepara regex para highlight nos tokens
+    const escRe = s => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const tokensRe = tokens.map(t => new RegExp(`(${escRe(t)})`, 'gi'));
+
+    resultEl.innerHTML = matches
+      .map(item => {
+        // 1) texto puro e highlight apenas nele
+        let proc = item.procurado.toUpperCase();
+        tokensRe.forEach(re => {
+          proc = proc.replace(
+            re,
+            '<span class="highlight animate-blink">$1</span>'
+          );
         });
-        if (!matches.length) {
-          resultEl.textContent = 'MODELO NÃO ENCONTRADO';
-          resultEl.classList.remove('hidden');
-          return;
-        }
-        const escRe = s => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const tokensRe = tokens.map(t => new RegExp(`(${escRe(t)})`, 'gi'));
-        resultEl.innerHTML = matches.map(item => {
-            let proc = item.procurado.toUpperCase();
-            tokensRe.forEach(re => {
-              proc = proc.replace(re, '<span class="highlight animate-blink">$1</span>');
-            });
-            return `<div class="bg-gray-800 text-gray-100 p-4 rounded-lg mb-3"><p class="mb-1"><span class="text-yellow-300 font-bold">MODELO PROCURADO:</span> ${proc}</p><p><span class="text-yellow-300 font-bold">MODELOS COMPATÍVEIS:</span> ${item.compatíveis.toUpperCase()}</p></div>`;
-          }).join('');
-        resultEl.classList.remove('hidden');
+        // 2) monta o card com os labels em amarelo+negrito
+        return `
+          <div class="bg-gray-800 text-gray-100 p-4 rounded-lg mb-3">
+            <p class="mb-1">
+              <span class="text-yellow-300 font-bold">MODELO PROCURADO:</span>
+              ${proc}
+            </p>
+            <p>
+              <span class="text-yellow-300 font-bold">MODELOS COMPATÍVEIS:</span>
+              ${item.compatíveis.toUpperCase()}
+            </p>
+          </div>
+        `;
+      })
+      .join('');
+
+    resultEl.classList.remove('hidden');
+  });
+
+
+// ao clicar em uma das opções, preenche o campo e esconde o result
+function selectModel(procurado) {
+  document.getElementById('searchModel').value = procurado.toUpperCase();
+  document.getElementById('result').classList.add('hidden');
+}
+
+
+
+/* 5) PESQUISA NA ABA DE PEDIDOS (orderModelo) */
+document
+  .getElementById('orderModelo')
+  .addEventListener('input', function() {
+    const raw = this.value;
+    const orderResult = document.getElementById('orderResult');
+
+    if (!raw.trim()) {
+      orderResult.classList.add('hidden');
+      orderResult.innerHTML = '';
+      return;
+    }
+
+    // 1) Helpers de normalização e escape
+    const normalize = str =>
+      str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ')
+        .toLowerCase()
+        .trim();
+    const escRe = s => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+    // 2) Quebra em tokens
+    const tokens = normalize(raw).split(' ').filter(t => t);
+
+    // 3) Filtra TODOS que contêm todos os tokens
+    const matches = data.filter(item => {
+      const norm = normalize(item.procurado);
+      return tokens.every(token => norm.includes(token));
     });
 
-    function selectModel(procurado) {
-      document.getElementById('searchModel').value = procurado.toUpperCase();
-      document.getElementById('result').classList.add('hidden');
+    // 4) Se achou correspondências, mostra opções clicáveis
+    if (matches.length > 0) {
+      const tokensRe = tokens.map(t => new RegExp(`(${escRe(t)})`, 'gi'));
+
+      orderResult.innerHTML = matches
+        .map(item => {
+          // 4.1) Texto puro em UPPERCASE
+          let proc = item.procurado.toUpperCase();
+          // 4.2) Aplica highlight apenas no texto puro
+          tokensRe.forEach(re => {
+            proc = proc.replace(
+              re,
+              '<span class="highlight animate-blink">$1</span>'
+            );
+          });
+          // 4.3) Monta o card com rótulos em amarelo+negrito
+          return `
+            <div
+              class="bg-gray-800 text-gray-100 p-3 rounded-lg mb-2 cursor-pointer hover:bg-gray-700"
+              onclick="preencherModelo('${item.procurado.replace(/'/g,"\\'")}')"
+            >
+              <p>
+                <span class="text-yellow-300 font-bold">MODELO:</span>
+                ${proc}
+              </p>
+              <p class="text-sm mt-1">
+                <span class="text-yellow-300 font-bold">COMPATÍVEIS:</span>
+                ${item.compatíveis.toUpperCase()}
+              </p>
+            </div>
+          `;
+        })
+        .join('');
+
+      orderResult.classList.remove('hidden');
+      return;
     }
 
-    /* 5) PESQUISA NA ABA DE PEDIDOS (orderModelo) */
-    document.getElementById('orderModelo').addEventListener('input', function() {
-        const raw = this.value;
-        const orderResult = document.getElementById('orderResult');
-        if (!raw.trim()) {
-          orderResult.classList.add('hidden');
-          orderResult.innerHTML = '';
-          return;
-        }
-        const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
-        const escRe = s => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const tokens = normalize(raw).split(' ').filter(t => t);
-        const matches = data.filter(item => {
-          const norm = normalize(item.procurado);
-          return tokens.every(token => norm.includes(token));
-        });
-        if (matches.length > 0) {
-          const tokensRe = tokens.map(t => new RegExp(`(${escRe(t)})`, 'gi'));
-          orderResult.innerHTML = matches.map(item => {
-              let proc = item.procurado.toUpperCase();
-              tokensRe.forEach(re => {
-                proc = proc.replace(re, '<span class="highlight animate-blink">$1</span>');
-              });
-              return `<div class="bg-gray-800 text-gray-100 p-3 rounded-lg mb-2 cursor-pointer hover:bg-gray-700" onclick="preencherModelo('${item.procurado.replace(/'/g,"\\'")}')"><p><span class="text-yellow-300 font-bold">MODELO:</span> ${proc}</p><p class="text-sm mt-1"><span class="text-yellow-300 font-bold">COMPATÍVEIS:</span> ${item.compatíveis.toUpperCase()}</p></div>`;
-            }).join('');
-          orderResult.classList.remove('hidden');
-        } else {
-          orderResult.classList.add('hidden');
-          orderResult.innerHTML = '';
-        }
-    });
+    // 5) Se não achar nenhum match, apenas esconde o painel
+    orderResult.classList.add('hidden');
+    orderResult.innerHTML = '';
+  });
 
-    function preencherModelo(valor) {
-      document.getElementById('orderModelo').value = valor.toUpperCase();
-      document.getElementById('orderResult').classList.add('hidden');
-    }
+/* função para preencher o input ao clicar na sugestão */
+function preencherModelo(valor) {
+  document.getElementById('orderModelo').value = valor.toUpperCase();
+  document.getElementById('orderResult').classList.add('hidden');
+}
 
-    function findRowIndexForModel(input) {
-      return data.findIndex(item => item.procurado.toLowerCase() === input.trim().toLowerCase());
-    }
+/* 6) findRowIndexForModel */
+function findRowIndexForModel(input) {
+  return data.findIndex(
+    item => item.procurado.toLowerCase() === input.trim().toLowerCase()
+  );
+}
 
-    function adicionarPedido() {
-      const modeloInput = document.getElementById('orderModelo');
-      const qtdInput    = document.getElementById('orderQuantidade');
-      const raw         = modeloInput.value.trim();
-      const quantidade  = qtdInput.value.trim();
-      const upperRaw    = raw.toUpperCase();
 
-      if (!raw || !quantidade) {
-        alert("Preencha o modelo e a quantidade antes de adicionar!");
-        if (!raw) blinkAndFocus(modeloInput);
-        else if (!quantidade) blinkAndFocus(qtdInput);
-        return;
-      }
 
-      if (orderItems.some(item => item.modeloDigitado === upperRaw)) {
-        duplicateGroup = orderItems.map((item, idx) => item.modeloDigitado === upperRaw ? idx : -1).filter(idx => idx !== -1);
-        duplicateIndex = duplicateGroup[0];
-        document.getElementById('duplicateMessage').innerText = `O modelo "${upperRaw}" já foi adicionado. O que deseja fazer?`;
-        document.getElementById('modalDuplicate').classList.remove('hidden');
-        return;
-      }
+// helper de normalização (mesma lógica do listener)
+function normalize(str) {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .toLowerCase()
+    .trim();
+}
 
-      const rowIndex = findRowIndexForModel(raw);
-      const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
-      const tokens = normalize(raw).split(' ').filter(t => t);
-      const suggestions = data.filter(item => {
-        const norm = normalize(item.procurado);
-        return tokens.every(token => norm.includes(token));
-      });
+function adicionarPedido() {
+  const modeloInput = document.getElementById('orderModelo');
+  const qtdInput    = document.getElementById('orderQuantidade');
+  const raw         = modeloInput.value.trim();
+  const quantidade  = qtdInput.value.trim();
+  const upperRaw    = raw.toUpperCase();
 
-      if (rowIndex === -1 && suggestions.length > 0) {
-        showConfirm(`Compatibilidades encontradas para "${upperRaw}".`, () => {
-            orderItems.push({ rowIndex, modeloDigitado: upperRaw, quantidade });
-            atualizarListaPedidos();
-        }, () => blinkAndFocus(modeloInput));
-        return;
-      }
-      if (rowIndex === -1 && suggestions.length === 0) {
-        showConfirm(`O modelo "${upperRaw}" não está na base de compatibilidade.`, () => {
-            orderItems.push({ rowIndex, modeloDigitado: upperRaw, quantidade });
-            atualizarListaPedidos();
-        }, () => blinkAndFocus(modeloInput));
-        return;
-      }
+  // 1) Validação básica
+  if (!raw || !quantidade) {
+    alert("Preencha o modelo e a quantidade antes de adicionar!");
+    if (!raw)      blinkAndFocus(modeloInput);
+    else if (!quantidade) blinkAndFocus(qtdInput);
+    return;
+  }
 
+  // ─── 2) CHECAGEM DE DUPLICATA PELO TEXTO DIGITADO ───────────────────────────
+  if (orderItems.some(item => item.modeloDigitado === upperRaw)) {
+    // Se já existe um item com o mesmo modeloDigitado
+    duplicateGroup = orderItems
+      .map((item, idx) => item.modeloDigitado === upperRaw ? idx : -1)
+      .filter(idx => idx !== -1);
+    duplicateIndex = duplicateGroup[0];
+
+    document.getElementById('duplicateMessage').innerText =
+      `O modelo "${upperRaw}" já foi adicionado. O que deseja fazer?`;
+    document.getElementById('modalDuplicate').classList.remove('hidden');
+    return;
+  }
+
+  // ─── 3) Índice exato (se existir na base) ─────────────────────────────────
+  const rowIndex = findRowIndexForModel(raw);
+
+  // ─── 4) NORMALIZAÇÃO & SUGESTÕES ──────────────────────────────────────────
+  const tokens      = normalize(raw).split(' ').filter(t => t);
+  const suggestions = data.filter(item => {
+    const norm = normalize(item.procurado);
+    return tokens.every(token => norm.includes(token));
+  });
+
+// ─── 5) SE HOUVER SUGESTÕES, MOSTRA MODAL DE COMPATIBILIDADE ─────────────
+if (rowIndex === -1 && suggestions.length > 0) {
+  showConfirm(
+    `Compatibilidades encontradas para "${upperRaw}".`,
+    // onOk: adicionar mesmo sem ser exato
+    () => {
       orderItems.push({ rowIndex, modeloDigitado: upperRaw, quantidade });
       atualizarListaPedidos();
-    }
+    },
+    // onCancel: volta o foco para escolher
+    () => blinkAndFocus(modeloInput)
+  );
+  return;
+}
 
-    function atualizarListaPedidos() {
-      const pedidoItensDiv = document.getElementById('pedidoItens');
-      if (orderItems.length === 0) {
-        pedidoItensDiv.innerHTML = "<p class='text-gray-300'>Nenhum item adicionado ainda.</p>";
-        return;
-      }
-      const itemsWithIdx = orderItems.map((item, idx) => ({ ...item, idx })).sort((a, b) => a.modeloDigitado.localeCompare(b.modeloDigitado));
-      let html = "<ul class='list-disc ml-5 space-y-1'>";
-      itemsWithIdx.forEach(({ modeloDigitado, quantidade, idx }) => {
-        html += `<li id="pedidoItem-${idx}" class="flex items-center gap-2"><span class="text-yellow-300 font-bold">${modeloDigitado.toUpperCase()}</span><span class="text-white">– <strong>QTD:</strong> ${String(quantidade).padStart(2,'0')}</span><button onclick="removerItemPedido(${idx})" class="bg-red-600 hover:bg-red-700 text-white ml-3 px-2 rounded text-xs">Remover</button><button onclick="exibirInputEdicao(${idx})" class="bg-blue-600 hover:bg-blue-700 text-white ml-2 px-2 rounded text-xs">Alterar Qtde</button><input type="number" id="editInput-${idx}" class="hidden w-16 p-1 text-black rounded text-xs ml-2" value="${quantidade}" min="1" onkeydown="if(event.key==='Enter'){salvarNovaQuantidade(${idx})}"><button id="saveBtn-${idx}" class="hidden bg-green-500 hover:bg-green-600 text-white px-2 rounded text-xs ml-1" onclick="salvarNovaQuantidade(${idx})">OK</button></li>`;
-      });
-      html += "</ul>";
-      pedidoItensDiv.innerHTML = html;
-    }
+  // ─── 6) SE NÃO HOUVER NEM SUGESTÕES, MOSTRA MODAL “NÃO ESTÁ NA BASE” ─────
+  if (rowIndex === -1 && suggestions.length === 0) {
+    showConfirm(
+      `O modelo "${upperRaw}" não está na base de compatibilidade.`,
+      () => {
+        orderItems.push({ rowIndex, modeloDigitado: upperRaw, quantidade });
+        atualizarListaPedidos();
+      },
+      () => blinkAndFocus(modeloInput)
+    );
+    return;
+  }
 
+  // ─── 7) CASO NORMAL: ADICIONA DIRETO (exato e sem confirmações) ────────────
+  orderItems.push({ rowIndex, modeloDigitado: upperRaw, quantidade });
+  atualizarListaPedidos();
+}
+
+
+    /* 8) Atualizar lista de pedidos */
+function atualizarListaPedidos() {
+  const pedidoItensDiv = document.getElementById('pedidoItens');
+  if (orderItems.length === 0) {
+    pedidoItensDiv.innerHTML = "<p class='text-gray-300'>Nenhum item adicionado ainda.</p>";
+    return;
+  }
+
+  // 1) Empacota cada item com seu índice original
+  const itemsWithIdx = orderItems
+    .map((item, idx) => ({
+      modelo: item.modeloDigitado.toUpperCase(),
+      quantidade: item.quantidade,
+      idx
+    }))
+    // 2) Ordena pelo modelo
+    .sort((a, b) => a.modelo.localeCompare(b.modelo));
+
+  // 3) Renderiza em lista
+  let html = "<ul class='list-disc ml-5 space-y-1'>";
+  itemsWithIdx.forEach(({ modelo, quantidade, idx }) => {
+    html += `
+      <li id="pedidoItem-${idx}" class="flex items-center gap-2">
+        <span class="text-yellow-300 font-bold">${modelo}</span>
+        <span class="text-white">– <strong>QTD:</strong> ${String(quantidade).padStart(2,'0')}</span>
+        <button onclick="removerItemPedido(${idx})" class="bg-red-600 hover:bg-red-700 text-white ml-3 px-2 rounded text-xs">
+          Remover
+        </button>
+        <button onclick="exibirInputEdicao(${idx})" class="bg-blue-600 hover:bg-blue-700 text-white ml-2 px-2 rounded text-xs">
+          Alterar Qtde
+        </button>
+        <input type="number" id="editInput-${idx}" class="hidden w-16 p-1 text-black rounded text-xs ml-2"
+               value="${quantidade}" min="1"
+               onkeydown="if(event.key==='Enter'){salvarNovaQuantidade(${idx})}">
+        <button id="saveBtn-${idx}" class="hidden bg-green-500 hover:bg-green-600 text-white px-2 rounded text-xs ml-1"
+                onclick="salvarNovaQuantidade(${idx})">
+          OK
+        </button>
+      </li>`;
+  });
+  html += "</ul>";
+
+  pedidoItensDiv.innerHTML = html;
+}
+
+    /* 9) Edição e remoção de itens */
     function exibirInputEdicao(index) {
-      document.getElementById(`editInput-${index}`).classList.remove('hidden');
-      document.getElementById(`saveBtn-${index}`).classList.remove('hidden');
-      document.getElementById(`editInput-${index}`).focus();
+      const inputQtd = document.getElementById(`editInput-${index}`);
+      const saveBtn = document.getElementById(`saveBtn-${index}`);
+      if (!inputQtd || !saveBtn) return;
+      inputQtd.classList.remove('hidden');
+      saveBtn.classList.remove('hidden');
+      inputQtd.focus();
     }
-
     function salvarNovaQuantidade(index) {
       const inputQtd = document.getElementById(`editInput-${index}`);
+      if (!inputQtd) return;
       const novaQtd = inputQtd.value.trim();
       if (!novaQtd || parseInt(novaQtd) < 1) {
         alert("Quantidade inválida!");
@@ -905,451 +1183,652 @@ document.querySelectorAll('img').forEach(img => {
       orderItems[index].quantidade = novaQtd;
       atualizarListaPedidos();
     }
-
     function destacarItemNoPedido(index) {
       const li = document.getElementById(`pedidoItem-${index}`);
-      if (li) {
-        li.classList.add('bg-red-500');
-        setTimeout(() => { li.classList.remove('bg-red-500'); }, 1000);
-      }
+      if (!li) return;
+      li.classList.add('bg-red-500');
+      setTimeout(() => { li.classList.remove('bg-red-500'); }, 1000);
     }
-
     function removerItemPedido(index) {
       orderItems.splice(index, 1);
       atualizarListaPedidos();
     }
 
+    /* 10) Modal de Duplicata */
     function cancelarDuplicata() {
       document.getElementById('modalDuplicate').classList.add('hidden');
       duplicateIndex = -1;
     }
+function alterarQtdDuplicado() {
+  document.getElementById('modalDuplicate').classList.add('hidden');
+  if (duplicateGroup.length === 0) return;
+  duplicateGroup.forEach(idx => destacarItemNoPedido(idx));
+  exibirInputEdicao(duplicateGroup[0]);
+  duplicateGroup = [];
+}
 
-    function alterarQtdDuplicado() {
-      document.getElementById('modalDuplicate').classList.add('hidden');
-      if (duplicateGroup.length > 0) {
-        duplicateGroup.forEach(idx => destacarItemNoPedido(idx));
-        exibirInputEdicao(duplicateGroup[0]);
-      }
-      duplicateGroup = [];
+function adicionarMesmoModelo() {
+  // Esconde o modal
+  document.getElementById('modalDuplicate').classList.add('hidden');
+
+  // Captura o texto bruto e a quantidade
+  const raw = document.getElementById('orderModelo').value.trim();
+  const qtd = document.getElementById('orderQuantidade').value.trim();
+
+  // Usa o findRowIndexForModel atual (que busca em item.procurado)
+  const rowIndex = findRowIndexForModel(raw);
+
+  // Adiciona aos itens do pedido
+  orderItems.push({
+    rowIndex,
+    modeloDigitado: raw.toUpperCase(),
+    quantidade: qtd
+  });
+
+  // Atualiza a lista e limpa os estados de duplicata
+  atualizarListaPedidos();
+  duplicateIndex = -1;
+  duplicateGroup = [];
+}
+
+
+
+/* 11) Gerar PDF do Pedido (com paginação automática) */
+function gerarPDFPedido() {
+  if (orderItems.length === 0) {
+    alert("Nenhum item no pedido para gerar PDF!");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Configurações de paginação (mesmo código de antes)…
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const marginTop = 20;
+  const marginBottom = 20;
+  const lineHeight = 10;
+  const leftMargin = 20;
+  let offsetY = marginTop;
+
+  function drawHeader() {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Pedido de Películas", leftMargin, offsetY);
+    offsetY += lineHeight;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+  }
+
+  drawHeader();
+
+  orderItems.forEach((item, i) => {
+    if (offsetY + marginBottom > pageHeight) {
+      doc.addPage();
+      offsetY = marginTop;
+      drawHeader();
     }
+    const text = `${i + 1}. Modelo: ${item.modeloDigitado.toUpperCase()} | Qtd: ${item.quantidade}`;
+    doc.text(text, leftMargin, offsetY);
+    offsetY += lineHeight;
+  });
 
-    function adicionarMesmoModelo() {
-      document.getElementById('modalDuplicate').classList.add('hidden');
-      const raw = document.getElementById('orderModelo').value.trim();
-      const qtd = document.getElementById('orderQuantidade').value.trim();
-      const rowIndex = findRowIndexForModel(raw);
-      orderItems.push({ rowIndex, modeloDigitado: raw.toUpperCase(), quantidade: qtd });
-      atualizarListaPedidos();
-      duplicateIndex = -1;
-      duplicateGroup = [];
-    }
+  if (offsetY + lineHeight + marginBottom > pageHeight) {
+    doc.addPage();
+    offsetY = marginTop;
+  }
+  offsetY += lineHeight;
+  doc.text("Pedido gerado pelo site www.peliculasuti.com.br", leftMargin, offsetY);
 
-    function gerarPDFPedido() {
-      if (orderItems.length === 0) {
-        alert("Nenhum item no pedido para gerar PDF!");
+  // Gera o PDF
+  doc.save("pedido-peliculas.pdf");
+
+  // AQUI: pergunta antes de limpar
+  const desejaLimpar = confirm(
+    "PDF gerado com sucesso!\n\n" +
+    "*Clique em OK se tem CERTEZA que está tudo correto (PDF SERÁ GERADO) após seus itens apagados.\n" +
+
+    "*Clique em Cancelar para manter os itens e continuar editando mesmo após gerar o PDF (PDF SERÁ GERADO)."
+  );
+
+  if (desejaLimpar) {
+    orderItems = [];
+    atualizarListaPedidos();
+    deleteDraft();
+  }
+}
+
+
+// 12) Função que faz o upsert em Supabase
+async function salvarDraft() {
+  const email = localStorage.getItem("user_email");
+  if (!email) return alert("Você precisa estar logado para salvar o pedido.");
+
+  // converte orderItems para JSON simples
+  const payload = orderItems.map(i => ({
+    modelo:     i.modeloDigitado,
+    quantidade: i.quantidade,
+    rowIndex:   i.rowIndex
+  }));
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/draft_orders`, {
+      method:  "POST",
+      headers: {
+        apikey:        supabaseKey,
+        "Content-Type":  "application/json",
+        Prefer:          "resolution=merge-duplicates"
+      },
+      body: JSON.stringify([{ email, items: payload }])
+    });
+    if (!res.ok) throw await res.text();
+    alert("✅ Pedido salvo com sucesso!");
+  } catch (err) {
+    console.error(err);
+    alert("❌ Falha ao salvar o pedido: " + err);
+  }
+}
+
+// ─── Registra o listener UMA ÚNICA VEZ, fora da função ───
+document
+  .getElementById("btnSalvarPedido")
+  .addEventListener("click", salvarDraft);
+
+
+
+    /* 12) LOGIN / LOGOUT */
+         async function checkEmail() {
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const rememberEmailChecked = document.getElementById('rememberEmail').checked;
+      if (rememberEmailChecked && email) localStorage.setItem('saved_email', email);
+      else localStorage.removeItem('saved_email');
+      if (!email) {
+        alert('Digite um e‑mail válido.');
         return;
       }
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const marginTop = 20, marginBottom = 20, lineHeight = 10, leftMargin = 20;
-      let offsetY = marginTop;
-      const drawHeader = () => {
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.text("Pedido de Películas", leftMargin, offsetY);
-        offsetY += lineHeight;
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(12);
-      };
-      drawHeader();
-      orderItems.forEach((item, i) => {
-        if (offsetY + marginBottom > pageHeight) {
-          doc.addPage();
-          offsetY = marginTop;
-          drawHeader();
-        }
-        const text = `${i + 1}. Modelo: ${item.modeloDigitado.toUpperCase()} | Qtd: ${item.quantidade}`;
-        doc.text(text, leftMargin, offsetY);
-        offsetY += lineHeight;
-      });
-      if (offsetY + lineHeight + marginBottom > pageHeight) {
-        doc.addPage();
-        offsetY = marginTop;
-      }
-      offsetY += lineHeight;
-      doc.text("Pedido gerado pelo site www.peliculasuti.com.br", leftMargin, offsetY);
-      doc.save("pedido-peliculas.pdf");
-      if (confirm("PDF gerado com sucesso!\nDeseja limpar a lista de pedidos?")) {
-        orderItems = [];
-        atualizarListaPedidos();
-        deleteDraft();
-      }
-    }
 
-    async function salvarDraft() {
-      const email = localStorage.getItem("user_email");
-      if (!email) return alert("Você precisa estar logado para salvar o pedido.");
-      const payload = orderItems.map(i => ({ modelo: i.modeloDigitado, quantidade: i.quantidade, rowIndex: i.rowIndex }));
       try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/draft_orders`, {
-          method: "POST",
-          headers: {
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'resolution=merge-duplicates'
-          },
-          body: JSON.stringify([{ email, items: payload }])
+        // --- ETAPA 1: Obter o limite de dispositivos e dados do plano ---
+        const resPlano = await fetch(
+          `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}`, {
+            method: "GET",
+            headers: { apikey: supabaseKey },
+            cache: 'no-cache' // Força a busca de dados novos
+          }
+        );
+        if (!resPlano.ok) throw new Error("Falha ao buscar dados do plano.");
+        const autorizacoes = await resPlano.json();
+        if (!autorizacoes.length) {
+          alert("E-mail não cadastrado em nenhum plano.");
+          return;
+        }
+        
+        const registroPlano = autorizacoes[0];
+        // **CORREÇÃO**: Garante que maxDevices é um número
+        const maxDevices = parseInt(registroPlano.max_devices, 10);
+
+        // Validar data de expiração
+        const hoje = new Date();
+        const expira = new Date(registroPlano.data_expiracao);
+        if (hoje > expira) {
+          if (confirm(`Seu plano ${registroPlano.plano} expirou em ${formatarData(registroPlano.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
+            mostrarPlanos();
+            window.location.hash = '#planosSection';
+          }
+          return;
+        }
+
+        // --- ETAPA 2: Obter o ID do dispositivo atual e a lista de dispositivos já registrados ---
+        let currentDeviceId = localStorage.getItem('device_id');
+        if (!currentDeviceId) {
+          currentDeviceId = generateToken();
+          localStorage.setItem('device_id', currentDeviceId);
+        }
+
+        const resSessions = await fetch(
+            `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}`, {
+            method: 'GET',
+            headers: { apikey: supabaseKey },
+            cache: 'no-cache' // **CORREÇÃO**: Força a busca de dados novos
         });
-        if (!res.ok) throw await res.json();
-        alert("✅ Pedido salvo com sucesso!");
+
+        if (!resSessions.ok) throw new Error('Falha ao buscar sessões existentes.');
+        
+        const allSessions = await resSessions.json();
+        const uniqueDeviceIds = new Set(allSessions.map(s => s.device_id));
+
+        // --- ETAPA 3: A LÓGICA DE DECISÃO ---
+        const isDeviceAlreadyRegistered = uniqueDeviceIds.has(currentDeviceId);
+        const registeredDeviceCount = uniqueDeviceIds.size;
+
+        // Se o dispositivo já foi registrado antes, permite o login.
+        if (isDeviceAlreadyRegistered) {
+          await proceedWithLogin(email, currentDeviceId, registroPlano);
+        
+        // Se é um NOVO dispositivo, verifica se ainda há vagas.
+        } else if (registeredDeviceCount < maxDevices) {
+          await proceedWithLogin(email, currentDeviceId, registroPlano);
+
+        // Se é um NOVO dispositivo e NÃO há vagas, bloqueia.
+        } else {
+          alert(
+            `Você já atingiu o limite de ${maxDevices} dispositivo(s) diferente(s) cadastrado(s) neste plano. ` +
+            `Para acessar por este novo dispositivo, remova um dos antigos ou adquira um plano com mais acessos.`
+          );
+          return;
+        }
+
       } catch (err) {
-        console.error("Falha ao salvar o pedido:", err);
-        alert("❌ Falha ao salvar o pedido.");
+        console.error("Erro durante o processo de login:", err);
+        alert("Ocorreu um erro ao tentar fazer login. Verifique o console para mais detalhes.");
       }
     }
-    document.getElementById("btnSalvarPedido").addEventListener("click", salvarDraft);
 
-    async function checkEmail() {
-        const email = document.getElementById('email').value.trim().toLowerCase();
-        if (!email) {
-            alert('Digite um e‑mail válido.');
-            return;
-        }
-        const rememberEmailChecked = document.getElementById('rememberEmail').checked;
-        if (rememberEmailChecked) localStorage.setItem('saved_email', email);
-        else localStorage.removeItem('saved_email');
 
-        try {
-            console.log(`--- INICIANDO VERIFICAÇÃO PARA: ${email} ---`);
-            const resPlano = await fetch(
-              `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,ativa&email=eq.${encodeURIComponent(email)}`, {
-                method: "GET",
-                headers: {
-                    'apikey': supabaseKey,
-                    'Authorization': `Bearer ${supabaseKey}`
-                },
-                cache: 'no-cache'
-            });
-
-            if (!resPlano.ok) {
-                console.error("Erro na resposta do Supabase ao buscar plano:", resPlano.status);
-                throw new Error("Falha ao buscar dados do plano.");
-            }
-            const autorizacoes = await resPlano.json();
-            if (!autorizacoes.length) {
-                alert("E-mail não cadastrado em nenhum plano.");
-                return;
-            }
-            
-            const registroPlano = autorizacoes[0];
-            
-            if(registroPlano.ativa === false) {
-              alert("Este usuário está inativo. Por favor, contate o suporte.");
-              return;
-            }
-
-            const maxDevices = parseInt(registroPlano.max_devices, 10) || 1;
-            console.log(`[ETAPA 1] Limite de dispositivos para este plano: ${maxDevices}`);
-
-            const hoje = new Date();
-            const expira = new Date(registroPlano.data_expiracao);
-            if (hoje > expira) {
-                if (confirm(`Seu plano ${registroPlano.plano} expirou em ${formatarData(registroPlano.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
-                    mostrarPlanos();
-                }
-                return;
-            }
-
-            const userDevicesUrl = `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}`;
-            const resUserDevices = await fetch(userDevicesUrl, {
-                method: 'GET',
-                headers: {
-                    'apikey': supabaseKey,
-                    'Authorization': `Bearer ${supabaseKey}`
-                },
-                cache: 'no-cache'
-            });
-            if (!resUserDevices.ok) throw new Error("Falha ao contar dispositivos do usuário.");
-            
-            const userSessions = await resUserDevices.json();
-            const userUniqueDevices = new Set(userSessions.map(s => s.device_id));
-            const registeredDeviceCount = userUniqueDevices.size;
-            console.log(`[ETAPA 2] Dispositivos únicos já registrados para este e-mail: ${registeredDeviceCount}. IDs:`, Array.from(userUniqueDevices));
-
-            let currentDeviceId = localStorage.getItem('device_id');
-            if (!currentDeviceId) {
-                currentDeviceId = generateToken();
-                localStorage.setItem('device_id', currentDeviceId);
-                console.log(`[ETAPA 3] ID novo gerado: ${currentDeviceId}`);
-            } else {
-                console.log(`[ETAPA 3] ID deste dispositivo: ${currentDeviceId}`);
-            }
-            
-            const isDeviceAlreadyRegisteredForThisUser = userUniqueDevices.has(currentDeviceId);
-            console.log(`[ETAPA 3] Este dispositivo já está registrado para esta conta? ${isDeviceAlreadyRegisteredForThisUser}`);
-
-            if (isDeviceAlreadyRegisteredForThisUser) {
-                console.log("[DECISÃO] PERMITIR. Dispositivo já conhecido.");
-                await proceedWithLogin(email, currentDeviceId, registroPlano);
-                return;
-            }
-            
-            if (registeredDeviceCount < maxDevices) {
-                console.log(`[DECISÃO] PERMITIR. Novo dispositivo, há vaga (${registeredDeviceCount} < ${maxDevices}).`);
-                await proceedWithLogin(email, currentDeviceId, registroPlano);
-            } else {
-                console.log(`[DECISÃO] BLOQUEAR. Limite atingido (${registeredDeviceCount} >= ${maxDevices}).`);
-                alert(`A sua conta já atingiu o limite de ${maxDevices} dispositivo(s) cadastrado(s).`);
-            }
-        } catch (err) {
-            console.error("ERRO CRÍTICO no processo de login:", err);
-            alert("Ocorreu um erro ao tentar fazer login. Verifique o console para mais detalhes.");
-        }
-    }
-
+    // --- FUNÇÃO AUXILIAR PARA EVITAR REPETIÇÃO DE CÓDIGO ---
     async function proceedWithLogin(email, deviceId, registroPlano) {
         const ipResp = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipResp.json();
+        const ipAddress = ipData.ip;
+        const deviceInfo = navigator.userAgent;
+        const sessionToken = generateToken();
+        
         const novaSessao = {
             email: email,
-            session_token: generateToken(),
+            session_token: sessionToken,
             login_date: getBrasiliaISOString(),
-            device_info: navigator.userAgent,
-            ip_address: ipData.ip,
+            device_info: deviceInfo,
+            ip_address: ipAddress,
             device_id: deviceId
         };
 
         await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
             method: 'POST',
-            headers: {
-                'apikey': supabaseKey,
-                'Authorization': `Bearer ${supabaseKey}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-            },
+            headers: { apikey: supabaseKey, 'Content-Type': 'application/json' },
             body: JSON.stringify(novaSessao)
         });
 
         localStorage.setItem('user_email', email);
-        localStorage.setItem('session_token', novaSessao.session_token);
+        localStorage.setItem('session_token', sessionToken);
 
+        // --- ATUALIZA A INTERFACE ---
         ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'orderSection'].forEach(id => {
-            document.getElementById(id)?.classList.add('hidden');
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
         });
 
         const busca = document.getElementById('searchSection');
         busca.classList.remove('hidden');
+        busca.style.display = '';
         busca.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         document.querySelector('a[href="#introSection"]').style.display = 'none';
         document.querySelector('a[href="#planosSection"]').style.display = 'none';
         document.getElementById('menuLogin').innerText = 'Sair';
         document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-        document.querySelector('#searchSection .bg-gray-800').innerHTML = `<strong>Bem-vindo(a), ${registroPlano.nome}!</strong><br>Plano: ${registroPlano.plano}<br>Válido até: ${formatarData(registroPlano.data_expiracao)}`;
+        document.querySelector('#searchSection .bg-gray-800').innerHTML =
+            `<strong>Bem-vindo(a), ${registroPlano.nome}!</strong><br>` +
+            `Plano: ${registroPlano.plano}<br>` +
+            `Válido até: ${formatarData(registroPlano.data_expiracao)}`;
 
         mostrarMenuMobileAposLogin();
 
-        const draftRes = await fetch(`${supabaseUrl}/rest/v1/draft_orders?select=items&email=eq.${encodeURIComponent(email)}`, {
+        // **CARREGAR PEDIDO SALVO (LUGAR CORRETO)**
+        const draftRes = await fetch(
+          `${supabaseUrl}/rest/v1/draft_orders?select=items&email=eq.${encodeURIComponent(email)}`, {
             method: 'GET',
             headers: {
-                'apikey': supabaseKey,
-                'Authorization': `Bearer ${supabaseKey}`
+              apikey: supabaseKey,
             }
-        });
+          }
+        );
         const [draft] = await draftRes.json();
         if (draft && Array.isArray(draft.items)) {
-            orderItems = draft.items.map(i => ({ rowIndex: i.rowIndex, modeloDigitado: i.modelo, quantidade: i.quantidade }));
-            atualizarListaPedidos();
+          orderItems = draft.items.map(i => ({
+            rowIndex: i.rowIndex,
+            modeloDigitado: i.modelo,
+            quantidade: i.quantidade
+          }));
+          atualizarListaPedidos();
         }
     }
 
-    async function logout() {
-      localStorage.removeItem('user_email');
-      localStorage.removeItem('session_token');
-      document.querySelectorAll('#introSection, #promoPedido, #planosSection').forEach(el => el.classList.remove('hidden'));
-      document.querySelectorAll('#searchSection, #orderSection', '#loginArea').forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.classList.add('hidden');
-      });
-      
-      document.getElementById('menuLogin').innerText = 'Login';
-      document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
-      
-      mostrarMenuMobileAposLogout();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+// Função de logout
+async function logout() {
+  const email = localStorage.getItem('user_email');
+  const sessionToken = localStorage.getItem('session_token');
+  if (!email || !sessionToken) return;
 
-    function mostrarInicio() {
-      ['loginArea','searchSection','orderSection'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      ['introSection','promoPedido','planosSection'].forEach(id => document.getElementById(id).classList.remove('hidden'));
-      document.getElementById('introSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Limpa os dados locais imediatamente para uma experiência de usuário mais rápida
+  localStorage.removeItem('user_email');
+  localStorage.removeItem('login_date');
+  localStorage.removeItem('session_token');
+
+  // Restaura visibilidade das seções
+  document.querySelector('a[href="#introSection"]').style.display = '';
+  document.querySelector('a[href="#planosSection"]').style.display = '';
+  ['introSection', 'promoPedido', 'planosSection'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+          el.classList.remove('hidden');
+          el.style.display = ''; 
+      }
+  });
+  
+  // Esconde as seções de logado
+  ['searchSection', 'orderSection'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+          el.classList.add('hidden');
+          el.style.display = 'none';
+      }
+  });
+
+  // Mostra a área de login novamente
+  const loginArea = document.getElementById('loginArea');
+  loginArea.classList.remove('hidden');
+  loginArea.style.display = '';
+
+  document.getElementById('menuLogin').innerText = 'Login';
+  document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
+
+  mostrarMenuMobileAposLogout();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+// Função de validação periódica de sessão (opcional, pode ser removida se não desejar)
+async function validateSession() {
+  const email = localStorage.getItem('user_email');
+  const storedToken = localStorage.getItem('session_token');
+  if (!email || !storedToken) return;
+
+  try {
+    const res = await fetch(
+      `${supabaseUrl}/rest/v1/login_sessions?email=eq.${encodeURIComponent(email)}&session_token=eq.${encodeURIComponent(storedToken)}`,
+      {
+        method: 'GET',
+        headers: {
+          apikey: supabaseKey,
+        }
+      }
+    );
+    const result = await res.json();
+    if (!result || result.length === 0) {
+      // Se a sessão não é válida no backend, força o logout no frontend
+      // logout(); 
+      // Comentado para não deslogar o usuário abruptamente, mas pode ser ativado
     }
+  } catch (err) {
+    console.error('Erro na validação da sessão:', err);
+  }
+}
+// setInterval(validateSession, 60000); // Executa a cada 1 minuto
+
+
+    /** 13) Exibir/Ocultar Seções */
+function mostrarInicio() {
+  ['loginArea','searchSection','orderSection'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+          el.classList.add('hidden');
+          el.style.display = 'none';
+      }
+  });
+
+  ['introSection','promoPedido','planosSection'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+          el.classList.remove('hidden');
+          el.style.display = '';
+      }
+  });
+
+  document.getElementById('introSection')
+          .scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 
     function mostrarPlanos() {
-      ['introSection','promoPedido','loginArea','searchSection','orderSection'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      const planos = document.getElementById('planosSection');
-      planos.classList.remove('hidden');
-      planos.scrollIntoView({ behavior: 'smooth' });
-    }
+  ['introSection','promoPedido','loginArea','searchSection','orderSection']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    });
+
+  const planos = document.getElementById('planosSection');
+  planos.classList.remove('hidden');
+  planos.style.display = '';
+  planos.scrollIntoView({ behavior: 'smooth' });
+}
 
     function goToLogin() {
-      ['introSection','promoPedido','planosSection','searchSection','orderSection'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      const login = document.getElementById('loginArea');
-      login.classList.remove('hidden');
-      login.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    function mostrarPedidos() {
-      ['introSection', 'promoPedido', 'planosSection','loginArea','searchSection'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      const order = document.getElementById('orderSection');
-      order.classList.remove('hidden');
-      order.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      const modeloPesquisado = document.getElementById('searchModel').value.trim();
-      if (modeloPesquisado) document.getElementById('orderModelo').value = modeloPesquisado;
-      document.getElementById('orderModelo')?.focus();
-    }
-
-    function voltarConsulta() {
-      document.getElementById('orderSection').classList.add('hidden');
-      const search = document.getElementById('searchSection');
-      search.classList.remove('hidden');
-      search.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      document.getElementById('searchModel')?.focus();
-    }
-
-    async function deleteDraft() {
-      const email = localStorage.getItem("user_email");
-      if (!email) return;
-      try {
-        await fetch(`${supabaseUrl}/rest/v1/draft_orders?email=eq.${email}`, {
-            method: "DELETE",
-            headers: {
-                'apikey': supabaseKey,
-                'Authorization': `Bearer ${supabaseKey}`
-            }
-        });
-      } catch (err) {
-        console.error("Erro ao deletar rascunho:", err);
+  ['introSection','promoPedido','planosSection','searchSection','orderSection']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+        el.style.display = 'none';
       }
-    }
+    });
 
-    function limparPedido() {
-      if (confirm("Tem certeza que deseja limpar todos os itens do pedido?")) {
-        orderItems = [];
-        atualizarListaPedidos();
-        deleteDraft();
+  const login = document.getElementById('loginArea');
+  login.classList.remove('hidden');
+  login.style.display = '';
+  login.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+}
+
+
+function mostrarPedidos() {
+  ['introSection', 'promoPedido', 'planosSection','loginArea','searchSection'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.classList.add('hidden');
+        el.style.display = 'none';
+    }
+  });
+
+  const order = document.getElementById('orderSection');
+  order.classList.remove('hidden');
+  order.style.display = '';
+  order.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+
+  const modeloPesquisado = document.getElementById('searchModel').value.trim();
+  if (modeloPesquisado) {
+    document.getElementById('orderModelo').value = modeloPesquisado;
+  }
+
+  document.getElementById('orderModelo')?.focus();
+}
+
+// 17) Voltar à consulta de modelos mantendo o pedido atual
+function voltarConsulta() {
+  const order = document.getElementById('orderSection');
+  order.classList.add('hidden');
+  order.style.display = 'none';
+
+  const search = document.getElementById('searchSection');
+  search.classList.remove('hidden');
+  search.style.display = '';
+  search.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+
+  document.getElementById('searchModel')?.focus();
+}
+
+
+// 1) Função auxiliar para apagar o draft do Supabase
+async function deleteDraft() {
+  const email = localStorage.getItem("user_email");
+  if (!email) return;
+  try {
+    await fetch(
+      `${supabaseUrl}/rest/v1/draft_orders?email=eq.${email}`,
+      {
+        method: "DELETE",
+        headers: {
+          apikey:        supabaseKey,
+        }
       }
-    }
+    );
+  } catch (err) {
+    console.error("Erro ao deletar rascunho:", err);
+  }
+}
+// 2) Limpar pedido local **e** no Supabase
+function limparPedido() {
+  if (confirm("Tem certeza que deseja limpar todos os itens do pedido? Esta ação não pode ser desfeita.")) {
+    orderItems = [];
+    atualizarListaPedidos();
+    deleteDraft();
+  }
+}
 
+    /* 14) Seções Legais */
     function mostrarLegal(secId) {
       document.getElementById('legalContentContainer').classList.remove('hidden');
       document.querySelectorAll('.legal-section').forEach(sec => sec.classList.add('hidden'));
       document.getElementById(secId).classList.remove('hidden');
       document.getElementById('legalContentContainer').scrollIntoView({ behavior: 'smooth' });
     }
-
     function fecharLegal() {
       document.getElementById('legalContentContainer').classList.add('hidden');
     }
 
+    /* 15) Modais: Incompatibilidade e Compatibilidade */
     function abrirModalIncompatibilidade() {
       const modeloProcurado = document.getElementById('searchModel').value.trim();
-      if (modeloProcurado) document.getElementById('modeloTestado').value = modeloProcurado;
+      if (modeloProcurado) {
+        document.getElementById('modeloTestado').value = modeloProcurado;
+      }
       document.getElementById('modalIncompatibilidade').classList.remove('hidden');
     }
-
     function fecharModalIncompatibilidade() {
       document.getElementById('modalIncompatibilidade').classList.add('hidden');
     }
-
     async function enviarIncompatibilidade() {
-      const modeloTestado = document.getElementById('modeloTestado').value.trim();
-      const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
-      if (!modeloTestado || !modeloIncompativel) return alert("Preencha ambos os campos!");
-      try {
-        await fetch(`${supabaseUrl}/rest/v1/relatorios_pelicula`, {
-          method: "POST",
-          headers: {
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify([{
-            tipo: "incompatibilidade",
-            modelo_procurado: modeloTestado,
-            modelo_informado: modeloIncompativel,
-            email_usuario: localStorage.getItem("user_email") || null
-          }])
-        });
-        alert("📥 Registro de incompatibilidade enviado com sucesso!");
-        fecharModalIncompatibilidade();
-      } catch (err) {
-        console.error(err);
-        alert("❌ Falha ao enviar.");
-      }
-    }
+  const modeloTestado = document.getElementById('modeloTestado').value.trim();
+  const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
+  const email = localStorage.getItem("user_email") || null;
+
+  if (!modeloTestado || !modeloIncompativel) {
+    return alert("Preencha ambos os campos antes de enviar!");
+  }
+
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/relatorios_pelicula`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify([{
+        tipo: "incompatibilidade",
+        modelo_procurado: modeloTestado,
+        modelo_informado: modeloIncompativel,
+        email_usuario: email
+      }])
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+
+    alert("📥 Registro de incompatibilidade enviado com sucesso!");
+    fecharModalIncompatibilidade();
+  } catch (err) {
+    console.error(err);
+    alert("❌ Falha ao enviar. Tente novamente.");
+  }
+}
 
     function abrirModalCompatibilidade() {
       const modeloProcurado = document.getElementById('searchModel').value.trim();
-      if (modeloProcurado) document.getElementById('modeloProcuradoCompat').value = modeloProcurado;
+      if (modeloProcurado) {
+        document.getElementById('modeloProcuradoCompat').value = modeloProcurado;
+      }
       document.getElementById('modalCompatibilidade').classList.remove('hidden');
     }
-
     function fecharModalCompatibilidade() {
       document.getElementById('modalCompatibilidade').classList.add('hidden');
     }
-
     async function enviarCompatibilidade() {
-      const modeloProcurado = document.getElementById('modeloProcuradoCompat').value.trim();
-      const modeloCompativel = document.getElementById('modeloCompativel').value.trim();
-      if (!modeloProcurado || !modeloCompativel) return alert("Preencha ambos os campos!");
-      try {
-        await fetch(`${supabaseUrl}/rest/v1/relatorios_pelicula`, {
-          method: "POST",
-          headers: {
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify([{
-            tipo: "compatibilidade",
-            modelo_procurado: modeloProcurado,
-            modelo_informado: modeloCompativel,
-            email_usuario: localStorage.getItem("user_email") || null
-          }])
-        });
-        alert("📥 Registro de compatibilidade enviado com sucesso!");
-        fecharModalCompatibilidade();
-      } catch (err) {
-        console.error(err);
-        alert("❌ Falha ao enviar.");
-      }
-    }
+  const modeloProcurado = document.getElementById('modeloProcuradoCompat').value.trim();
+  const modeloCompativel = document.getElementById('modeloCompativel').value.trim();
+  const email = localStorage.getItem("user_email") || null;
 
-    document.getElementById('email').addEventListener('keydown', function(event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        checkEmail();
-      }
+  if (!modeloProcurado || !modeloCompativel) {
+    return alert("Preencha ambos os campos antes de enviar!");
+  }
+
+   try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/relatorios_pelicula`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify([{
+        tipo: "compatibilidade",
+        modelo_procurado: modeloProcurado,
+        modelo_informado: modeloCompativel,
+        email_usuario: email
+      }])
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadData();
-        const email = localStorage.getItem('user_email');
-        if (email) {
-            checkEmailOnLoad();
-        }
-    });
-
-    async function checkEmailOnLoad() {
-        const email = localStorage.getItem('user_email');
-        if (!email) return;
-        const emailInput = document.getElementById('email');
-        if (emailInput) emailInput.value = email;
-        await checkEmail();
+    if (!res.ok) {
+      throw new Error(await res.text());
     }
+
+    alert("📥 Registro de compatibilidade enviado com sucesso!");
+    fecharModalCompatibilidade();
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ Falha ao enviar. Tente novamente.");
+  }
+}
+
+// Permite login ao pressionar ENTER no campo de e-mail
+document.getElementById('email').addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    checkEmail();
+  }
+});
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    // Verifica se já existe uma sessão ao carregar a página
+    const email = localStorage.getItem('user_email');
+    if (email) {
+        // Se houver um e-mail, tenta revalidar o login silenciosamente
+        // ou diretamente mostra a tela de logado.
+        // Por simplicidade, vamos chamar a função de login de novo,
+        // mas com o email já preenchido.
+        checkEmailOnLoad();
+    }
+});
+
+async function checkEmailOnLoad() {
+    const email = localStorage.getItem('user_email');
+    if (!email) return;
+
+    // Coloca o e-mail no campo para a função `checkEmail` funcionar
+    const emailInput = document.getElementById('email');
+    if (emailInput) emailInput.value = email;
+
+    // Roda a verificação de login
+    await checkEmail();
+}
+
   </script>
 </body>
 </ht
