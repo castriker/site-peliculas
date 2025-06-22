@@ -1336,7 +1336,7 @@ document
 
 
     /* 12) LOGIN / LOGOUT */
-       async function checkEmail() {
+         async function checkEmail() {
       const email = document.getElementById('email').value.trim().toLowerCase();
       const rememberEmailChecked = document.getElementById('rememberEmail').checked;
       if (rememberEmailChecked && email) localStorage.setItem('saved_email', email);
@@ -1351,7 +1351,8 @@ document
         const resPlano = await fetch(
           `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}`, {
             method: "GET",
-            headers: { apikey: supabaseKey }
+            headers: { apikey: supabaseKey },
+            cache: 'no-cache' // Força a busca de dados novos
           }
         );
         if (!resPlano.ok) throw new Error("Falha ao buscar dados do plano.");
@@ -1362,7 +1363,8 @@ document
         }
         
         const registroPlano = autorizacoes[0];
-        const maxDevices = registroPlano.max_devices;
+        // **CORREÇÃO**: Garante que maxDevices é um número
+        const maxDevices = parseInt(registroPlano.max_devices, 10);
 
         // Validar data de expiração
         const hoje = new Date();
@@ -1385,7 +1387,8 @@ document
         const resSessions = await fetch(
             `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}`, {
             method: 'GET',
-            headers: { apikey: supabaseKey }
+            headers: { apikey: supabaseKey },
+            cache: 'no-cache' // **CORREÇÃO**: Força a busca de dados novos
         });
 
         if (!resSessions.ok) throw new Error('Falha ao buscar sessões existentes.');
@@ -1401,9 +1404,7 @@ document
         if (isDeviceAlreadyRegistered) {
           await proceedWithLogin(email, currentDeviceId, registroPlano);
         
-        // **AQUI ESTÁ A CORREÇÃO**
         // Se é um NOVO dispositivo, verifica se ainda há vagas.
-        // A condição deve ser ESTRITAMENTE MENOR QUE (<).
         } else if (registeredDeviceCount < maxDevices) {
           await proceedWithLogin(email, currentDeviceId, registroPlano);
 
@@ -1421,6 +1422,7 @@ document
         alert("Ocorreu um erro ao tentar fazer login. Verifique o console para mais detalhes.");
       }
     }
+
 
     // --- FUNÇÃO AUXILIAR PARA EVITAR REPETIÇÃO DE CÓDIGO ---
     async function proceedWithLogin(email, deviceId, registroPlano) {
