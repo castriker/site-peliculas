@@ -1,3 +1,4 @@
+SITE EM MANUTENÇÃO DESDE AS 20:48 01/07/2025
 <!DOCTYPE html>
 <!-- Meta Pixel Code -->
 <script>
@@ -1337,196 +1338,137 @@ document
 
 
     /* 12) LOGIN / LOGOUT */
-        async function checkEmail() {
+    async function checkEmail() {
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
     const rememberEmailChecked = document.getElementById('rememberEmail').checked;
 
-    if (rememberEmailChecked && email) {
-        localStorage.setItem('saved_email', email);
-    } else {
-        localStorage.removeItem('saved_email');
-    }
+    if (rememberEmailChecked && email) localStorage.setItem('saved_email', email);
+    else localStorage.removeItem('saved_email');
 
-    if (!email) {
-        alert('Digite um e-mail válido.');
-        return;
-    }
+    if (!email) return alert('Digite um e-mail válido.');
 
     try {
-        // --- ETAPA 1: Obter o limite de dispositivos e dados do plano ---
-        const resPlano = await fetch(
-            `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}`, {
-                method: "GET",
-                headers: { apikey: supabaseKey },
-                cache: 'no-cache'
+        // ETAPA 1: Buscar TODOS os dados do usuário de uma só vez na tabela 'sessoes'
+        const { data: userData, error: userError } = await fetch(
+            `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1`, {
+                headers: { 'apikey': supabaseKey }
             }
-        );
-        if (!resPlano.ok) throw new Error("Falha ao buscar dados do plano.");
+        ).then(res => res.json().then(data => ({ data, error: null }))).catch(error => ({ data: null, error }));
 
-        const autorizacoes = await resPlano.json();
-        if (!autorizacoes.length) {
-            alert("E-mail não cadastrado em nenhum plano.");
+        if (userError || !userData || userData.length === 0) {
+            alert("E-mail não cadastrado em nenhum plano ou falha na consulta.");
+            console.error(userError);
             return;
         }
 
-        const registroPlano = autorizacoes[0];
-        const maxDevices = parseInt(registroPlano.max_devices, 10);
+        const planoInfo = userData[0];
+        const maxDevices = parseInt(planoInfo.max_devices, 10);
+        const registeredDevices = planoInfo.registered_devices || []; // Garante que é um array
 
-        // --- ETAPA 2: Validar data de expiração ---
-        const hoje = new Date();
-        const expira = new Date(registroPlano.data_expiracao);
-        if (hoje > expira) {
-            if (confirm(`Seu plano ${registroPlano.plano} expirou em ${formatarData(registroPlano.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
+        // ETAPA 2: Validar data de expiração (sem alteração)
+        if (new Date() > new Date(planoInfo.data_expiracao)) {
+            if (confirm(`Seu plano ${planoInfo.plano} expirou em ${formatarData(planoInfo.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
                 mostrarPlanos();
-                window.location.hash = '#planosSection';
             }
             return;
         }
 
-        // --- ETAPA 3: Identificar o dispositivo atual e buscar os já registrados ---
-        const currentDeviceInfo = navigator.userAgent; // Identificador real do dispositivo/navegador
+        // ETAPA 3: Lógica de verificação de dispositivo usando a nova coluna
+        const currentDeviceInfo = navigator.userAgent;
+        const isDeviceAlreadyRegistered = registeredDevices.includes(currentDeviceInfo);
 
-        const resSessions = await fetch(
-            `${supabaseUrl}/rest/v1/login_sessions?select=device_info&email=eq.${encodeURIComponent(email)}`, {
-            method: 'GET',
-            headers: { apikey: supabaseKey },
-            cache: 'no-cache'
-        });
-
-        if (!resSessions.ok) throw new Error('Falha ao buscar sessões existentes.');
-
-        const allSessions = await resSessions.json();
-        // Cria um conjunto (Set) para garantir que cada device_info seja contado apenas uma vez
-        const uniqueDeviceInfos = new Set(allSessions.map(s => s.device_info));
-
-        // --- ETAPA 4: A LÓGICA DE DECISÃO ---
-        const isDeviceAlreadyRegistered = uniqueDeviceInfos.has(currentDeviceInfo);
-        const registeredDeviceCount = uniqueDeviceInfos.size;
-
-        // Se o dispositivo já foi registrado antes, permite o login.
         if (isDeviceAlreadyRegistered) {
-            console.log("Dispositivo já conhecido. Acesso liberado.");
-            await proceedWithLogin(email, currentDeviceInfo, registroPlano);
+            // Dispositivo conhecido, acesso liberado.
+            await proceedWithLogin(email, planoInfo);
 
-        // Se é um NOVO dispositivo, verifica se ainda há vagas.
-        } else if (registeredDeviceCount < maxDevices) {
-            console.log(`Novo dispositivo. Vagas usadas: ${registeredDeviceCount}/${maxDevices}. Acesso liberado.`);
-            await proceedWithLogin(email, currentDeviceInfo, registroPlano);
+        } else if (registeredDevices.length < maxDevices) {
+            // Dispositivo novo, e ainda há vagas.
+            // Adiciona o novo dispositivo à lista
+            const updatedDevices = [...registeredDevices, currentDeviceInfo];
 
-        // Se é um NOVO dispositivo e NÃO há vagas, bloqueia.
+            // ATUALIZA O REGISTRO DO USUÁRIO NO SUPABASE COM O NOVO DISPOSITIVO
+            await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': supabaseKey,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ registered_devices: updatedDevices })
+            });
+
+            // Libera o acesso
+            await proceedWithLogin(email, planoInfo);
+
         } else {
+            // Dispositivo novo, mas o limite foi atingido. Bloqueia o acesso.
             alert(
-                `Você atingiu o limite de ${maxDevices} dispositivo(s) diferente(s) para o seu plano. ` +
-                `Para acessar por este novo dispositivo, entre em contato com o suporte para remover um dos antigos ou para atualizar seu plano.`
+                `Você atingiu o limite de ${maxDevices} dispositivo(s) para o seu plano. ` +
+                `Entre em contato com o suporte para remover um dispositivo antigo ou para atualizar seu plano.`
             );
-            return;
         }
 
     } catch (err) {
-        console.error("Erro durante o processo de login:", err);
-        alert("Ocorreu um erro ao tentar fazer login. Verifique o console para mais detalhes.");
+        console.error("Erro crítico durante o login:", err);
+        alert("Ocorreu um erro ao tentar fazer login.");
     }
 }
 
-// Pequena correção na função proceedWithLogin para ela receber e usar o 'currentDeviceInfo'
-async function proceedWithLogin(email, deviceInfo, registroPlano) {
+async function proceedWithLogin(email, registroPlano) {
+    // Registra a sessão no log (isso continua útil para histórico)
     const ipResp = await fetch('https://api.ipify.org?format=json');
     const ipData = await ipResp.json();
-    const ipAddress = ipData.ip;
-    // const deviceInfo = navigator.userAgent; // Já obtemos isso antes, recebemos como parâmetro
-    const sessionToken = generateToken();
-    
-    // O device_id aleatório não é mais necessário para o controle de limite, mas pode ser mantido para outras finalidades se desejar
-    let deviceId = localStorage.getItem('device_id');
-    if (!deviceId) {
-      deviceId = generateToken();
-      localStorage.setItem('device_id', deviceId);
-    }
-    
     const novaSessao = {
         email: email,
-        session_token: sessionToken,
+        session_token: generateToken(),
         login_date: getBrasiliaISOString(),
-        device_info: deviceInfo, // AQUI ESTÁ O DADO CORRETO
-        ip_address: ipAddress,
-        device_id: deviceId // pode manter se quiser, mas não é usado para o limite
+        device_info: navigator.userAgent,
+        ip_address: ipData.ip,
+        device_id: localStorage.getItem('device_id') || generateToken()
     };
-
     await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
         method: 'POST',
         headers: { apikey: supabaseKey, 'Content-Type': 'application/json' },
         body: JSON.stringify(novaSessao)
     });
-}
-    // --- FUNÇÃO AUXILIAR PARA EVITAR REPETIÇÃO DE CÓDIGO ---
-    async function proceedWithLogin(email, deviceId, registroPlano) {
-        const ipResp = await fetch('https://api.ipify.org?format=json');
-        const ipData = await ipResp.json();
-        const ipAddress = ipData.ip;
-        const deviceInfo = navigator.userAgent;
-        const sessionToken = generateToken();
-        
-        const novaSessao = {
-            email: email,
-            session_token: sessionToken,
-            login_date: getBrasiliaISOString(),
-            device_info: deviceInfo,
-            ip_address: ipAddress,
-            device_id: deviceId
-        };
 
-        await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
-            method: 'POST',
-            headers: { apikey: supabaseKey, 'Content-Type': 'application/json' },
-            body: JSON.stringify(novaSessao)
-        });
+    // Salva dados locais para o usuário
+    localStorage.setItem('user_email', email);
+    localStorage.setItem('session_token', novaSessao.session_token);
 
-        localStorage.setItem('user_email', email);
-        localStorage.setItem('session_token', sessionToken);
+    // --- ATUALIZA A INTERFACE ---
+    ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'orderSection'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+    });
+    const busca = document.getElementById('searchSection');
+    busca.classList.remove('hidden');
+    busca.style.display = '';
+    busca.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        // --- ATUALIZA A INTERFACE ---
-        ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'orderSection'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.style.display = 'none';
-        });
+    document.querySelector('a[href="#introSection"]').style.display = 'none';
+    document.querySelector('a[href="#planosSection"]').style.display = 'none';
+    document.getElementById('menuLogin').innerText = 'Sair';
+    document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
+    document.querySelector('#welcomeMsg').innerHTML =
+        `<strong>Bem-vindo(a), ${registroPlano.nome}!</strong><br>` +
+        `Plano: ${registroPlano.plano}<br>` +
+        `Válido até: ${formatarData(registroPlano.data_expiracao)}`;
 
-        const busca = document.getElementById('searchSection');
-        busca.classList.remove('hidden');
-        busca.style.display = '';
-        busca.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    mostrarMenuMobileAposLogin();
 
-        document.querySelector('a[href="#introSection"]').style.display = 'none';
-        document.querySelector('a[href="#planosSection"]').style.display = 'none';
-        document.getElementById('menuLogin').innerText = 'Sair';
-        document.getElementById('menuLogin').setAttribute('onclick', 'logout()');
-        document.querySelector('#searchSection .bg-gray-800').innerHTML =
-            `<strong>Bem-vindo(a), ${registroPlano.nome}!</strong><br>` +
-            `Plano: ${registroPlano.plano}<br>` +
-            `Válido até: ${formatarData(registroPlano.data_expiracao)}`;
-
-        mostrarMenuMobileAposLogin();
-
-        // **CARREGAR PEDIDO SALVO (LUGAR CORRETO)**
-        const draftRes = await fetch(
-          `${supabaseUrl}/rest/v1/draft_orders?select=items&email=eq.${encodeURIComponent(email)}`, {
-            method: 'GET',
-            headers: {
-              apikey: supabaseKey,
-            }
-          }
-        );
-        const [draft] = await draftRes.json();
-        if (draft && Array.isArray(draft.items)) {
-          orderItems = draft.items.map(i => ({
-            rowIndex: i.rowIndex,
-            modeloDigitado: i.modelo,
-            quantidade: i.quantidade
-          }));
-          atualizarListaPedidos();
-        }
+    // Carrega o rascunho de pedido do usuário
+    const draftRes = await fetch(`${supabaseUrl}/rest/v1/draft_orders?select=items&email=eq.${encodeURIComponent(email)}`);
+    const [draft] = await draftRes.json();
+    if (draft && Array.isArray(draft.items)) {
+      orderItems = draft.items.map(i => ({
+        rowIndex: i.rowIndex,
+        modeloDigitado: i.modelo,
+        quantidade: i.quantidade
+      }));
+      atualizarListaPedidos();
     }
-
+}
 // Função de logout
 async function logout() {
   const email = localStorage.getItem('user_email');
