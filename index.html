@@ -1,3 +1,4 @@
+SITE EM MANUTENÇÃO DESDE AS 20:29 DE 01/07/2025
 <!DOCTYPE html>
 <!-- Meta Pixel Code -->
 <script>
@@ -1337,93 +1338,127 @@ document
 
 
     /* 12) LOGIN / LOGOUT */
-         async function checkEmail() {
-      const email = document.getElementById('email').value.trim().toLowerCase();
-      const rememberEmailChecked = document.getElementById('rememberEmail').checked;
-      if (rememberEmailChecked && email) localStorage.setItem('saved_email', email);
-      else localStorage.removeItem('saved_email');
-      if (!email) {
-        alert('Digite um e‑mail válido.');
-        return;
-      }
+        async function checkEmail() {
+    const emailInput = document.getElementById('email');
+    const email = emailInput.value.trim().toLowerCase();
+    const rememberEmailChecked = document.getElementById('rememberEmail').checked;
 
-      try {
+    if (rememberEmailChecked && email) {
+        localStorage.setItem('saved_email', email);
+    } else {
+        localStorage.removeItem('saved_email');
+    }
+
+    if (!email) {
+        alert('Digite um e-mail válido.');
+        return;
+    }
+
+    try {
         // --- ETAPA 1: Obter o limite de dispositivos e dados do plano ---
         const resPlano = await fetch(
-          `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}`, {
-            method: "GET",
-            headers: { apikey: supabaseKey },
-            cache: 'no-cache' // Força a busca de dados novos
-          }
+            `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices&email=eq.${encodeURIComponent(email)}`, {
+                method: "GET",
+                headers: { apikey: supabaseKey },
+                cache: 'no-cache'
+            }
         );
         if (!resPlano.ok) throw new Error("Falha ao buscar dados do plano.");
+
         const autorizacoes = await resPlano.json();
         if (!autorizacoes.length) {
-          alert("E-mail não cadastrado em nenhum plano.");
-          return;
+            alert("E-mail não cadastrado em nenhum plano.");
+            return;
         }
-        
+
         const registroPlano = autorizacoes[0];
-        // **CORREÇÃO**: Garante que maxDevices é um número
         const maxDevices = parseInt(registroPlano.max_devices, 10);
 
-        // Validar data de expiração
+        // --- ETAPA 2: Validar data de expiração ---
         const hoje = new Date();
         const expira = new Date(registroPlano.data_expiracao);
         if (hoje > expira) {
-          if (confirm(`Seu plano ${registroPlano.plano} expirou em ${formatarData(registroPlano.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
-            mostrarPlanos();
-            window.location.hash = '#planosSection';
-          }
-          return;
+            if (confirm(`Seu plano ${registroPlano.plano} expirou em ${formatarData(registroPlano.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
+                mostrarPlanos();
+                window.location.hash = '#planosSection';
+            }
+            return;
         }
 
-        // --- ETAPA 2: Obter o ID do dispositivo atual e a lista de dispositivos já registrados ---
-        let currentDeviceId = localStorage.getItem('device_id');
-        if (!currentDeviceId) {
-          currentDeviceId = generateToken();
-          localStorage.setItem('device_id', currentDeviceId);
-        }
+        // --- ETAPA 3: Identificar o dispositivo atual e buscar os já registrados ---
+        const currentDeviceInfo = navigator.userAgent; // Identificador real do dispositivo/navegador
 
         const resSessions = await fetch(
-            `${supabaseUrl}/rest/v1/login_sessions?select=device_id&email=eq.${encodeURIComponent(email)}`, {
+            `${supabaseUrl}/rest/v1/login_sessions?select=device_info&email=eq.${encodeURIComponent(email)}`, {
             method: 'GET',
             headers: { apikey: supabaseKey },
-            cache: 'no-cache' // **CORREÇÃO**: Força a busca de dados novos
+            cache: 'no-cache'
         });
 
         if (!resSessions.ok) throw new Error('Falha ao buscar sessões existentes.');
-        
-        const allSessions = await resSessions.json();
-        const uniqueDeviceIds = new Set(allSessions.map(s => s.device_id));
 
-        // --- ETAPA 3: A LÓGICA DE DECISÃO ---
-        const isDeviceAlreadyRegistered = uniqueDeviceIds.has(currentDeviceId);
-        const registeredDeviceCount = uniqueDeviceIds.size;
+        const allSessions = await resSessions.json();
+        // Cria um conjunto (Set) para garantir que cada device_info seja contado apenas uma vez
+        const uniqueDeviceInfos = new Set(allSessions.map(s => s.device_info));
+
+        // --- ETAPA 4: A LÓGICA DE DECISÃO ---
+        const isDeviceAlreadyRegistered = uniqueDeviceInfos.has(currentDeviceInfo);
+        const registeredDeviceCount = uniqueDeviceInfos.size;
 
         // Se o dispositivo já foi registrado antes, permite o login.
         if (isDeviceAlreadyRegistered) {
-          await proceedWithLogin(email, currentDeviceId, registroPlano);
-        
+            console.log("Dispositivo já conhecido. Acesso liberado.");
+            await proceedWithLogin(email, currentDeviceInfo, registroPlano);
+
         // Se é um NOVO dispositivo, verifica se ainda há vagas.
         } else if (registeredDeviceCount < maxDevices) {
-          await proceedWithLogin(email, currentDeviceId, registroPlano);
+            console.log(`Novo dispositivo. Vagas usadas: ${registeredDeviceCount}/${maxDevices}. Acesso liberado.`);
+            await proceedWithLogin(email, currentDeviceInfo, registroPlano);
 
         // Se é um NOVO dispositivo e NÃO há vagas, bloqueia.
         } else {
-          alert(
-            `Você já atingiu o limite de ${maxDevices} dispositivo(s) diferente(s) cadastrado(s) neste plano. ` +
-            `Para acessar por este novo dispositivo, remova um dos antigos ou adquira um plano com mais acessos.`
-          );
-          return;
+            alert(
+                `Você atingiu o limite de ${maxDevices} dispositivo(s) diferente(s) para o seu plano. ` +
+                `Para acessar por este novo dispositivo, entre em contato com o suporte para remover um dos antigos ou para atualizar seu plano.`
+            );
+            return;
         }
 
-      } catch (err) {
+    } catch (err) {
         console.error("Erro durante o processo de login:", err);
         alert("Ocorreu um erro ao tentar fazer login. Verifique o console para mais detalhes.");
-      }
     }
+}
 
+// Pequena correção na função proceedWithLogin para ela receber e usar o 'currentDeviceInfo'
+async function proceedWithLogin(email, deviceInfo, registroPlano) {
+    const ipResp = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipResp.json();
+    const ipAddress = ipData.ip;
+    // const deviceInfo = navigator.userAgent; // Já obtemos isso antes, recebemos como parâmetro
+    const sessionToken = generateToken();
+    
+    // O device_id aleatório não é mais necessário para o controle de limite, mas pode ser mantido para outras finalidades se desejar
+    let deviceId = localStorage.getItem('device_id');
+    if (!deviceId) {
+      deviceId = generateToken();
+      localStorage.setItem('device_id', deviceId);
+    }
+    
+    const novaSessao = {
+        email: email,
+        session_token: sessionToken,
+        login_date: getBrasiliaISOString(),
+        device_info: deviceInfo, // AQUI ESTÁ O DADO CORRETO
+        ip_address: ipAddress,
+        device_id: deviceId // pode manter se quiser, mas não é usado para o limite
+    };
+
+    await fetch(`${supabaseUrl}/rest/v1/login_sessions`, {
+        method: 'POST',
+        headers: { apikey: supabaseKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify(novaSessao)
+    });
 
     // --- FUNÇÃO AUXILIAR PARA EVITAR REPETIÇÃO DE CÓDIGO ---
     async function proceedWithLogin(email, deviceId, registroPlano) {
