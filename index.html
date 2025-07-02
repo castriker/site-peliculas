@@ -859,6 +859,7 @@ function blinkAndFocus(element) {
     let orderItems = [];  // Itens do pedido
 	let duplicateGroup = [];
     let duplicateIndex = -1;
+    let dailyCheckInterval; 
 
     /* 3) Carregar dados da planilha */
     function loadData() {
@@ -1465,6 +1466,12 @@ async function proceedWithLogin(email, registroPlano) {
     // Salva dados locais para o usuário
     localStorage.setItem('user_email', email);
 
+// --- LINHAS NOVAS A SEREM ADICIONADAS ---
+    const todayForStorage = new Date().toISOString().split('T')[0];
+    localStorage.setItem('login_date', todayForStorage); // Salva a data do login
+    dailyCheckInterval = setInterval(checkDailyLogout, 60000); // Inicia o verificador (a cada 1 minuto)
+    // --- FIM DAS LINHAS NOVAS ---
+
     // --- ATUALIZA A INTERFACE ---
     ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'orderSection'].forEach(id => {
         document.getElementById(id).style.display = 'none';
@@ -1506,6 +1513,7 @@ async function proceedWithLogin(email, registroPlano) {
 
 // Função de logout
 async function logout() {
+ if (dailyCheckInterval) clearInterval(dailyCheckInterval);
   const email = localStorage.getItem('user_email');
   const sessionToken = localStorage.getItem('session_token');
   if (!email || !sessionToken) return;
@@ -1547,6 +1555,27 @@ async function logout() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function checkDailyLogout() {
+  const loginDate = localStorage.getItem('login_date');
+  
+  // Se não houver data de login, não faz nada
+  if (!loginDate) {
+    return;
+  }
+
+  // Pega a data de hoje no formato 'AAAA-MM-DD'
+  const today = new Date().toISOString().split('T')[0];
+
+  // Compara se a data de hoje é diferente da data salva no login
+  if (today !== loginDate) {
+    // Para o verificador para não ficar repetindo o alerta
+    if (dailyCheckInterval) clearInterval(dailyCheckInterval);
+    
+    // Avisa o usuário e força o logout
+    alert('Sua sessão diária expirou. Por favor, faça o login novamente.');
+    logout();
+  }
+}
 
 // Função de validação periódica de sessão (opcional, pode ser removida se não desejar)
 async function validateSession() {
