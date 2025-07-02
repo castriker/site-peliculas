@@ -1337,7 +1337,8 @@ document
 
 
     /* 12) LOGIN / LOGOUT */
-    async function checkEmail() {
+   async function checkEmail() {
+    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
     const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -1348,24 +1349,28 @@ document
     if (!email) return alert('Digite um e-mail válido.');
 
     try {
-        // ETAPA 1: Buscar TODOS os dados do usuário de uma só vez na tabela 'sessoes'
-        const { data: userData, error: userError } = await fetch(
+        const res = await fetch(
             `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1`, {
-                headers: { 'apikey': supabaseKey }
+                headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
             }
-        ).then(res => res.json().then(data => ({ data, error: null }))).catch(error => ({ data: null, error }));
+        );
+        const userData = await res.json();
 
-        if (userError || !userData || userData.length === 0) {
+        if (!res.ok || !userData || userData.length === 0) {
             alert("E-mail não cadastrado em nenhum plano ou falha na consulta.");
-            console.error(userError);
             return;
         }
 
         const planoInfo = userData[0];
-        const maxDevices = parseInt(planoInfo.max_devices, 10);
-        const registeredDevices = planoInfo.registered_devices || []; // Garante que é um array
+        console.log("1. DADOS VINDOS DO SUPABASE:", planoInfo);
 
-        // ETAPA 2: Validar data de expiração (sem alteração)
+        const maxDevices = parseInt(planoInfo.max_devices, 10) || 1;
+        console.log(`2. maxDevices (após parseInt): ${maxDevices} (Tipo: ${typeof maxDevices})`);
+
+        const registeredDevices = planoInfo.registered_devices || [];
+        console.log("3. registeredDevices:", registeredDevices);
+        console.log(`4. Número de dispositivos registrados: ${registeredDevices.length} (Tipo: ${typeof registeredDevices.length})`);
+
         if (new Date() > new Date(planoInfo.data_expiracao)) {
             if (confirm(`Seu plano ${planoInfo.plano} expirou em ${formatarData(planoInfo.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
                 mostrarPlanos();
@@ -1373,41 +1378,39 @@ document
             return;
         }
 
-        // ETAPA 3: Lógica de verificação de dispositivo usando a nova coluna
         const currentDeviceInfo = navigator.userAgent;
+        console.log("5. Dispositivo atual:", currentDeviceInfo);
+
         const isDeviceAlreadyRegistered = registeredDevices.includes(currentDeviceInfo);
+        console.log("6. Este dispositivo já está registrado?", isDeviceAlreadyRegistered);
 
         if (isDeviceAlreadyRegistered) {
-            // Dispositivo conhecido, acesso liberado.
+            console.log("--> DECISÃO: Dispositivo já registrado. Acesso liberado.");
             await proceedWithLogin(email, planoInfo);
-
-        } else if (registeredDevices.length < maxDevices) {
-            // Dispositivo novo, e ainda há vagas.
-            // Adiciona o novo dispositivo à lista
-            const updatedDevices = [...registeredDevices, currentDeviceInfo];
-
-            // ATUALIZA O REGISTRO DO USUÁRIO NO SUPABASE COM O NOVO DISPOSITIVO
-            await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
-                method: 'PATCH',
-                headers: {
-                    'apikey': supabaseKey,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=minimal'
-                },
-                body: JSON.stringify({ registered_devices: updatedDevices })
-            });
-
-            // Libera o acesso
-            await proceedWithLogin(email, planoInfo);
-
         } else {
-            // Dispositivo novo, mas o limite foi atingido. Bloqueia o acesso.
-            alert(
-                `Você atingiu o limite de ${maxDevices} dispositivo(s) para o seu plano. ` +
-                `Entre em contato com o suporte para remover um dispositivo antigo ou para atualizar seu plano.`
-            );
+            console.log(`--> VERIFICANDO VAGAS: A comparação é: ${registeredDevices.length} < ${maxDevices} ?`);
+            
+            if (registeredDevices.length < maxDevices) {
+                console.log("--> DECISÃO: Há vagas! Registrando novo dispositivo e liberando acesso.");
+                const updatedDevices = [...registeredDevices, currentDeviceInfo];
+                await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ registered_devices: updatedDevices })
+                });
+                await proceedWithLogin(email, planoInfo);
+            } else {
+                console.log("--> DECISÃO: Não há vagas. Acesso bloqueado.");
+                alert(
+                    `Você atingiu o limite de ${maxDevices} dispositivo(s) para o seu plano. ` +
+                    `Entre em contato com o suporte para remover um dispositivo antigo ou para atualizar seu plano.`
+                );
+            }
         }
-
     } catch (err) {
         console.error("Erro crítico durante o login:", err);
         alert("Ocorreu um erro ao tentar fazer login.");
