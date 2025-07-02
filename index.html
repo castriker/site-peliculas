@@ -1337,7 +1337,7 @@ document
 
 
     /* 12) LOGIN / LOGOUT */
-   async function checkEmail() {
+ async function checkEmail() {
     console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
@@ -1365,11 +1365,32 @@ document
         console.log("1. DADOS VINDOS DO SUPABASE:", planoInfo);
 
         const maxDevices = parseInt(planoInfo.max_devices, 10) || 1;
-        console.log(`2. maxDevices (após parseInt): ${maxDevices} (Tipo: ${typeof maxDevices})`);
+        
+        // --- BLOCO DE CORREÇÃO DO TIPO DE DADO ---
+        let registeredDevices = []; // Começa com um array vazio por padrão
+        const rawDevicesData = planoInfo.registered_devices;
 
-        const registeredDevices = planoInfo.registered_devices || [];
-        console.log("3. registeredDevices:", registeredDevices);
-        console.log(`4. Número de dispositivos registrados: ${registeredDevices.length} (Tipo: ${typeof registeredDevices.length})`);
+        if (rawDevicesData) {
+            // Se o dado vindo do banco for um TEXTO, tentamos convertê-lo para um ARRAY.
+            if (typeof rawDevicesData === 'string') {
+                try {
+                    registeredDevices = JSON.parse(rawDevicesData);
+                } catch (e) {
+                    console.error("Falha ao converter a string de dispositivos. Assumindo como vazio.", rawDevicesData);
+                    registeredDevices = [];
+                }
+            }
+            // Se já for um array, usamos diretamente.
+            else if (Array.isArray(rawDevicesData)) {
+                registeredDevices = rawDevicesData;
+            }
+        }
+        // --- FIM DO BLOCO DE CORREÇÃO ---
+
+        console.log(`2. maxDevices (após parseInt): ${maxDevices} (Tipo: ${typeof maxDevices})`);
+        console.log("3. registeredDevices (APÓS CORREÇÃO):", registeredDevices);
+        console.log(`4. Número de dispositivos registrados (APÓS CORREÇÃO): ${registeredDevices.length}`);
+
 
         if (new Date() > new Date(planoInfo.data_expiracao)) {
             if (confirm(`Seu plano ${planoInfo.plano} expirou em ${formatarData(planoInfo.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
@@ -1400,6 +1421,7 @@ document
                         'Content-Type': 'application/json',
                         'Prefer': 'return=minimal'
                     },
+                    // Agora enviamos a lista convertida para JSON, o que é o correto
                     body: JSON.stringify({ registered_devices: updatedDevices })
                 });
                 await proceedWithLogin(email, planoInfo);
