@@ -476,7 +476,7 @@ document.querySelectorAll('img').forEach(img => {
 
   <!-- Seção de Planos -->
 <!-- Título dos Planos -->
-<section class="text-center py-12 bg-[#121212]">
+<section id="planosTitleSection" class="text-center py-12 bg-[#121212]">
   <h2 class="text-4xl font-extrabold text-yellow-400">Escolha seu Plano</h2>
   <p class="text-gray-300 mt-2">Acesse nossa tabela de películas compatíveis com desconto progressivo.</p>
 </section>
@@ -1726,49 +1726,24 @@ setupNoticeState(); // Configura o estado do banner (minimizado ou expandido)
 
 
 // Função de logout
+// Função de logout (VERSÃO CORRIGIDA E SIMPLIFICADA)
 async function logout() {
- if (dailyCheckInterval) clearInterval(dailyCheckInterval);
-document.getElementById('expirationAlert').classList.add('hidden');
-localStorage.removeItem('notice_state');
-  const email = localStorage.getItem('user_email');
-  const sessionToken = localStorage.getItem('session_token');
-  if (!email || !sessionToken) return;
+    // 1. Limpa os dados da sessão
+    if (dailyCheckInterval) clearInterval(dailyCheckInterval);
+    document.getElementById('expirationAlert').classList.add('hidden');
+    localStorage.removeItem('notice_state');
+    localStorage.removeItem('user_email');
+    localStorage.removeItem('login_date');
+    localStorage.removeItem('session_token');
 
-  // Limpa os dados locais imediatamente para uma experiência de usuário mais rápida
-  localStorage.removeItem('user_email');
-  localStorage.removeItem('login_date');
-  localStorage.removeItem('session_token');
+    // 2. Restaura o estado do menu
+    document.getElementById('menuLogin').innerText = 'Login';
+    document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
+    mostrarMenuMobileAposLogout();
 
-  // Restaura visibilidade das seções
-  document.querySelector('a[href="#introSection"]').style.display = '';
-  document.querySelector('a[href="#planosSection"]').style.display = '';
-  ['introSection', 'promoPedido', 'planosSection'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-          el.classList.remove('hidden');
-          el.style.display = ''; 
-      }
-  });
-  
-  // Esconde as seções de logado
-  ['searchSection', 'orderSection'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-          el.classList.add('hidden');
-          el.style.display = 'none';
-      }
-  });
-
-  // Mostra a área de login novamente
-  const loginArea = document.getElementById('loginArea');
-  loginArea.classList.remove('hidden');
-  loginArea.style.display = '';
-
-  document.getElementById('menuLogin').innerText = 'Login';
-  document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
-
-  mostrarMenuMobileAposLogout();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 3. Leva o usuário de volta para a tela inicial
+    // Esta função já sabe quais seções mostrar/esconder
+    mostrarInicio();
 }
 
 function checkDailyLogout() {
@@ -1826,11 +1801,11 @@ async function validateSession() {
 function mostrarInicio() {
   ['loginArea','searchSection','orderSection'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) {
-          el.classList.add('hidden');
-          el.style.display = 'none';
-      }
+      if (el) el.style.display = 'none';
   });
+
+  // Garante que o título dos planos reapareça na tela inicial
+  document.getElementById('planosTitleSection').style.display = '';
 
   ['introSection','promoPedido','planosSection'].forEach(id => {
       const el = document.getElementById(id);
@@ -1846,13 +1821,13 @@ function mostrarInicio() {
 
 
     function mostrarPlanos() {
-  ['introSection','promoPedido','loginArea','searchSection','orderSection']
-    .forEach(id => {
+  ['introSection', 'promoPedido', 'loginArea', 'searchSection', 'orderSection'].forEach(id => {
       const el = document.getElementById(id);
-      el.classList.add('hidden');
-      el.style.display = 'none';
+      if (el) el.style.display = 'none';
     });
 
+  // Garante que tanto o título quanto os cards dos planos apareçam
+  document.getElementById('planosTitleSection').style.display = '';
   const planos = document.getElementById('planosSection');
   planos.classList.remove('hidden');
   planos.style.display = '';
@@ -1880,10 +1855,10 @@ function mostrarInicio() {
 
 
 function mostrarPedidos() {
-  ['introSection', 'promoPedido', 'planosSection','loginArea','searchSection'].forEach(id => {
+  // Adicionamos 'planosTitleSection' à lista de coisas para esconder
+  ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'searchSection', 'planosTitleSection'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-        el.classList.add('hidden');
         el.style.display = 'none';
     }
   });
