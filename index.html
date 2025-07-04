@@ -1753,8 +1753,9 @@ setupNoticeState(); // Configura o estado do banner (minimizado ou expandido)
 
 // Função de logout
 // Função de logout (VERSÃO CORRIGIDA E SIMPLIFICADA)
+// Função de logout (VERSÃO FINAL CORRIGIDA)
 async function logout() {
-    // 1. Limpa os dados da sessão
+    // 1. Limpa os dados da sessão e timers
     if (dailyCheckInterval) clearInterval(dailyCheckInterval);
     document.getElementById('expirationAlert').classList.add('hidden');
     localStorage.removeItem('notice_state');
@@ -1762,13 +1763,18 @@ async function logout() {
     localStorage.removeItem('login_date');
     localStorage.removeItem('session_token');
 
-    // 2. Restaura o estado do menu
+    // 2. Restaura o estado do menu de texto e cliques
     document.getElementById('menuLogin').innerText = 'Login';
     document.getElementById('menuLogin').setAttribute('onclick', 'goToLogin()');
     mostrarMenuMobileAposLogout();
 
+    // --- CORREÇÃO ADICIONADA AQUI ---
+    // Garante que os links do menu principal voltem a aparecer
+    document.querySelector('a[href="#introSection"]').style.display = '';
+    document.querySelector('a[href="#planosSection"]').style.display = '';
+    // --- FIM DA CORREÇÃO ---
+
     // 3. Leva o usuário de volta para a tela inicial
-    // Esta função já sabe quais seções mostrar/esconder
     mostrarInicio();
 }
 
