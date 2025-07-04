@@ -2106,6 +2106,45 @@ async function enviarSolicitacao() {
   }
 }
 
+// >>>>> COLOQUE O NOVO CÓDIGO DO 'ESC' AQUI <<<<<
+/**
+ * Adiciona um ouvinte global para a tecla 'Escape' para fechar modais abertos.
+ */
+document.addEventListener('keydown', function (event) {
+    // Verifica se a tecla pressionada foi 'Escape'
+    if (event.key === 'Escape') {
+        // Chama as funções de fechamento de cada modal
+        // que já criamos. Isso garante que qualquer lógica
+        // extra dentro delas (como limpar variáveis) seja executada.
+        
+        // Verifica se o modal está visível antes de tentar fechar
+        if (!document.getElementById('modalIncompatibilidade').classList.contains('hidden')) {
+            fecharModalIncompatibilidade();
+        }
+        if (!document.getElementById('modalCompatibilidade').classList.contains('hidden')) {
+            fecharModalCompatibilidade();
+        }
+        if (!document.getElementById('modalSolicitacao').classList.contains('hidden')) {
+            fecharModalSolicitacao();
+        }
+        if (!document.getElementById('modalDuplicate').classList.contains('hidden')) {
+            cancelarDuplicata(); // A função de fechar para este modal é 'cancelar'
+        }
+        if (!document.getElementById('modalCrossCompatible').classList.contains('hidden')) {
+            closeCrossCompatibleModal();
+        }
+        if (!document.getElementById('confirmModal').classList.contains('hidden')) {
+            // Para o modal de confirmação, podemos simular um clique no botão de cancelar
+             document.getElementById('confirmCancel').click();
+        }
+        if (!document.getElementById('imageModal').classList.contains('hidden')) {
+            document.getElementById('closeModal').click();
+        }
+    }
+});
+// >>>>> FIM DO NOVO CÓDIGO <<<<<
+
+
 // Permite login ao pressionar ENTER no campo de e-mail
 document.getElementById('email').addEventListener('keydown', function(event) {
   if (event.key === 'Enter') {
