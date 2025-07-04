@@ -57,6 +57,25 @@ src="https://www.facebook.com/tr?id=697769519885889&ev=PageView&noscript=1"
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
+#notice-content {
+  /* Controla a animação de expandir/minimizar */
+  transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+  overflow: hidden;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(251, 146, 60, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(251, 146, 60, 0.6); /* Brilho laranja */
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s infinite;
+}
+
 body, html, * {
   -webkit-user-select: none !important;
   -moz-user-select: none !important;
@@ -675,10 +694,35 @@ document.querySelectorAll('img').forEach(img => {
     <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
       <strong id="welcomeMsg">Bem-vindo(a)!</strong>
     </div>
-    <div class="mb-4 bg-red-600 text-white alert-avisos rounded-lg">
-      <strong>Aviso Importante:</strong> Ao aplicar qualquer película, meça cuidadosamente o tamanho, verifique bordas, localização de câmera e demais recortes pois pode haver diferença nas películas de acordo com o fabricante. O site isenta-se de quaisquer responsabilidades.
+    <div id="important-notice-banner" class="relative mb-4 bg-red-600 text-white alert-avisos rounded-lg p-3">
+    <div class="flex justify-between items-center">
+        <strong class="block">Aviso Importante:</strong>
+        <button id="toggle-notice-btn" 
+        onclick="toggleNotice()" 
+        class="w-6 h-6 flex items-center justify-center bg-red-700 hover:bg-red-800 text-white rounded-full transition-colors duration-200">
+        <svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
+        </svg>
+    </button>
     </div>
+    
+    <div id="notice-content" class="mt-2">
+        <span>Ao aplicar qualquer película, meça cuidadosamente o tamanho, verifique bordas, localização de câmera e demais recortes pois pode haver diferença nas películas de acordo com o fabricante. O site isenta-se de quaisquer responsabilidades.</span>
+    </div>
+</div>
 
+<div id="expirationAlert" class="hidden items-center justify-center mb-4 text-white text-center p-3 rounded-lg shadow-lg">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" />
+    </svg>
+    
+    <div class="text-left">
+        <span id="expirationMessage" class="font-semibold"></span>
+        <button id="renewButton" onclick="mostrarPlanos()" class="hidden ml-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-md text-sm hover:bg-yellow-300 transition">
+            Renovar Agora
+        </button>
+    </div>
+</div>
 
     <!-- Botões da área de busca -->
     <input type="text" id="searchModel" placeholder="DIGITE O MODELO" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
@@ -712,10 +756,14 @@ document.querySelectorAll('img').forEach(img => {
   <div id="modalIncompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
     <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
       <h2 class="text-lg font-bold mb-4">Relatar Incompatibilidade</h2>
-      <label class="block mb-2 text-sm font-medium" for="modeloTestado">Modelo testado</label>
+      <p class="text-sm text-gray-600 mb-4 -mt-2">A película de um modelo não serviu em outro? Nos ajude a registrar.</p>
+
+      <label class="block mb-2 text-sm font-medium" for="modeloTestado">Película do Modelo (Principal)</label>
       <input type="text" id="modeloTestado" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: IPHONE 14" />
-      <label class="block mb-2 text-sm font-medium" for="modeloIncompativel">Modelo incompatível</label>
+      
+      <label class="block mb-2 text-sm font-medium" for="modeloIncompativel">Não foi compatível com o modelo</label>
       <input type="text" id="modeloIncompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: SAMSUNG A10" />
+      
       <div class="flex justify-end space-x-2">
         <button onclick="fecharModalIncompatibilidade()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
           Fechar
@@ -725,16 +773,20 @@ document.querySelectorAll('img').forEach(img => {
         </button>
       </div>
     </div>
-  </div>
+</div>
 
   <!-- Modal de Adicionar Compatibilidade -->
-  <div id="modalCompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+<div id="modalCompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
     <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
-      <h2 class="text-lg font-bold mb-4">Adicionar Compatibilidade</h2>
-      <label class="block mb-2 text-sm font-medium" for="modeloProcuradoCompat">Modelo Procurado</label>
-      <input type="text" id="modeloProcuradoCompat" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="MODELO PESQUISADO" />
-      <label class="block mb-2 text-sm font-medium" for="modeloCompativel">Modelo Compatível</label>
-      <input type="text" id="modeloCompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: SAMSUNG GALAXY A10" />
+      <h2 class="text-lg font-bold mb-4">Adicionar Nova Compatibilidade</h2>
+      <p class="text-sm text-gray-600 mb-4 -mt-2">Nos ajude a manter a base de dados atualizada!</p>
+      
+      <label class="block mb-2 text-sm font-medium" for="modeloProcuradoCompat">Película do Modelo (Principal)</label>
+      <input type="text" id="modeloProcuradoCompat" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: MOTOROLA G22" />
+      
+      <label class="block mb-2 text-sm font-medium" for="modeloCompativel">Também é compatível com o modelo</label>
+      <input type="text" id="modeloCompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: MOTO G52 / G71" />
+      
       <div class="flex justify-end space-x-2">
         <button onclick="fecharModalCompatibilidade()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
           Fechar
@@ -744,7 +796,7 @@ document.querySelectorAll('img').forEach(img => {
         </button>
       </div>
     </div>
-  </div>
+</div>
 <div id="modalSolicitacao" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
   <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
     <h2 class="text-lg font-bold mb-4">Solicitar Compatibilidade</h2>
@@ -870,6 +922,87 @@ function getBrasiliaISOString() {
   return now.toISOString().slice(0, 19).replace('T', ' ');
 }
 
+// --- LÓGICA PARA O ALERTA DE VENCIMENTO DE PLANO ---
+
+/**
+ * Calcula a diferença de dias entre hoje e uma data de expiração.
+ * Retorna um número:
+ * > 0: dias restantes
+ * 0: vence hoje
+ * < 0: já venceu
+ */
+/**
+ * Calcula a diferença de dias entre hoje e uma data de expiração.
+ * (VERSÃO CORRIGIDA COM CONTAGEM MAIS NATURAL)
+ */
+function getDaysRemaining(expirationDateString) {
+    const today = new Date();
+    // Adiciona o horário para evitar problemas com fuso horário
+    const expirationDate = new Date(expirationDateString + "T23:59:59");
+
+    // Zera o horário de hoje para comparar apenas as datas
+    today.setHours(0, 0, 0, 0);
+
+    const diffTime = expirationDate.getTime() - today.getTime();
+    
+    // --- MUDANÇA REALIZADA AQUI ---
+    // Trocamos Math.ceil por Math.floor para uma contagem mais intuitiva
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+}
+
+/**
+ * Controla a exibição e o conteúdo do banner de alerta.
+ */
+/**
+ * Controla a exibição e o conteúdo do banner de alerta. (VERSÃO ATUALIZADA)
+ */
+function handleExpirationAlert(expirationDate) {
+    const alertDiv = document.getElementById('expirationAlert');
+    const messageSpan = document.getElementById('expirationMessage');
+    const renewBtn = document.getElementById('renewButton');
+
+    const daysRemaining = getDaysRemaining(expirationDate);
+
+    // Reseta o estado do banner
+    renewBtn.classList.add('hidden');
+    alertDiv.classList.remove('bg-red-600', 'bg-gradient-to-r', 'from-orange-500', 'to-red-500', 'animate-pulse-glow');
+    alertDiv.style.display = 'none'; // Usamos style para garantir que o flex funcione
+
+    if (daysRemaining < 0) {
+        // --- CASO 1: PLANO JÁ VENCEU ---
+        messageSpan.textContent = `Seu plano expirou há ${Math.abs(daysRemaining)} dia(s)!`;
+        renewBtn.classList.remove('hidden');
+        alertDiv.classList.add('bg-red-600');
+        alertDiv.style.display = 'flex';
+
+    } else if (daysRemaining <= 3) {
+        // --- CASO 2: URGENTE! 3 DIAS OU MENOS ---
+        if (daysRemaining === 0) {
+            messageSpan.textContent = 'Atenção: Seu plano expira hoje! Renove para não perder o acesso.';
+        } else {
+            const dayText = daysRemaining > 1 ? 'dias' : 'dia';
+            messageSpan.textContent = `Seu plano expira em ${daysRemaining} ${dayText}. Não perca o acesso!`;
+        }
+        // Adiciona o gradiente E a animação de pulsação
+        alertDiv.classList.add('bg-gradient-to-r', 'from-orange-500', 'to-red-500', 'animate-pulse-glow');
+        alertDiv.style.display = 'flex';
+
+    } else if (daysRemaining <= 5) {
+        // --- CASO 3: AVISO. 4 OU 5 DIAS RESTANTES ---
+        messageSpan.textContent = `Seu plano expira em ${daysRemaining} dias.`;
+        // Adiciona apenas o gradiente, sem animação
+        alertDiv.classList.add('bg-gradient-to-r', 'from-orange-500', 'to-red-500');
+        alertDiv.style.display = 'flex';
+
+    } else {
+        // --- CASO 4: TUDO OK ---
+        alertDiv.style.display = 'none'; // Garante que o banner esteja escondido
+    }
+}
+
+
 // **NOVO** Função para piscar e focar um elemento
 function blinkAndFocus(element) {
     if (!element) return;
@@ -883,6 +1016,53 @@ function blinkAndFocus(element) {
     }, 1000);
 }
 
+/**
+ * Minimiza o banner de aviso e salva a preferência do usuário.
+ */
+// --- LÓGICA DO BANNER DE AVISO MINIMIZÁVEL ---
+
+const icons = {
+    minimize: '<svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>',
+    expand: '<svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>'
+};
+
+function toggleNotice() {
+    const content = document.getElementById('notice-content');
+    const button = document.getElementById('toggle-notice-btn');
+    
+    // Verifica se está minimizado checando o max-height
+    const isMinimized = content.style.maxHeight === '0px';
+
+    if (isMinimized) {
+        // Expande
+        content.style.maxHeight = content.scrollHeight + 'px';
+        button.innerHTML = icons.minimize;
+        localStorage.setItem('notice_state', 'expanded');
+    } else {
+        // Minimiza
+        content.style.maxHeight = '0px';
+        button.innerHTML = icons.expand;
+        localStorage.setItem('notice_state', 'minimized');
+    }
+}
+
+function setupNoticeState() {
+    const state = localStorage.getItem('notice_state');
+    const content = document.getElementById('notice-content');
+    const button = document.getElementById('toggle-notice-btn');
+    const banner = document.getElementById('important-notice-banner');
+
+    banner.classList.remove('hidden'); // Garante que o container do aviso esteja visível
+
+    if (state === 'minimized') {
+        content.style.maxHeight = '0px';
+        button.innerHTML = icons.expand;
+    } else {
+        // Estado padrão é expandido
+        content.style.maxHeight = content.scrollHeight + 'px';
+        button.innerHTML = icons.minimize;
+    }
+}
 
     /* 2) Variáveis e Estruturas */
     let data = [];        // Base de compatibilidade
@@ -1395,14 +1575,25 @@ document
         const planoInfo = userData[0];
         console.log("1. DADOS VINDOS DO SUPABASE:", planoInfo);
 
+        // --- CORREÇÃO DA DATA DE EXPIRAÇÃO APLICADA AQUI ---
+        const hoje = new Date();
+        // Adicionamos a hora para garantir que a data seja considerada até o fim do dia
+        const dataExpiracao = new Date(planoInfo.data_expiracao + 'T23:59:59');
+
+        if (hoje > dataExpiracao) {
+            if (confirm(`Seu plano ${planoInfo.plano} expirou em ${formatarData(planoInfo.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
+                mostrarPlanos();
+            }
+            return; // Bloqueia o login se expirado
+        }
+        // --- FIM DA CORREÇÃO ---
+
         const maxDevices = parseInt(planoInfo.max_devices, 10) || 1;
         
-        // --- BLOCO DE CORREÇÃO DO TIPO DE DADO ---
-        let registeredDevices = []; // Começa com um array vazio por padrão
+        let registeredDevices = [];
         const rawDevicesData = planoInfo.registered_devices;
 
         if (rawDevicesData) {
-            // Se o dado vindo do banco for um TEXTO, tentamos convertê-lo para um ARRAY.
             if (typeof rawDevicesData === 'string') {
                 try {
                     registeredDevices = JSON.parse(rawDevicesData);
@@ -1410,25 +1601,14 @@ document
                     console.error("Falha ao converter a string de dispositivos. Assumindo como vazio.", rawDevicesData);
                     registeredDevices = [];
                 }
-            }
-            // Se já for um array, usamos diretamente.
-            else if (Array.isArray(rawDevicesData)) {
+            } else if (Array.isArray(rawDevicesData)) {
                 registeredDevices = rawDevicesData;
             }
         }
-        // --- FIM DO BLOCO DE CORREÇÃO ---
-
+        
         console.log(`2. maxDevices (após parseInt): ${maxDevices} (Tipo: ${typeof maxDevices})`);
         console.log("3. registeredDevices (APÓS CORREÇÃO):", registeredDevices);
         console.log(`4. Número de dispositivos registrados (APÓS CORREÇÃO): ${registeredDevices.length}`);
-
-
-        if (new Date() > new Date(planoInfo.data_expiracao)) {
-            if (confirm(`Seu plano ${planoInfo.plano} expirou em ${formatarData(planoInfo.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
-                mostrarPlanos();
-            }
-            return;
-        }
 
         const currentDeviceInfo = navigator.userAgent;
         console.log("5. Dispositivo atual:", currentDeviceInfo);
@@ -1452,7 +1632,6 @@ document
                         'Content-Type': 'application/json',
                         'Prefer': 'return=minimal'
                     },
-                    // Agora enviamos a lista convertida para JSON, o que é o correto
                     body: JSON.stringify({ registered_devices: updatedDevices })
                 });
                 await proceedWithLogin(email, planoInfo);
@@ -1496,15 +1675,15 @@ async function proceedWithLogin(email, registroPlano) {
     // Salva dados locais para o usuário
     localStorage.setItem('user_email', email);
 
-// --- LINHAS NOVAS A SEREM ADICIONADAS ---
+    // Inicia o logout diário
     const todayForStorage = new Date().toISOString().split('T')[0];
-    localStorage.setItem('login_date', todayForStorage); // Salva a data do login
-    dailyCheckInterval = setInterval(checkDailyLogout, 60000); // Inicia o verificador (a cada 1 minuto)
-    // --- FIM DAS LINHAS NOVAS ---
+    localStorage.setItem('login_date', todayForStorage);
+    dailyCheckInterval = setInterval(checkDailyLogout, 60000);
 
     // --- ATUALIZA A INTERFACE ---
     ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'orderSection'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
     });
     const busca = document.getElementById('searchSection');
     busca.classList.remove('hidden');
@@ -1521,6 +1700,7 @@ async function proceedWithLogin(email, registroPlano) {
         `Válido até: ${formatarData(registroPlano.data_expiracao)}`;
 
     mostrarMenuMobileAposLogin();
+setupNoticeState(); // Configura o estado do banner (minimizado ou expandido)
 
     // Carrega o rascunho de pedido do usuário de forma segura
     try {
@@ -1539,11 +1719,17 @@ async function proceedWithLogin(email, registroPlano) {
     } catch (draftError) {
         console.error("Não foi possível carregar o rascunho do pedido:", draftError);
     }
+
+    // CHAMA A NOVA FUNÇÃO DE ALERTA DE VENCIMENTO
+    handleExpirationAlert(registroPlano.data_expiracao);
 }
+
 
 // Função de logout
 async function logout() {
  if (dailyCheckInterval) clearInterval(dailyCheckInterval);
+document.getElementById('expirationAlert').classList.add('hidden');
+localStorage.removeItem('notice_state');
   const email = localStorage.getItem('user_email');
   const sessionToken = localStorage.getItem('session_token');
   if (!email || !sessionToken) return;
