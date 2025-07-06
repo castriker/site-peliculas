@@ -57,6 +57,27 @@ src="https://www.facebook.com/tr?id=697769519885889&ev=PageView&noscript=1"
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
+/* Animação e Estilos para o Letreiro Rolante */
+.marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5) inset; /* Sombra interna para profundidade */
+}
+
+.marquee p {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee-animation 25s linear infinite;
+    font-size: 0.875rem; /* 14px */
+    color: #cbd5e1; /* Cor cinza claro (slate-300) */
+}
+
+@keyframes marquee-animation {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
 #notice-content {
   /* Controla a animação de expandir/minimizar */
   transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
@@ -212,32 +233,43 @@ document.querySelectorAll('img').forEach(img => {
 "></div>
 
   <!-- Cabeçalho responsivo -->
-<nav class="flex items-center justify-between p-4 bg-gradient-to-r from-black to-gray-800 shadow-xl text-white">
-  <div class="text-2xl font-black tracking-widest text-shadow flex items-center gap-2">
-    <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
-         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"></svg>
-    PELÍCULA COMPATÍVEL
-  </div>
-  <!-- Menu desktop -->
-  <div class="hidden md:flex gap-6 text-base font-semibold">
-    <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
-    <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
-    <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
-    <a href="javascript:void(0)"
-   id="menuLogin"
-   onclick="goToLogin()"
-   class="premium-link hover:text-yellow-400 transition">
-  Login
-</a>
+<nav class="flex items-center justify-between p-4 bg-gradient-to-r from-black to-gray-800 shadow-xl text-white h-20">
+  
+    <div class="flex-shrink-0" style="min-width: 180px;"> <a href="#" onclick="mostrarInicio(); return false;"> <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/logo-peliculas-uti.png" 
+                 alt="Logo Películas Compatíveis UTI" 
+                 class="h-44 w-auto"> 
+        </a>
+    </div>
 
-  </div>
-  <!-- Menu mobile (hambúrguer) -->
-  <button id="menuBtn" class="md:hidden">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-    </svg>
-  </button>
+    <div class="hidden lg:flex flex-1 mx-8 min-w-0">
+        <div class="marquee w-full bg-gray-900/50 rounded-full py-1">
+            <p>
+                ✨ MODELOS MAIS PROCURADOS: REDMI 13C / IPHONE 16 PRO MAX ✨ NOVAS COMPATIBILIDADES ADICIONADAS PARA POCO X5 ✨ CONFIRA NOSSOS PLANOS E SEJA PREMIUM ✨
+            </p>
+        </div>
+    </div>
+
+    <div class="hidden md:flex items-center gap-6 text-base font-semibold flex-shrink-0">
+        <a href="#introSection" onclick="mostrarInicio()" class="premium-link hover:text-yellow-400 transition">Início</a>
+        <a href="#planosSection" onclick="mostrarPlanos()" class="premium-link hover:text-yellow-400 transition">Planos</a>
+        <a href="https://wa.me/utidatecnologia" target="_blank" class="premium-link hover:text-yellow-400 transition">Contato</a>
+        <a href="javascript:void(0)"
+           id="menuLogin"
+           onclick="goToLogin()"
+           class="premium-link hover:text-yellow-400 transition">
+          Login
+        </a>
+    </div>
+
+    <div class="md:hidden flex items-center">
+        <button id="menuBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+    </div>
 </nav>
+
 <!-- Mobile menu (sidebar) -->
 <div id="mobileMenu"
   class="md:hidden fixed top-0 right-0 w-2/3 max-w-xs h-full bg-gradient-to-br from-gray-900/95 to-gray-800/95 text-white p-8 z-50 hidden flex-col gap-6 shadow-2xl backdrop-blur-lg rounded-l-2xl">
@@ -385,10 +417,8 @@ document.querySelectorAll('img').forEach(img => {
 </script>
 
 
-  <!-- Página Inicial: Introdução -->
-  <section id="introSection" class="py-12 bg-[#0b1120] text-white">
+<section id="introSection" class="relative py-12 bg-[#0b1120] text-white overflow-hidden">
     <div class="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center px-4 lg:px-8">
-      <!-- Texto -->
       <div class="w-full md:w-1/2 text-center md:text-left">
         <h2 class="text-3xl sm:text-4xl font-extrabold text-yellow-400 mb-4">
           <span class="inline-block">🧩</span> Encontre a película certa em segundos
@@ -402,7 +432,7 @@ document.querySelectorAll('img').forEach(img => {
           Economize tempo, evite erros e <span class="text-yellow-400 font-bold">venda mais com segurança</span>.
         </p>
         <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-4">
-          <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm"✔️ Fácil de usar</span>
+          <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Fácil de usar</span>
           <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Sem propagandas</span>
           <span class="bg-green-600 text-white px-4 py-1 rounded-full text-sm">✔️ Atualizações automáticas</span>
         </div>
@@ -410,13 +440,11 @@ document.querySelectorAll('img').forEach(img => {
           <span class="text-yellow-400 font-bold">A partir de R$ 12,00 por mês</span>, você transforma seu atendimento e ganha confiança no que oferece.
         </p>
       </div>
-      <!-- Imagem -->
       <div class="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
         <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
       </div>
     </div>
-  </section> <!-- fim de #introSection -->
-
+</section>
 <section id="loginActionSection" class="py-12 bg-[#121212] border-y border-gray-800">
     <div class="max-w-4xl mx-auto text-center px-4">
         <h2 class="text-2xl sm:text-3xl font-bold text-white">Já é assinante?</h2>
@@ -1057,8 +1085,8 @@ function blinkAndFocus(element) {
 /**
  * Minimiza o banner de aviso e salva a preferência do usuário.
  */
+// >>>>> COLE O BLOCO DE CÓDIGO FALTANTE AQUI <<<<<
 // --- LÓGICA DO BANNER DE AVISO MINIMIZÁVEL ---
-
 const icons = {
     minimize: '<svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>',
     expand: '<svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>'
@@ -1068,16 +1096,13 @@ function toggleNotice() {
     const content = document.getElementById('notice-content');
     const button = document.getElementById('toggle-notice-btn');
     
-    // Verifica se está minimizado checando o max-height
     const isMinimized = content.style.maxHeight === '0px';
 
     if (isMinimized) {
-        // Expande
         content.style.maxHeight = content.scrollHeight + 'px';
         button.innerHTML = icons.minimize;
         localStorage.setItem('notice_state', 'expanded');
     } else {
-        // Minimiza
         content.style.maxHeight = '0px';
         button.innerHTML = icons.expand;
         localStorage.setItem('notice_state', 'minimized');
@@ -1090,24 +1115,26 @@ function setupNoticeState() {
     const button = document.getElementById('toggle-notice-btn');
     const banner = document.getElementById('important-notice-banner');
 
-    banner.classList.remove('hidden'); // Garante que o container do aviso esteja visível
+    if (!content || !button || !banner) return; // Checagem de segurança
+
+    banner.classList.remove('hidden');
 
     if (state === 'minimized') {
         content.style.maxHeight = '0px';
         button.innerHTML = icons.expand;
     } else {
-        // Estado padrão é expandido
         content.style.maxHeight = content.scrollHeight + 'px';
         button.innerHTML = icons.minimize;
     }
 }
-
-    /* 2) Variáveis e Estruturas */
-    let data = [];        // Base de compatibilidade
-    let orderItems = [];  // Itens do pedido
-	let duplicateGroup = [];
-    let duplicateIndex = -1;
-    let dailyCheckInterval; 
+// >>>>> FIM DO BLOCO FALTANTE <<<<<
+/* 2) Variáveis e Estruturas (VERSÃO CORRIGIDA E COMPLETA) */
+let data = [];
+let orderItems = [];
+let duplicateGroup = [];
+let duplicateIndex = -1;
+let dailyCheckInterval; 
+let itemToAddAnyway = null;
 
     /* 3) Carregar dados da planilha */
     function loadData() {
