@@ -523,15 +523,15 @@ document.addEventListener('DOMContentLoaded', () => {
         </figure>
 
       </div>
-      <div class="block lg:hidden flex space-x-4 overflow-x-auto py-4 scroll-smooth promo-container">
+<div class="block lg:hidden flex space-x-4 overflow-x-auto py-4 scroll-smooth promo-container">
         
-        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg transition-opacity duration-1000 ease-in-out object-cover" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg" alt="Pedido de Películas">
-        
-        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg transition-opacity duration-1000 ease-in-out object-cover" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg" alt="Modelo Compatível">
-        
-        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg transition-opacity duration-1000 ease-in-out object-cover" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg" alt="Área de Pedidos">
-      
-      </div>
+    <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover" alt="Pedido de Películas">
+    
+    <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover" alt="Modelo Compatível">
+    
+    <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover" alt="Área de Pedidos">
+  
+</div>
     </div>
   </div>
 
@@ -2226,27 +2226,50 @@ async function checkEmailOnLoad() {
     // Roda a verificação de login
     await checkEmail();
 }
-// --- LÓGICA DO CARROSSEL DE IMAGENS AUTOMÁTICO ---
+// --- LÓGICA DO CARROSSEL DE IMAGENS AUTOMÁTICO (VERSÃO ATUALIZADA) ---
 function startImageCarousel() {
-    const containers = document.querySelectorAll('.promo-container');
-    
+    const containers = document.querySelectorAll('.promo-container'); //
+
     containers.forEach(container => {
         let currentIndex = 0;
-        const images = container.querySelectorAll('.promo-image');
-        if (images.length <= 1) return;
+        
+        // --- Lógica para o carrossel de FADE (Desktop) ---
+        if (container.classList.contains('lg:block')) {
+            const images = container.querySelectorAll('.promo-image'); //
+            if (images.length <= 1) return;
 
-        setInterval(() => {
-            // Esconde a imagem atual
-            images[currentIndex].classList.remove('opacity-100');
-            images[currentIndex].classList.add('opacity-0');
+            setInterval(() => {
+                // Esconde a imagem atual
+                images[currentIndex].classList.remove('opacity-100'); //
+                images[currentIndex].classList.add('opacity-0'); //
 
-            // Calcula o índice da próxima imagem
-            currentIndex = (currentIndex + 1) % images.length;
+                // Calcula o índice da próxima imagem
+                currentIndex = (currentIndex + 1) % images.length; //
 
-            // Mostra a próxima imagem
-            images[currentIndex].classList.remove('opacity-0');
-            images[currentIndex].classList.add('opacity-100');
-        }, 4000); // Muda de imagem a cada 4 segundos
+                // Mostra a próxima imagem
+                images[currentIndex].classList.remove('opacity-0'); //
+                images[currentIndex].classList.add('opacity-100'); //
+            }, 4000); // Muda a cada 4 segundos
+        }
+
+        // --- Lógica para o carrossel de SCROLL (Mobile) ---
+        else if (container.classList.contains('lg:hidden')) {
+            const images = container.querySelectorAll('img');
+            if (images.length <= 1) return;
+
+            setInterval(() => {
+                // Calcula o índice da próxima imagem, voltando para o início se chegar ao fim
+                currentIndex = (currentIndex + 1) % images.length;
+
+                // Pega a posição da próxima imagem
+                const newScrollPosition = images[currentIndex].offsetLeft;
+
+                // Rola o contêiner para a posição da nova imagem
+                // A classe "scroll-smooth" no HTML fará a animação
+                container.scrollLeft = newScrollPosition;
+
+            }, 4000); // Muda a cada 4 segundos
+        }
     });
 }
 
