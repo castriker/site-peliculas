@@ -506,6 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="text-yellow-400 font-bold">A partir de R$ 12,00 por mês</span>, você transforma seu atendimento e ganha confiança no que oferece.
         </p>
       </div>
+
 <div class="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
         <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
       </div>
@@ -519,6 +520,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <button onclick="goToLogin()" class="w-full sm:w-auto bg-yellow-400 text-black font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-yellow-300 transition-all duration-300 transform hover:scale-105">
             Fazer Login
         </button>
+
+
     </div>
 </section>
 
@@ -2267,51 +2270,26 @@ async function checkEmailOnLoad() {
 }
 // --- LÓGICA DO CARROSSEL DE IMAGENS AUTOMÁTICO (VERSÃO ATUALIZADA) ---
 function startImageCarousel() {
-    const containers = document.querySelectorAll('.promo-container'); //
+    const containers = document.querySelectorAll('.promo-container');
 
     containers.forEach(container => {
         let currentIndex = 0;
         
-        // --- Lógica para o carrossel de FADE (Desktop) ---
+        // Mantém apenas a lógica para o carrossel de FADE (Desktop)
         if (container.classList.contains('lg:block')) {
-    const images = container.querySelectorAll('.desktop-carousel-item'); //
+            const images = container.querySelectorAll('.desktop-carousel-item'); 
             if (images.length <= 1) return;
 
             setInterval(() => {
-                // Esconde a imagem atual
-                images[currentIndex].classList.remove('opacity-100'); //
-                images[currentIndex].classList.add('opacity-0'); //
-
-                // Calcula o índice da próxima imagem
-                currentIndex = (currentIndex + 1) % images.length; //
-
-                // Mostra a próxima imagem
-                images[currentIndex].classList.remove('opacity-0'); //
-                images[currentIndex].classList.add('opacity-100'); //
-            }, 4000); // Muda a cada 4 segundos
-        }
-
-        // --- Lógica para o carrossel de SCROLL (Mobile) ---
-        else if (container.classList.contains('lg:hidden')) {
-            const images = container.querySelectorAll('img');
-            if (images.length <= 1) return;
-
-            setInterval(() => {
-                // Calcula o índice da próxima imagem, voltando para o início se chegar ao fim
+                images[currentIndex].classList.remove('opacity-100');
+                images[currentIndex].classList.add('opacity-0');
                 currentIndex = (currentIndex + 1) % images.length;
-
-                // Pega a posição da próxima imagem
-                const newScrollPosition = images[currentIndex].offsetLeft;
-
-                // Rola o contêiner para a posição da nova imagem
-                // A classe "scroll-smooth" no HTML fará a animação
-                container.scrollLeft = newScrollPosition;
-
-            }, 4000); // Muda a cada 4 segundos
+                images[currentIndex].classList.remove('opacity-0');
+                images[currentIndex].classList.add('opacity-100');
+            }, 4000); 
         }
     });
 }
-
   </script>
 </body>
 </html>
