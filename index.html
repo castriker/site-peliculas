@@ -211,17 +211,32 @@ document.querySelectorAll('img').forEach(img => {
 
   <!-- Script para pré‑carregar o e‑mail salvo -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const saved = localStorage.getItem('saved_email');
-      if (saved) {
+   // Inicialização (VERSÃO COMPLETA E ATUALIZADA)
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Carrega os dados de compatibilidade da planilha
+    loadData();
+
+    // 2. Inicia o carrossel automático de imagens
+    startImageCarousel();
+
+    // 3. Verifica se há um e-mail salvo para preencher o campo de login
+    const savedEmail = localStorage.getItem('saved_email');
+    if (savedEmail) {
         const emailInput = document.getElementById('email');
         const rememberCb = document.getElementById('rememberEmail');
         if (emailInput && rememberCb) {
-          emailInput.value = saved;
-          rememberCb.checked = true;
+            emailInput.value = savedEmail;
+            rememberCb.checked = true;
         }
-      }
-    });
+    }
+
+    // 4. Verifica se já existe uma sessão de usuário ativa para fazer o login automático
+    const activeUserEmail = localStorage.getItem('user_email');
+    if (activeUserEmail) {
+        // A função checkEmailOnLoad preenche o campo de e-mail e chama a função de login
+        checkEmailOnLoad();
+    }
+});
   </script>
 </head>
 <body>
@@ -450,12 +465,11 @@ document.querySelectorAll('img').forEach(img => {
           <span class="text-yellow-400 font-bold">A partir de R$ 12,00 por mês</span>, você transforma seu atendimento e ganha confiança no que oferece.
         </p>
       </div>
-      <div class="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+<div class="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
         <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
       </div>
     </div>
-</section>
-<section id="loginActionSection" class="py-12 bg-[#121212] border-y border-gray-800">
+</section> </section> <section id="loginActionSection" class="py-12 bg-[#121212] border-y border-gray-800">
     <div class="max-w-4xl mx-auto text-center px-4">
         <h2 class="text-2xl sm:text-3xl font-bold text-white">Já é assinante?</h2>
         
@@ -486,27 +500,35 @@ document.querySelectorAll('img').forEach(img => {
       </button>
     </div>
     <!-- Imagens Responsivas -->
-    <div class="lg:w-1/2">
-      <!-- Overlay desktop -->
-      <div class="hidden lg:block relative h-80">
-        <figure class="absolute top-0 left-0 w-2/3 bg-white rounded-xl shadow-lg overflow-hidden transform -rotate-3 hover:rotate-0 transition duration-500 z-10 cursor-pointer promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg">
+<div class="lg:w-1/2 flex items-center justify-center">
+      <div class="hidden lg:block relative w-[550px] h-[350px] promo-container">
+        
+        <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-100 z-20" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg">
           <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg" class="w-full h-full object-cover" alt="Pedido de Películas">
         </figure>
-        <figure class="absolute bottom-0 left-1/4 w-2/3 bg-white rounded-xl shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition duration-500 z-10 cursor-pointer promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg">
+        
+        <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg">
           <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg" class="w-full h-full object-cover" alt="Modelo Compatível">
         </figure>
-        <figure class="absolute inset-y-1/4 right-0 w-2/3 bg-white rounded-xl shadow-2xl overflow-hidden transform hover:scale-105 transition duration-500 z-20 cursor-pointer promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg">
+        
+        <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-2xl overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg">
           <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg" class="w-full h-full object-cover" alt="Área de Pedidos">
         </figure>
+
       </div>
-      <!-- Carousel mobile -->
-      <div class="block lg:hidden flex space-x-4 overflow-x-auto py-4 scroll-smooth">
-        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg" class="w-64 flex-shrink-0 rounded-xl shadow-lg cursor-pointer promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg" alt="Pedido de Películas">
-        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg" class="w-64 flex-shrink-0 rounded-xl shadow-lg cursor-pointer promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg" alt="Modelo Compatível">
-        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg" class="w-64 flex-shrink-0 rounded-xl shadow-lg cursor-pointer promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg" alt="Área de Pedidos">
+      <div class="block lg:hidden flex space-x-4 overflow-x-auto py-4 scroll-smooth promo-container">
+        
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg transition-opacity duration-1000 ease-in-out promo-image opacity-100 object-cover" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pedido%20de%20peliculas.jpg" alt="Pedido de Películas">
+        
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg transition-opacity duration-1000 ease-in-out promo-image opacity-0 object-cover" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/modelo%20compativel.jpg" alt="Modelo Compatível">
+        
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg transition-opacity duration-1000 ease-in-out promo-image opacity-0 object-cover" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/area%20de%20pedidos.jpg" alt="Área de Pedidos">
+      
       </div>
     </div>
   </div>
+
+
   <!-- Lightbox Modal -->
   <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
     <button id="closeModal" class="absolute top-6 right-6 text-white text-3xl font-bold">×</button>
@@ -2236,6 +2258,29 @@ async function checkEmailOnLoad() {
 
     // Roda a verificação de login
     await checkEmail();
+}
+// --- LÓGICA DO CARROSSEL DE IMAGENS AUTOMÁTICO ---
+function startImageCarousel() {
+    const containers = document.querySelectorAll('.promo-container');
+    
+    containers.forEach(container => {
+        let currentIndex = 0;
+        const images = container.querySelectorAll('.promo-image');
+        if (images.length <= 1) return;
+
+        setInterval(() => {
+            // Esconde a imagem atual
+            images[currentIndex].classList.remove('opacity-100');
+            images[currentIndex].classList.add('opacity-0');
+
+            // Calcula o índice da próxima imagem
+            currentIndex = (currentIndex + 1) % images.length;
+
+            // Mostra a próxima imagem
+            images[currentIndex].classList.remove('opacity-0');
+            images[currentIndex].classList.add('opacity-100');
+        }, 4000); // Muda de imagem a cada 4 segundos
+    });
 }
 
   </script>
