@@ -1182,69 +1182,53 @@ data = jsonData.map(row => ({
     }
 
  /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
-document
-  .getElementById('searchModel')
-  .addEventListener('input', function() {
+/* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) - VERSÃO CORRIGIDA */
+document.getElementById('searchModel').addEventListener('input', function() {
     const raw = this.value;
     const resultEl = document.getElementById('result');
     if (!raw.trim()) {
-      resultEl.classList.add('hidden');
-      return;
+        resultEl.classList.add('hidden');
+        return;
     }
 
-    // função de normalização, tokenização, etc...
-    const normalize = str =>
-      str.normalize('NFD')
-         .replace(/[\u0300-\u036f]/g, '')
-         .replace(/\s+/g, ' ')
-         .toLowerCase()
-         .trim();
+    const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
     const tokens = normalize(raw).split(' ').filter(t => t);
 
-    // filtra todos que contêm cada token
     const matches = data.filter(item => {
-      const norm = normalize(item.procurado);
-      return tokens.every(token => norm.includes(token));
+        const norm = normalize(item.procurado);
+        return tokens.every(token => norm.includes(token));
     });
+
     if (!matches.length) {
-      resultEl.textContent = 'MODELO NÃO ENCONTRADO';
-      resultEl.classList.remove('hidden');
-      return;
+        resultEl.textContent = 'MODELO NÃO ENCONTRADO';
+        resultEl.classList.remove('hidden');
+        return;
     }
 
-    // prepara regex para highlight nos tokens
-    const escRe = s => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    const tokensRe = tokens.map(t => new RegExp(`(${escRe(t)})`, 'gi'));
-
-    resultEl.innerHTML = matches
-      .map(item => {
-        // 1) texto puro e highlight apenas nele
+    resultEl.innerHTML = matches.map(item => {
         let proc = item.procurado.toUpperCase();
-        tokensRe.forEach(re => {
-          proc = proc.replace(
-            re,
-            '<span class="highlight animate-blink">$1</span>'
-          );
+        // Lógica de highlight mais segura
+        tokens.forEach(token => {
+            const upperToken = token.toUpperCase();
+            const parts = proc.split(upperToken);
+            proc = parts.join(`<span class="highlight animate-blink">${upperToken}</span>`);
         });
-        // 2) monta o card com os labels em amarelo+negrito
+
         return `
-          <div class="bg-gray-800 text-gray-100 p-4 rounded-lg mb-3">
-            <p class="mb-1">
-              <span class="text-yellow-300 font-bold">MODELO PROCURADO:</span>
-              ${proc}
-            </p>
-            <p>
-              <span class="text-yellow-300 font-bold">MODELOS COMPATÍVEIS:</span>
-              ${item.compatíveis.toUpperCase()}
-            </p>
-          </div>
+            <div class="bg-gray-800 text-gray-100 p-4 rounded-lg mb-3">
+                <p class="mb-1">
+                    <span class="text-yellow-300 font-bold">MODELO PROCURADO:</span>
+                    ${proc}
+                </p>
+                <p>
+                    <span class="text-yellow-300 font-bold">MODELOS COMPATÍVEIS:</span>
+                    ${item.compatíveis.toUpperCase()}
+                </p>
+            </div>
         `;
-      })
-      .join('');
-
+    }).join('');
     resultEl.classList.remove('hidden');
-  });
-
+});
 
 // ao clicar em uma das opções, preenche o campo e esconde o result
 function selectModel(procurado) {
@@ -1255,79 +1239,55 @@ function selectModel(procurado) {
 
 
 /* 5) PESQUISA NA ABA DE PEDIDOS (orderModelo) */
-document
-  .getElementById('orderModelo')
-  .addEventListener('input', function() {
+/* 5) PESQUISA NA ABA DE PEDIDOS (orderModelo) - VERSÃO CORRIGIDA */
+document.getElementById('orderModelo').addEventListener('input', function() {
     const raw = this.value;
     const orderResult = document.getElementById('orderResult');
 
     if (!raw.trim()) {
-      orderResult.classList.add('hidden');
-      orderResult.innerHTML = '';
-      return;
+        orderResult.classList.add('hidden');
+        orderResult.innerHTML = '';
+        return;
     }
 
-    // 1) Helpers de normalização e escape
-    const normalize = str =>
-      str
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/\s+/g, ' ')
-        .toLowerCase()
-        .trim();
-    const escRe = s => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-
-    // 2) Quebra em tokens
+    const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
     const tokens = normalize(raw).split(' ').filter(t => t);
 
-    // 3) Filtra TODOS que contêm todos os tokens
     const matches = data.filter(item => {
-      const norm = normalize(item.procurado);
-      return tokens.every(token => norm.includes(token));
+        const norm = normalize(item.procurado);
+        return tokens.every(token => norm.includes(token));
     });
 
-    // 4) Se achou correspondências, mostra opções clicáveis
     if (matches.length > 0) {
-      const tokensRe = tokens.map(t => new RegExp(`(${escRe(t)})`, 'gi'));
+        orderResult.innerHTML = matches.map(item => {
+            let proc = item.procurado.toUpperCase();
+            // Lógica de highlight mais segura
+            tokens.forEach(token => {
+                const upperToken = token.toUpperCase();
+                const parts = proc.split(upperToken);
+                proc = parts.join(`<span class="highlight animate-blink">${upperToken}</span>`);
+            });
 
-      orderResult.innerHTML = matches
-        .map(item => {
-          // 4.1) Texto puro em UPPERCASE
-          let proc = item.procurado.toUpperCase();
-          // 4.2) Aplica highlight apenas no texto puro
-          tokensRe.forEach(re => {
-            proc = proc.replace(
-              re,
-              '<span class="highlight animate-blink">$1</span>'
-            );
-          });
-          // 4.3) Monta o card com rótulos em amarelo+negrito
-          return `
-            <div
-              class="bg-gray-800 text-gray-100 p-3 rounded-lg mb-2 cursor-pointer hover:bg-gray-700"
-              onclick="preencherModelo('${item.procurado.replace(/'/g,"\\'")}')"
-            >
-              <p>
-                <span class="text-yellow-300 font-bold">MODELO:</span>
-                ${proc}
-              </p>
-              <p class="text-sm mt-1">
-                <span class="text-yellow-300 font-bold">COMPATÍVEIS:</span>
-                ${item.compatíveis.toUpperCase()}
-              </p>
-            </div>
-          `;
-        })
-        .join('');
-
-      orderResult.classList.remove('hidden');
-      return;
+            return `
+                <div class="bg-gray-800 text-gray-100 p-3 rounded-lg mb-2 cursor-pointer hover:bg-gray-700"
+                     onclick="preencherModelo('${item.procurado.replace(/'/g, "\\'")}')">
+                    <p>
+                        <span class="text-yellow-300 font-bold">MODELO:</span>
+                        ${proc}
+                    </p>
+                    <p class="text-sm mt-1">
+                        <span class="text-yellow-300 font-bold">COMPATÍVEIS:</span>
+                        ${item.compatíveis.toUpperCase()}
+                    </p>
+                </div>
+            `;
+        }).join('');
+        orderResult.classList.remove('hidden');
+    } else {
+        orderResult.classList.add('hidden');
+        orderResult.innerHTML = '';
     }
-
-    // 5) Se não achar nenhum match, apenas esconde o painel
-    orderResult.classList.add('hidden');
-    orderResult.innerHTML = '';
-  });
+});
 
 /* função para preencher o input ao clicar na sugestão */
 function preencherModelo(valor) {
