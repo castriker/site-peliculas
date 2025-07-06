@@ -220,6 +220,11 @@ body {
   transform: translateX(0);
   opacity: 1;
 }
+ 
+.promo-image {
+  pointer-events: auto; /* Reativa os eventos de clique para esta classe */
+  cursor: pointer;      /* Mostra o cursor de 'mãozinha' para indicar que é clicável */
+}
 
   </style>
 
@@ -538,20 +543,21 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- Imagens Responsivas -->
 <div class="lg:w-1/2 flex items-center justify-center">
       <div class="hidden lg:block relative w-[550px] h-[350px] promo-container">
-        
-<figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-100 z-20" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg">
-        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-full h-full object-cover" alt="Pedido de Películas">
-      </figure>
       
-      <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg">
-        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" class="w-full h-full object-cover" alt="Modelo Compatível">
-      </figure>
-      
-      <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-2xl overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg">
-        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-full h-full object-cover" alt="Área de Pedidos">
-      </figure>
+   <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-100 z-20" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg">
+  <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-full h-full object-cover" alt="Pedido de Películas">
+</figure>
 
-      </div>
+<figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg">
+  <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" class="w-full h-full object-cover" alt="Modelo Compatível">
+</figure>
+
+<figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-2xl overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg">
+  <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-full h-full object-cover" alt="Área de Pedidos">
+</figure>
+
+</div>
+
 <div class="block lg:hidden promo-container-mobile">
     <div class="marquee-wrapper">
         <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" alt="Pedido de Películas">
@@ -563,7 +569,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" alt="Área de Pedidos">
     </div>
 </div>
-  </div>
 
 
   <!-- Lightbox Modal -->
