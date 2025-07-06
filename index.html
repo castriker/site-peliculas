@@ -57,6 +57,35 @@ src="https://www.facebook.com/tr?id=697769519885889&ev=PageView&noscript=1"
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
+/* Container da galeria mobile */
+.promo-container-mobile {
+    width: 100%;
+    overflow: hidden; /* Esconde o que sai da tela */
+    padding: 1rem 0;
+}
+
+/* Wrapper que segura e anima as imagens */
+.marquee-wrapper {
+    display: flex; /* Coloca as imagens lado a lado */
+    gap: 1rem; /* Espaçamento entre as imagens */
+    animation: scroll-left 25s linear infinite; /* Aplica a animação */
+}
+
+/* Pausa a animação quando o mouse está sobre ela */
+.promo-container-mobile:hover .marquee-wrapper {
+    animation-play-state: paused;
+}
+
+/* Define a animação de rolagem */
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
 /* Adicione este código dentro da sua tag <style> */
 
 /* Correção para garantir que o modal de confirmação fique na frente de tudo */
@@ -510,29 +539,30 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="lg:w-1/2 flex items-center justify-center">
       <div class="hidden lg:block relative w-[550px] h-[350px] promo-container">
         
-        <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-100 z-20" data-src="img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg">
-          <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-full h-full object-cover" alt="Pedido de Películas">
-        </figure>
-        
-        <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg">
-          <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" class="w-full h-full object-cover" alt="Modelo Compatível">
-        </figure>
-        
-        <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-2xl overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg">
-          <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-full h-full object-cover" alt="Área de Pedidos">
-        </figure>
+<figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-100 z-20" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-full h-full object-cover" alt="Pedido de Películas">
+      </figure>
+      
+      <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" class="w-full h-full object-cover" alt="Modelo Compatível">
+      </figure>
+      
+      <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-2xl overflow-hidden transform transition-opacity duration-1000 ease-in-out promo-image opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-full h-full object-cover" alt="Área de Pedidos">
+      </figure>
 
       </div>
-<div class="block lg:hidden flex space-x-4 overflow-x-auto py-4 scroll-smooth promo-container">
+<div class="block lg:hidden promo-container-mobile">
+    <div class="marquee-wrapper">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" alt="Pedido de Películas">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" alt="Modelo Compatível">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" alt="Área de Pedidos">
         
-    <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover" alt="Pedido de Películas">
-    
-    <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover" alt="Modelo Compatível">
-    
-    <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover" alt="Área de Pedidos">
-  
-</div>
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" alt="Pedido de Películas">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" alt="Modelo Compatível">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-96 h-56 flex-shrink-0 rounded-xl shadow-lg object-cover promo-image" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" alt="Área de Pedidos">
     </div>
+</div>
   </div>
 
 
