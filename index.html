@@ -417,6 +417,23 @@ document.querySelectorAll('img').forEach(img => {
     </div>
   </section> <!-- fim de #introSection -->
 
+<section id="loginActionSection" class="py-12 bg-[#121212] border-y border-gray-800">
+    <div class="max-w-4xl mx-auto text-center px-4">
+        <h2 class="text-2xl sm:text-3xl font-bold text-white">Já é assinante?</h2>
+        <p class="text-gray-400 mt-2">Faça login para acessar a tabela completa e suas ferramentas exclusivas.</p>
+        
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button onclick="goToLogin()" class="w-full sm:w-auto bg-yellow-400 text-black font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-yellow-300 transition-all duration-300 transform hover:scale-105">
+                Fazer Login
+            </button>
+            
+            <button onclick="mostrarPlanos()" class="w-full sm:w-auto bg-transparent border-2 border-gray-700 text-gray-300 font-semibold py-3 px-8 rounded-lg hover:bg-gray-800 hover:text-white transition-colors duration-300">
+                Ver Planos
+            </button>
+        </div>
+    </div>
+</section>
+
 <section id="promoPedido" class="py-16 bg-gradient-to-r from-yellow-500 to-yellow-600 text-gray-900">
   <div class="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
     <!-- Texto Promocional -->
@@ -1707,6 +1724,12 @@ async function proceedWithLogin(email, registroPlano) {
     dailyCheckInterval = setInterval(checkDailyLogout, 60000);
 
     // --- ATUALIZA A INTERFACE ---
+// ADICIONE 'loginActionSection' A ESTA LISTA
+    ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'orderSection', 'loginActionSection'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
     ['introSection', 'promoPedido', 'planosSection', 'loginArea', 'orderSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -1836,10 +1859,8 @@ function mostrarInicio() {
       if (el) el.style.display = 'none';
   });
 
-  // Garante que o título dos planos reapareça na tela inicial
-  document.getElementById('planosTitleSection').style.display = '';
-
-  ['introSection','promoPedido','planosSection'].forEach(id => {
+  // ADICIONE 'loginActionSection' A ESTA LISTA TAMBÉM
+  ['introSection', 'promoPedido', 'planosSection', 'planosTitleSection', 'loginActionSection'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
           el.classList.remove('hidden');
