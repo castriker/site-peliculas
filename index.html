@@ -68,7 +68,7 @@ src="https://www.facebook.com/tr?id=697769519885889&ev=PageView&noscript=1"
 .marquee-wrapper {
     display: flex; /* Coloca as imagens lado a lado */
     gap: 1rem; /* Espaçamento entre as imagens */
-    animation: scroll-left 6s linear infinite; /* Aplica a animação */
+    animation: scroll-left 3s linear infinite; /* Aplica a animação */
 }
 
 /* Pausa a animação quando o mouse está sobre ela */
@@ -542,19 +542,23 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     <!-- Imagens Responsivas -->
 <div class="lg:w-1/2 flex items-center justify-center">
-      <div class="hidden lg:block relative w-[550px] h-[350px] promo-container">
+<div class="hidden lg:block relative w-[550px] h-[350px] promo-container">
       
-   <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out opacity-100 z-20" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg">
-  <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-full h-full object-cover" alt="Pedido de Películas">
-</figure>
+  <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out desktop-carousel-item opacity-100 z-20" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg">
+    <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img1.jpg" class="w-full h-full object-cover" alt="Pedido de Películas">
+  </figure>
 
-<figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out opacity-100 z-20" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg">
-  <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" class="w-full h-full object-cover" alt="Modelo Compatível">
-</figure>
+  <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out desktop-carousel-item opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg">
+    <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img2.jpg" class="w-full h-full object-cover" alt="Modelo Compatível">
+  </figure>
 
-<figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden transform transition-opacity duration-1000 ease-in-out opacity-100 z-20" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg">
-  <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-full h-full object-cover" alt="Área de Pedidos">
-</figure>
+  <figure class="absolute top-0 left-0 w-full h-full rounded-xl shadow-2xl overflow-hidden transform transition-opacity duration-1000 ease-in-out desktop-carousel-item opacity-0 z-10" data-src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg">
+    <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/img3.jpg" class="w-full h-full object-cover" alt="Área de Pedidos">
+  </figure>
+
+</div>
+
+</div>
 
 </div>
 
@@ -2270,7 +2274,7 @@ function startImageCarousel() {
         
         // --- Lógica para o carrossel de FADE (Desktop) ---
         if (container.classList.contains('lg:block')) {
-            const images = container.querySelectorAll('.promo-image'); //
+    const images = container.querySelectorAll('.desktop-carousel-item'); //
             if (images.length <= 1) return;
 
             setInterval(() => {
