@@ -1,4 +1,4 @@
-#<!DOCTYPE html>
+<!DOCTYPE html>
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -1690,7 +1690,7 @@ async function getStableDeviceInfo() {
         const currentDeviceId = await getStableDeviceInfo();
 
         const res = await fetch(
-            `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1`, {
+            `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1&timestamp=${Date.now()}`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
             }
         );
