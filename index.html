@@ -23,7 +23,7 @@ src="https://www.facebook.com/tr?id=697769519885889&ev=PageView&noscript=1"
    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  
+
   <!-- favicon no formato .ico -->
   <link rel="icon" href="favicoouti.ico" type="image/x-icon">
   <link rel="shortcut icon" href="favicoouti.ico" type="image/x-icon">
@@ -1664,9 +1664,14 @@ async function getStableDeviceInfo() {
     // Obtém o resultado da análise
     const result = await fp.get();
     
-    // Retorna o ID do visitante (visitorId), que é o nosso identificador único
-    console.log("FingerprintJS ID:", result.visitorId);
-    return result.visitorId;
+    // Pega a plataforma do navegador (ex: "Win32", "iPhone", "Linux armv8l")
+    const platform = navigator.platform || 'unknown';
+    
+    // Cria um ID composto
+    const compositeId = `${result.visitorId}|${platform}`;
+    
+    console.log("FingerprintJS ID Enriquecido:", compositeId);
+    return compositeId;
 }
 
     /* 12) LOGIN / LOGOUT */
