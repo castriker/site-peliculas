@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+@<!DOCTYPE html>
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -1647,7 +1647,7 @@ async function getStableDeviceInfo() {
 
     /* 12) LOGIN / LOGOUT */
  async function checkEmail() {
-    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO FINALÍSSIMA) ---");
+    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO FINALÍSSIMA CORRIGIDA) ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
     const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -1660,6 +1660,7 @@ async function getStableDeviceInfo() {
     try {
         const currentDeviceId = await getStableDeviceInfo();
 
+        // --- URL DE LEITURA 100% CORRIGIDA ---
         const res = await fetch(
             `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1&timestamp=${Date.now()}`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
@@ -1694,7 +1695,7 @@ async function getStableDeviceInfo() {
             if (registeredDevices.length < maxDevices) {
                 const updatedDevices = [...registeredDevices, currentDeviceId];
                 
-                // --- CORREÇÃO APLICADA AQUI: REMOVIDO O HÍFEN DE 'v-1' ---
+                // URL DE SALVAMENTO JÁ ESTÁ CORRETA
                 await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
                     method: 'PATCH',
                     headers: {
