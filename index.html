@@ -1,4 +1,4 @@
-@<!DOCTYPE html>
+<!DOCTYPE html>
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -1647,7 +1647,7 @@ async function getStableDeviceInfo() {
 
     /* 12) LOGIN / LOGOUT */
  async function checkEmail() {
-    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO FINAL CORRIGIDA) ---");
+    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO FINALÍSSIMA) ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
     const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -1660,7 +1660,6 @@ async function getStableDeviceInfo() {
     try {
         const currentDeviceId = await getStableDeviceInfo();
 
-        // --- ESTA É A LINHA CORRIGIDA COM O '&' ---
         const res = await fetch(
             `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1&timestamp=${Date.now()}`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
@@ -1688,14 +1687,14 @@ async function getStableDeviceInfo() {
         const registeredDevices = Array.isArray(planoInfo.registered_devices) ? planoInfo.registered_devices : [];
         
         const isDeviceAlreadyRegistered = registeredDevices.includes(currentDeviceId);
-        console.log("Este dispositivo já está registrado?", isDeviceAlreadyRegistered);
-
+        
         if (isDeviceAlreadyRegistered) {
             await proceedWithLogin(email, planoInfo);
         } else {
             if (registeredDevices.length < maxDevices) {
                 const updatedDevices = [...registeredDevices, currentDeviceId];
                 
+                // --- CORREÇÃO APLICADA AQUI: REMOVIDO O HÍFEN DE 'v-1' ---
                 await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
                     method: 'PATCH',
                     headers: {
