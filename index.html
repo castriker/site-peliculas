@@ -56,6 +56,8 @@ src="https://www.facebook.com/tr?id=697769519885889&ev=PageView&noscript=1"
   <!-- jsPDF para gerar PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+
   <style>
 /* Container da galeria mobile */
 .promo-container-mobile {
@@ -1651,11 +1653,22 @@ document
   .getElementById("btnSalvarPedido")
   .addEventListener("click", salvarDraft);
 
-
+// NOVO: Função que usa FingerprintJS para criar um ID único e estável
+async function getStableDeviceInfo() {
+    // Inicializa a biblioteca
+    const fp = await FingerprintJS.load();
+    
+    // Obtém o resultado da análise
+    const result = await fp.get();
+    
+    // Retorna o ID do visitante (visitorId), que é o nosso identificador único
+    console.log("FingerprintJS ID:", result.visitorId);
+    return result.visitorId;
+}
 
     /* 12) LOGIN / LOGOUT */
  async function checkEmail() {
-    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN ---");
+    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (V4 COM FINGERPRINTJS) ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
     const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -1666,6 +1679,9 @@ document
     if (!email) return alert('Digite um e-mail válido.');
 
     try {
+        // ALTERAÇÃO 1: Chamamos a nova função com 'await' para obter o ID do dispositivo
+        const currentDeviceId = await getStableDeviceInfo();
+
         const res = await fetch(
             `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
@@ -1679,58 +1695,34 @@ document
         }
 
         const planoInfo = userData[0];
-        console.log("1. DADOS VINDOS DO SUPABASE:", planoInfo);
-
-        // --- CORREÇÃO DA DATA DE EXPIRAÇÃO APLICADA AQUI ---
         const hoje = new Date();
-        // Adicionamos a hora para garantir que a data seja considerada até o fim do dia
         const dataExpiracao = new Date(planoInfo.data_expiracao + 'T23:59:59');
 
         if (hoje > dataExpiracao) {
             if (confirm(`Seu plano ${planoInfo.plano} expirou em ${formatarData(planoInfo.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
                 mostrarPlanos();
             }
-            return; // Bloqueia o login se expirado
+            return;
         }
-        // --- FIM DA CORREÇÃO ---
 
         const maxDevices = parseInt(planoInfo.max_devices, 10) || 1;
+        let registeredDevices = Array.isArray(planoInfo.registered_devices) ? planoInfo.registered_devices : [];
         
-        let registeredDevices = [];
-        const rawDevicesData = planoInfo.registered_devices;
-
-        if (rawDevicesData) {
-            if (typeof rawDevicesData === 'string') {
-                try {
-                    registeredDevices = JSON.parse(rawDevicesData);
-                } catch (e) {
-                    console.error("Falha ao converter a string de dispositivos. Assumindo como vazio.", rawDevicesData);
-                    registeredDevices = [];
-                }
-            } else if (Array.isArray(rawDevicesData)) {
-                registeredDevices = rawDevicesData;
-            }
-        }
-        
-        console.log(`2. maxDevices (após parseInt): ${maxDevices} (Tipo: ${typeof maxDevices})`);
-        console.log("3. registeredDevices (APÓS CORREÇÃO):", registeredDevices);
-        console.log(`4. Número de dispositivos registrados (APÓS CORREÇÃO): ${registeredDevices.length}`);
-
-        const currentDeviceInfo = navigator.userAgent;
-        console.log("5. Dispositivo atual:", currentDeviceInfo);
-
-        const isDeviceAlreadyRegistered = registeredDevices.includes(currentDeviceInfo);
-        console.log("6. Este dispositivo já está registrado?", isDeviceAlreadyRegistered);
+        // ALTERAÇÃO 2: A verificação agora usa o ID do FingerprintJS
+        const isDeviceAlreadyRegistered = registeredDevices.includes(currentDeviceId);
+        console.log("Este dispositivo já está registrado?", isDeviceAlreadyRegistered);
 
         if (isDeviceAlreadyRegistered) {
             console.log("--> DECISÃO: Dispositivo já registrado. Acesso liberado.");
             await proceedWithLogin(email, planoInfo);
         } else {
-            console.log(`--> VERIFICANDO VAGAS: A comparação é: ${registeredDevices.length} < ${maxDevices} ?`);
+            console.log(`--> VERIFICANDO VAGAS: ${registeredDevices.length} < ${maxDevices} ?`);
             
             if (registeredDevices.length < maxDevices) {
                 console.log("--> DECISÃO: Há vagas! Registrando novo dispositivo e liberando acesso.");
-                const updatedDevices = [...registeredDevices, currentDeviceInfo];
+                // ALTERAÇÃO 3: Salvamos o novo ID do FingerprintJS
+                const updatedDevices = [...registeredDevices, currentDeviceId];
+                
                 await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
                     method: 'PATCH',
                     headers: {
