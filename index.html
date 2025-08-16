@@ -1,4 +1,4 @@
-#<!DOCTYPE html>
+@<!DOCTYPE html>
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -254,35 +254,6 @@ document.querySelectorAll('img').forEach(img => {
     });
   </script>
 
-  <!-- Script para pré‑carregar o e‑mail salvo -->
-  <script>
-   // Inicialização (VERSÃO COMPLETA E ATUALIZADA)
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Carrega os dados de compatibilidade da planilha
-    loadData();
-
-    // 2. Inicia o carrossel automático de imagens
-    startImageCarousel();
-
-    // 3. Verifica se há um e-mail salvo para preencher o campo de login
-    const savedEmail = localStorage.getItem('saved_email');
-    if (savedEmail) {
-        const emailInput = document.getElementById('email');
-        const rememberCb = document.getElementById('rememberEmail');
-        if (emailInput && rememberCb) {
-            emailInput.value = savedEmail;
-            rememberCb.checked = true;
-        }
-    }
-
-    // 4. Verifica se já existe uma sessão de usuário ativa para fazer o login automático
-    const activeUserEmail = localStorage.getItem('user_email');
-    if (activeUserEmail) {
-        // A função checkEmailOnLoad preenche o campo de e-mail e chama a função de login
-        checkEmailOnLoad();
-    }
-});
-  </script>
 </head>
 <body>
 <div id="debugLog" style="
@@ -1676,7 +1647,7 @@ async function getStableDeviceInfo() {
 
     /* 12) LOGIN / LOGOUT */
  async function checkEmail() {
-    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (V5 COM CORREÇÃO DE ARRAY) ---");
+    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO FINAL CORRIGIDA) ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
     const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -1689,6 +1660,7 @@ async function getStableDeviceInfo() {
     try {
         const currentDeviceId = await getStableDeviceInfo();
 
+        // --- ESTA É A LINHA CORRIGIDA COM O '&' ---
         const res = await fetch(
             `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1&timestamp=${Date.now()}`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
@@ -1713,25 +1685,16 @@ async function getStableDeviceInfo() {
         }
 
         const maxDevices = parseInt(planoInfo.max_devices, 10) || 1;
-        // A linha abaixo já trata o caso de 'registered_devices' ser nulo ou não ser um array
         const registeredDevices = Array.isArray(planoInfo.registered_devices) ? planoInfo.registered_devices : [];
         
         const isDeviceAlreadyRegistered = registeredDevices.includes(currentDeviceId);
         console.log("Este dispositivo já está registrado?", isDeviceAlreadyRegistered);
 
         if (isDeviceAlreadyRegistered) {
-            console.log("--> DECISÃO: Dispositivo já registrado. Acesso liberado.");
             await proceedWithLogin(email, planoInfo);
         } else {
-            console.log(`--> VERIFICANDO VAGAS: ${registeredDevices.length} < ${maxDevices} ?`);
-            
             if (registeredDevices.length < maxDevices) {
-                console.log("--> DECISÃO: Há vagas! Registrando novo dispositivo e liberando acesso.");
-                
-                // --- CORREÇÃO APLICADA AQUI ---
-                // Garante que estamos adicionando ao array existente, mesmo que a variável tenha sido re-declarada.
                 const updatedDevices = [...registeredDevices, currentDeviceId];
-                // -----------------------------
                 
                 await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
                     method: 'PATCH',
@@ -1744,11 +1707,7 @@ async function getStableDeviceInfo() {
                 });
                 await proceedWithLogin(email, planoInfo);
             } else {
-                console.log("--> DECISÃO: Não há vagas. Acesso bloqueado.");
-                alert(
-                    `Você atingiu o limite de ${maxDevices} dispositivo(s) para o seu plano. ` +
-                    `Entre em contato com o suporte para remover um dispositivo antigo ou para atualizar seu plano.`
-                );
+                alert(`Você atingiu o limite de ${maxDevices} dispositivo(s) para o seu plano.`);
             }
         }
     } catch (err) {
