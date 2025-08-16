@@ -1676,7 +1676,7 @@ async function getStableDeviceInfo() {
 
     /* 12) LOGIN / LOGOUT */
  async function checkEmail() {
-    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (V4 COM FINGERPRINTJS) ---");
+    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (V5 COM CORREÇÃO DE ARRAY) ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
     const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -1687,7 +1687,6 @@ async function getStableDeviceInfo() {
     if (!email) return alert('Digite um e-mail válido.');
 
     try {
-        // ALTERAÇÃO 1: Chamamos a nova função com 'await' para obter o ID do dispositivo
         const currentDeviceId = await getStableDeviceInfo();
 
         const res = await fetch(
@@ -1714,9 +1713,9 @@ async function getStableDeviceInfo() {
         }
 
         const maxDevices = parseInt(planoInfo.max_devices, 10) || 1;
-        let registeredDevices = Array.isArray(planoInfo.registered_devices) ? planoInfo.registered_devices : [];
+        // A linha abaixo já trata o caso de 'registered_devices' ser nulo ou não ser um array
+        const registeredDevices = Array.isArray(planoInfo.registered_devices) ? planoInfo.registered_devices : [];
         
-        // ALTERAÇÃO 2: A verificação agora usa o ID do FingerprintJS
         const isDeviceAlreadyRegistered = registeredDevices.includes(currentDeviceId);
         console.log("Este dispositivo já está registrado?", isDeviceAlreadyRegistered);
 
@@ -1728,8 +1727,11 @@ async function getStableDeviceInfo() {
             
             if (registeredDevices.length < maxDevices) {
                 console.log("--> DECISÃO: Há vagas! Registrando novo dispositivo e liberando acesso.");
-                // ALTERAÇÃO 3: Salvamos o novo ID do FingerprintJS
+                
+                // --- CORREÇÃO APLICADA AQUI ---
+                // Garante que estamos adicionando ao array existente, mesmo que a variável tenha sido re-declarada.
                 const updatedDevices = [...registeredDevices, currentDeviceId];
+                // -----------------------------
                 
                 await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
                     method: 'PATCH',
