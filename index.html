@@ -1628,42 +1628,68 @@ document
   .addEventListener("click", salvarDraft);
 
 // NOVO: Função que usa FingerprintJS para criar um ID único e estável
-async function getStableDeviceInfo() {
-    // Inicializa a biblioteca
-    const fp = await FingerprintJS.load();
+// ========================================================================
+// COLE TODO ESTE BLOCO DE CÓDIGO NO LUGAR DAS FUNÇÕES ANTIGAS
+// ========================================================================
+
+/**
+ * Função auxiliar que lê as informações do navegador e sistema.
+ */
+function getReadableDeviceDescription() {
+    const ua = navigator.userAgent;
+    let os = 'OS Desconhecido';
+    if (/Windows/.test(ua)) os = 'Windows';
+    else if (/Macintosh/.test(ua)) os = 'Mac';
+    else if (/iPhone|iPad|iPod/.test(ua)) os = 'iPhone/iPad';
+    else if (/Android/.test(ua)) os = 'Android';
+    else if (/Linux/.test(ua)) os = 'Linux';
+
+    let browser = 'Navegador Desconhecido';
+    // A ordem é importante para não confundir Chrome com outros
+    if (/Edg/.test(ua)) browser = 'Edge';
+    else if (/Firefox/.test(ua)) browser = 'Firefox';
+    else if (/Chrome/.test(ua) && !/Chromium/.test(ua)) browser = 'Chrome';
+    else if (/Safari/.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
     
-    // Obtém o resultado da análise
-    const result = await fp.get();
-    
-    // Pega a plataforma do navegador (ex: "Win32", "iPhone", "Linux armv8l")
-    const platform = navigator.platform || 'unknown';
-    
-    // Cria um ID composto
-    const compositeId = `${result.visitorId}|${platform}`;
-    
-    console.log("FingerprintJS ID Enriquecido:", compositeId);
-    return compositeId;
+    return `${browser} no ${os}`;
 }
 
-    /* 12) LOGIN / LOGOUT */
-// SUBSTITUA A FUNÇÃO DE TESTE PELA VERSÃO FINAL E CORRETA ABAIXO
-async function getStableDeviceInfo() {
-    // Garante que a biblioteca FingerprintJS está carregada antes de usar
-    if (typeof FingerprintJS === 'undefined') {
-        console.error("FingerprintJS não foi carregado a tempo!");
-        // Retorna um ID de fallback para não quebrar a aplicação
-        return `error_fallback|${navigator.platform || 'unknown'}`;
+/**
+ * Função principal que coleta todas as "pistas" do dispositivo.
+ */
+async function getDeviceDossier() {
+    // Carrega a biblioteca de Fingerprint
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    
+    // Pega o IP público do usuário através de um serviço externo
+    let ipAddress = 'IP não obtido';
+    try {
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        ipAddress = ipData.ip;
+    } catch (e) {
+        console.error("Não foi possível obter o endereço de IP.", e);
     }
-    const fp = await FingerprintJS.load();
-    const result = await fp.get();
-    const platform = navigator.platform || 'unknown';
-    const compositeId = `${result.visitorId}|${platform}`;
-    console.log("FingerprintJS ID Enriquecido:", compositeId);
-    return compositeId;
+
+    // Monta o "dossiê" completo
+    const dossier = {
+        id: result.visitorId, // O ID único do Fingerprint
+        descricao: getReadableDeviceDescription(), // Ex: "Chrome no Windows"
+        ip: ipAddress, // O IP do usuário
+        resolucao: `${screen.width}x${screen.height}`, // A resolução da tela
+        plataforma: navigator.platform || 'desconhecida' // Ex: "Win32"
+    };
+
+    console.log("Dossiê do Dispositivo Coletado:", dossier);
+    return dossier;
 }
 
+/**
+ * Função de Login FINAL, agora usando o Dossiê.
+ */
 async function checkEmail() {
-    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO FINAL) ---");
+    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO DOSSIÊ) ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
     const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -1674,48 +1700,47 @@ async function checkEmail() {
     if (!email) return alert('Digite um e-mail válido.');
 
     try {
-        const currentDeviceId = await getStableDeviceInfo();
+        // 1. Coleta o dossiê completo do dispositivo atual
+        const deviceDossier = await getDeviceDossier();
 
+        // 2. Busca os dados do usuário no Supabase
         const res = await fetch(
             `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
             }
         );
         
-        if (!res.ok) {
-            // Se a requisição falhar, mostra o status do erro
-            throw new Error(`Falha na consulta ao banco de dados: ${res.status} ${res.statusText}`);
-        }
+        if (!res.ok) throw new Error(`Falha na consulta: ${res.status}`);
 
         const userData = await res.json();
-
-        if (!userData || !userData.length) {
-            alert("E-mail não cadastrado em nenhum plano.");
-            return;
-        }
+        if (!userData || !userData.length) return alert("E-mail não cadastrado em nenhum plano.");
 
         const planoInfo = userData[0];
+        
+        // 3. Lógica de data de expiração (sem alterações)
         const hoje = new Date();
         const dataExpiracao = new Date(planoInfo.data_expiracao + 'T23:59:59');
-
         if (hoje > dataExpiracao) {
-            if (confirm(`Seu plano ${planoInfo.plano} expirou em ${formatarData(planoInfo.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
-                mostrarPlanos();
-            }
+            if (confirm(`Seu plano ${planoInfo.plano} expirou. Deseja ver os planos?`)) mostrarPlanos();
             return;
         }
 
+        // 4. Lógica de verificação de dispositivos (AGORA USANDO O DOSSIÊ)
         const maxDevices = parseInt(planoInfo.max_devices, 10) || 1;
         const registeredDevices = Array.isArray(planoInfo.registered_devices) ? planoInfo.registered_devices : [];
-        const isDeviceAlreadyRegistered = registeredDevices.includes(currentDeviceId);
+        
+        // Verifica se algum dispositivo na lista salva tem o mesmo ID do dispositivo atual
+        const isDeviceAlreadyRegistered = registeredDevices.some(device => device.id === deviceDossier.id);
         
         if (isDeviceAlreadyRegistered) {
+            console.log("Dispositivo já registrado. Acesso liberado.");
             await proceedWithLogin(email, planoInfo);
         } else {
             if (registeredDevices.length < maxDevices) {
-                const updatedDevices = [...registeredDevices, currentDeviceId];
+                console.log("Nova vaga de dispositivo sendo preenchida.");
+                // Adiciona o dossiê completo à lista
+                const updatedDevices = [...registeredDevices, deviceDossier];
                 
-                // Envia a atualização para o Supabase
                 await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
                     method: 'PATCH',
                     headers: {
@@ -1727,12 +1752,12 @@ async function checkEmail() {
                 });
                 await proceedWithLogin(email, planoInfo);
             } else {
-                alert(`Você atingiu o limite de ${maxDevices} dispositivo(s) para o seu plano.`);
+                alert(`Você atingiu o limite de ${maxDevices} acessos para o seu plano.`);
             }
         }
     } catch (err) {
         console.error("Erro crítico durante o login:", err);
-        alert("Ocorreu um erro ao tentar fazer login. Detalhes: " + err.message);
+        alert("Ocorreu um erro ao tentar fazer login.");
     }
 }
 
