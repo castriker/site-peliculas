@@ -25,8 +25,8 @@ src="https://www.facebook.com/tr?id=697769519885889&ev=PageView&noscript=1"
   <meta http-equiv="Expires" content="0">
 
   <!-- favicon no formato .ico -->
-  <link rel="icon" href="favicoouti.ico" type="image/x-icon">
-  <link rel="shortcut icon" href="favicoouti.ico" type="image/x-icon">
+  <<link rel="icon" href="https://raw.githubusercontent.com/castriker/site-peliculas/main/favicoouti.ico" type="image/x-icon">
+<link rel="shortcut icon" href="https://raw.githubusercontent.com/castriker/site-peliculas/main/favicoouti.ico" type="image/x-icon">
 
 <script>
   document.addEventListener('contextmenu', e => e.preventDefault());
@@ -484,7 +484,7 @@ document.querySelectorAll('img').forEach(img => {
       </div>
 
 <div class="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-        <img src="pelicua3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
+        <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/pelicula3d.png" alt="Películas 3D" class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-sm xl:max-w-md">
       </div>
     </div>
 </section> </section> <section id="loginActionSection" class="py-12 bg-[#121212] border-y border-gray-800">
@@ -1662,7 +1662,7 @@ async function getStableDeviceInfo() {
 
         // --- URL DE LEITURA 100% CORRIGIDA COM NOMES CERTOS DAS COLUNAS ---
         const res = await fetch(
-            `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1&timestamp=${Date.now()}`, {
+    `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1&timestamp=${Date.now()}`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
             }
         );
