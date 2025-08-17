@@ -1,4 +1,4 @@
-@<!DOCTYPE html>
+<!DOCTYPE html>
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -25,7 +25,7 @@ src="https://www.facebook.com/tr?id=697769519885889&ev=PageView&noscript=1"
   <meta http-equiv="Expires" content="0">
 
   <!-- favicon no formato .ico -->
-  <<link rel="icon" href="https://raw.githubusercontent.com/castriker/site-peliculas/main/favicoouti.ico" type="image/x-icon">
+ <link rel="icon" href="https://raw.githubusercontent.com/castriker/site-peliculas/main/favicoouti.ico" type="image/x-icon">
 <link rel="shortcut icon" href="https://raw.githubusercontent.com/castriker/site-peliculas/main/favicoouti.ico" type="image/x-icon">
 
 <script>
@@ -1646,45 +1646,93 @@ async function getStableDeviceInfo() {
 }
 
     /* 12) LOGIN / LOGOUT */
-// SUBSTITUA A SUA FUNÇÃO checkEmail PELA FUNÇÃO ABAIXO
+// SUBSTITUA A FUNÇÃO DE TESTE PELA VERSÃO FINAL E CORRETA ABAIXO
+async function getStableDeviceInfo() {
+    // Garante que a biblioteca FingerprintJS está carregada antes de usar
+    if (typeof FingerprintJS === 'undefined') {
+        console.error("FingerprintJS não foi carregado a tempo!");
+        // Retorna um ID de fallback para não quebrar a aplicação
+        return `error_fallback|${navigator.platform || 'unknown'}`;
+    }
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    const platform = navigator.platform || 'unknown';
+    const compositeId = `${result.visitorId}|${platform}`;
+    console.log("FingerprintJS ID Enriquecido:", compositeId);
+    return compositeId;
+}
+
 async function checkEmail() {
-    console.log("--- INICIANDO TESTE DEFINITIVO DE CONEXÃO ---");
+    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO FINAL) ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
+    const rememberEmailChecked = document.getElementById('rememberEmail').checked;
 
-    if (!email) {
-        alert('Digite um e-mail válido.');
-        return;
-    }
+    if (rememberEmailChecked && email) localStorage.setItem('saved_email', email);
+    else localStorage.removeItem('saved_email');
+
+    if (!email) return alert('Digite um e-mail válido.');
 
     try {
-        console.log("Tentando buscar dados para o e-mail:", email);
-        // Apenas a busca, sem Fingerprint
+        const currentDeviceId = await getStableDeviceInfo();
+
         const res = await fetch(
-            `${supabaseUrl}/rest/v1/sessoes?select=*&email=eq.${encodeURIComponent(email)}&limit=1`, {
+            `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
             }
         );
-
-        console.log("Resposta do servidor:", res.status, res.statusText);
-
+        
         if (!res.ok) {
-            alert(`O TESTE FALHOU.\n\nO servidor respondeu com erro: ${res.status}.\n\nIsso confirma que o problema NÃO é o Fingerprint, mas sim algo na sua configuração de RLS ou na chave de API do Supabase.`);
-            return;
+            // Se a requisição falhar, mostra o status do erro
+            throw new Error(`Falha na consulta ao banco de dados: ${res.status} ${res.statusText}`);
         }
 
         const userData = await res.json();
-        console.log("Dados recebidos no teste:", userData);
 
-        if (userData && userData.length > 0) {
-            alert("ÓTIMA NOTÍCIA! O TESTE FUNCIONOU!\n\nA busca no banco de dados foi um sucesso e o erro 400 desapareceu. Isso prova que o problema é 100% a integração com o FingerprintJS. Agora podemos corrigir o código original.");
-        } else {
-            alert("TESTE FUNCIONOU!\n\nA busca foi feita com sucesso, mas não encontrou seu e-mail na tabela. O importante é que o erro 400 SUMIU. O problema é mesmo o FingerprintJS.");
+        if (!userData || !userData.length) {
+            alert("E-mail não cadastrado em nenhum plano.");
+            return;
         }
 
+        const planoInfo = userData[0];
+        const hoje = new Date();
+        const dataExpiracao = new Date(planoInfo.data_expiracao + 'T23:59:59');
+
+        if (hoje > dataExpiracao) {
+            if (confirm(`Seu plano ${planoInfo.plano} expirou em ${formatarData(planoInfo.data_expiracao)}.\nClique em OK para ver nossos planos.`)) {
+                mostrarPlanos();
+            }
+            return;
+        }
+
+        const maxDevices = parseInt(planoInfo.max_devices, 10) || 1;
+        const registeredDevices = Array.isArray(planoInfo.registered_devices) ? planoInfo.registered_devices : [];
+        const isDeviceAlreadyRegistered = registeredDevices.includes(currentDeviceId);
+        
+        if (isDeviceAlreadyRegistered) {
+            await proceedWithLogin(email, planoInfo);
+        } else {
+            if (registeredDevices.length < maxDevices) {
+                const updatedDevices = [...registeredDevices, currentDeviceId];
+                
+                // Envia a atualização para o Supabase
+                await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ registered_devices: updatedDevices })
+                });
+                await proceedWithLogin(email, planoInfo);
+            } else {
+                alert(`Você atingiu o limite de ${maxDevices} dispositivo(s) para o seu plano.`);
+            }
+        }
     } catch (err) {
-        console.error("Erro crítico durante o teste:", err);
-        alert("Ocorreu um erro de rede ou script durante o teste. Verifique o console.");
+        console.error("Erro crítico durante o login:", err);
+        alert("Ocorreu um erro ao tentar fazer login. Detalhes: " + err.message);
     }
 }
 
