@@ -1195,16 +1195,31 @@ let itemToAddAnyway = null;
 
     /* 3) Carregar dados da planilha */
     function loadData() {
-      fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
-        .then(response => response.json())
-        .then(jsonData => {
-          // row[0] → coluna A, row[1] → coluna B
-data = jsonData.map(row => ({
-  procurado:  row[0].trim(),   // modelo procurado
-  compatíveis: row[1].trim()    // lista de compatíveis
-}));
-        });
-    }
+  fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
+    .then(response => {
+      if (!response.ok) {
+        // Lança um erro se a resposta da rede não for bem-sucedida (ex: erro 404, 500)
+        throw new Error(`Erro de rede: ${response.statusText}`);
+      }
+      return response.json();
+    })
+    .then(jsonData => {
+      if (!Array.isArray(jsonData)) {
+        // Lança um erro se os dados recebidos não estiverem no formato esperado
+        throw new Error('O formato dos dados recebidos da planilha é inválido.');
+      }
+      data = jsonData.map(row => ({
+        procurado:  (row[0] || '').toString().trim(),
+        compatíveis: (row[1] || '').toString().trim()
+      }));
+      console.log('Dados carregados com sucesso:', data.length, 'registros.');
+    })
+    .catch(error => {
+      // Captura qualquer erro que ocorrer no processo e exibe um alerta para o usuário
+      console.error('Falha ao carregar os dados da planilha:', error);
+      alert('ERRO: Não foi possível carregar a lista de modelos. O serviço de dados pode estar temporariamente fora do ar. Verifique sua planilha ou tente novamente mais tarde.');
+    });
+}
 
  /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
 /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) - VERSÃO CORRIGIDA */
