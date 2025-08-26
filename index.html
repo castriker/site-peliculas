@@ -1194,28 +1194,17 @@ let dailyCheckInterval;
 let itemToAddAnyway = null;
 
     /* 3) Carregar dados da planilha */
-// CÓDIGO FINAL E CORRETO - GARANTA QUE COPIOU TUDO
-function loadData() {
-  // Este é o link completo e correto
-  fetch('https://script.google.com/macros/s/AKfycbxU-TPKNkRPgTe3Mq93drxZkWauTL0qljm4_8wq-OHVirtCQOJza3s5UgSAAgmihfhK/exec')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Erro de rede: ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .then(jsonData => {
-      data = jsonData.map(row => ({
-        procurado:  (row[0] || '').toString().trim(),
-        compatíveis: (row[1] || '').toString().trim()
-      }));
-      console.log('Dados dos modelos carregados com sucesso!');
-    })
-    .catch(error => {
-      console.error('Falha crítica ao carregar os dados da planilha:', error);
-      alert('ERRO: Não foi possível carregar a lista de modelos. Verifique sua conexão ou contate o suporte.');
-    });
-}
+    function loadData() {
+      fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
+        .then(response => response.json())
+        .then(jsonData => {
+          // row[0] → coluna A, row[1] → coluna B
+data = jsonData.map(row => ({
+  procurado:  row[0].trim(),   // modelo procurado
+  compatíveis: row[1].trim()    // lista de compatíveis
+}));
+        });
+    }
 
  /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
 /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) - VERSÃO CORRIGIDA */
