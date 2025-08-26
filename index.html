@@ -289,7 +289,7 @@ document.querySelectorAll('img').forEach(img => {
     <div class="hidden lg:flex flex-1 mx-8 min-w-0">
         <div class="marquee w-full bg-gray-900/50 rounded-full py-1">
             <p>
-                ✨ATENÇÃO!!!! SITE EM MANUTENÇÃO / ATUALIZAÇÃO 26/08/2025 DESDE AS 09:00H, ESTAREMOS DE VOLTA LOGO LOGO ! ✨
+                ✨ATENÇÃO!!!! SITE EM MANUTENÇÃO / ATUALIZAÇÃO 26/08/2025 DESDE AS 09:00H, VOLTAREMOS DE VOLTA LOGO LOGO ! ✨
             </p>
         </div>
     </div>
@@ -1194,27 +1194,17 @@ let dailyCheckInterval;
 let itemToAddAnyway = null;
 
     /* 3) Carregar dados da planilha */
-function loadData() {
-  // Este é o link novo e correto da sua "Versão 2"
-  fetch('https://script.google.com/macros/s/AKfycbx7xabW5bT62ud00t25QM_elusAfRzmhg5XoYETp4vFhXunJYyhe_f2ogmho0oJ3w-v/exec')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Erro de rede: ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .then(jsonData => {
-      data = jsonData.map(row => ({
-        procurado:  (row[0] || '').toString().trim(),
-        compatíveis: (row[1] || '').toString().trim()
-      }));
-      console.log('Dados dos modelos carregados com sucesso!');
-    })
-    .catch(error => {
-      console.error('Falha crítica ao carregar os dados da planilha:', error);
-      alert('ERRO: Não foi possível carregar a lista de modelos. Verifique sua conexão ou contate o suporte.');
-    });
-}
+    function loadData() {
+      fetch('https://script.google.com/macros/s/AKfycbwiDM-VA66hS8pnAGghwY2vxL3vqrRp9SIHmGc5AkwlMZeMYXg_An3dCvoJQUq6mJWTuA/exec')
+        .then(response => response.json())
+        .then(jsonData => {
+          // row[0] → coluna A, row[1] → coluna B
+data = jsonData.map(row => ({
+  procurado:  row[0].trim(),   // modelo procurado
+  compatíveis: row[1].trim()    // lista de compatíveis
+}));
+        });
+    }
 
  /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
 /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) - VERSÃO CORRIGIDA */
