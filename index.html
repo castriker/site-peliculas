@@ -2274,26 +2274,44 @@ document.getElementById('email').addEventListener('keydown', function(event) {
 /**
  * Exibe uma data e hora de atualização falsas para marketing.
  */
+/**
+ * VERSÃO CORRIGIDA: Exibe uma data e hora de atualização que persistem
+ * durante a sessão do usuário, evitando horários que "voltam no tempo".
+ */
 function displayFakeUpdateTime() {
   const today = new Date();
-  
-  // Gera uma hora aleatória entre 08 e 21h para parecer mais real
-  const hour = Math.floor(Math.random() * (21 - 8 + 1)) + 8; 
-  const minute = Math.floor(Math.random() * 60);
+  const todayString = today.toLocaleDateString('pt-BR'); // Formato DD/MM/AAAA
+  let fakeTime;
 
-  // Formata para ter sempre dois dígitos (ex: 09:05)
-  const paddedHour = String(hour).padStart(2, '0');
-  const paddedMinute = String(minute).padStart(2, '0');
+  // 1. Tenta buscar um horário já salvo na memória da sessão
+  const storedTime = sessionStorage.getItem('fakeUpdateTime');
+  const storedDate = sessionStorage.getItem('fakeUpdateDate');
 
-  const formattedDate = today.toLocaleDateString('pt-BR'); // Formato DD/MM/AAAA
-  const fakeTime = `${paddedHour}:${paddedMinute}`;
-  
-  const updateText = `Última atualização: Hoje, ${formattedDate} às ${fakeTime}`;
+  // 2. Verifica se existe um horário salvo E se ele é do dia de hoje
+  if (storedTime && storedDate === todayString) {
+    // Se sim, usa o horário que já foi sorteado antes
+    fakeTime = storedTime;
+  } else {
+    // Se não, é a primeira visita do dia/sessão. Sorteia um novo horário.
+    const hour = Math.floor(Math.random() * (21 - 8 + 1)) + 8; // Entre 08 e 21h
+    const minute = Math.floor(Math.random() * 60);
+    
+    const paddedHour = String(hour).padStart(2, '0');
+    const paddedMinute = String(minute).padStart(2, '0');
 
+    fakeTime = `${paddedHour}:${paddedMinute}`;
+
+    // 3. Salva o novo horário e a data na memória da sessão para ser usado nos reloads
+    sessionStorage.setItem('fakeUpdateTime', fakeTime);
+    sessionStorage.setItem('fakeUpdateDate', todayString);
+  }
+
+  // 4. Monta o texto e exibe na tela (nenhuma mudança aqui)
+  const updateText = `Última atualização: Hoje, ${todayString} às ${fakeTime}`;
   const targetElement = document.getElementById('last-update-timestamp');
   if (targetElement) {
     targetElement.textContent = updateText;
-    targetElement.style.display = 'block'; // Garante que esteja visível
+    targetElement.style.display = 'block';
   }
 }
 
