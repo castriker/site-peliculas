@@ -312,6 +312,9 @@ document.querySelectorAll('img').forEach(img => {
         </button>
     </div>
 </nav>
+<div class="bg-gray-900 py-1 border-b border-gray-800 text-center">
+    <p id="last-update-timestamp" class="text-green-400 text-xs animate-pulse"></p>
+</div>
 
 <!--PARA CELULAR: -->
 <div class="lg:hidden bg-gray-900 py-1 border-b border-gray-800">
@@ -2268,17 +2271,39 @@ document.getElementById('email').addEventListener('keydown', function(event) {
     checkEmail();
   }
 });
+/**
+ * Exibe uma data e hora de atualização falsas para marketing.
+ */
+function displayFakeUpdateTime() {
+  const today = new Date();
+  
+  // Gera uma hora aleatória entre 08 e 21h para parecer mais real
+  const hour = Math.floor(Math.random() * (21 - 8 + 1)) + 8; 
+  const minute = Math.floor(Math.random() * 60);
+
+  // Formata para ter sempre dois dígitos (ex: 09:05)
+  const paddedHour = String(hour).padStart(2, '0');
+  const paddedMinute = String(minute).padStart(2, '0');
+
+  const formattedDate = today.toLocaleDateString('pt-BR'); // Formato DD/MM/AAAA
+  const fakeTime = `${paddedHour}:${paddedMinute}`;
+  
+  const updateText = `Última atualização: Hoje, ${formattedDate} às ${fakeTime}`;
+
+  const targetElement = document.getElementById('last-update-timestamp');
+  if (targetElement) {
+    targetElement.textContent = updateText;
+    targetElement.style.display = 'block'; // Garante que esteja visível
+  }
+}
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
     loadData();
-    // Verifica se já existe uma sessão ao carregar a página
+    displayFakeUpdateTime(); // Chamada fora do IF, para rodar sempre
+
     const email = localStorage.getItem('user_email');
     if (email) {
-        // Se houver um e-mail, tenta revalidar o login silenciosamente
-        // ou diretamente mostra a tela de logado.
-        // Por simplicidade, vamos chamar a função de login de novo,
-        // mas com o email já preenchido.
         checkEmailOnLoad();
     }
 });
