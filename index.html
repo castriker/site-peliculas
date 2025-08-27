@@ -1658,22 +1658,24 @@ function getReadableDeviceDescription() {
 /**
  * NOVA VERSÃO - Coleta um "dossiê" do dispositivo com base em dados estáveis.
  */
+/**
+ * VERSÃO FINAL CORRIGIDA - Coleta um "dossiê" focado no COMPUTADOR.
+ */
 async function getDeviceDossier() {
-    // 1. Coleta os dados estáveis do navegador/dispositivo
-    const stableData = {
+    // 1. Coleta os dados que identificam o COMPUTADOR (hardware + SO)
+    const stableComputerData = {
         plataforma: navigator.platform || 'desconhecida',
         resolucao: `${screen.width}x${screen.height}`,
-        idiomas: (navigator.languages || ['desconhecido']).join(','),
         profundidadeCor: screen.colorDepth || 0,
         fusoHorario: new Date().getTimezoneOffset() || 0,
         nucleosCPU: navigator.hardwareConcurrency || 0,
         memoriaRAM: navigator.deviceMemory || 0
     };
 
-    // 2. Cria o identificador único e estável juntando os valores
-    const stableId = Object.values(stableData).join('|');
+    // 2. Cria o identificador único e estável JUNTANDO APENAS OS DADOS DO COMPUTADOR
+    const stableId = Object.values(stableComputerData).join('|');
 
-    // 3. Coleta dados adicionais (IP e descrição) apenas para registro/log
+    // 3. Coleta dados adicionais (IP, descrição e idiomas) apenas para registro/log
     let ipAddress = 'IP não obtido';
     try {
         const ipResponse = await fetch('https://api.ipify.org?format=json');
@@ -1685,14 +1687,16 @@ async function getDeviceDossier() {
 
     // 4. Monta o "dossiê" completo que será salvo
     const dossier = {
-        stableId: stableId, // <-- NOSSO NOVO ID ESTÁVEL!
-        descricao: getReadableDeviceDescription(), // Função que você já tem
+        stableId: stableId, // <-- ID ESTÁVEL DO COMPUTADOR
+        descricao: getReadableDeviceDescription(), 
         ip: ipAddress,
+        // O campo 'idiomas' continua sendo salvo, mas FORA do stableId
+        idiomas: (navigator.languages || ['desconhecido']).join(','), 
         // Incluímos os dados que formaram o ID para referência
-        ...stableData 
+        ...stableComputerData 
     };
 
-    console.log("Dossiê do Dispositivo (versão estável):", dossier);
+    console.log("Dossiê do Dispositivo (versão COMPUTADOR):", dossier);
     return dossier;
 }
 
