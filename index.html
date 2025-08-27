@@ -59,8 +59,6 @@ src="https://www.facebook.com/tr?id=697769519885889&ev=PageView&noscript=1"
   <!-- jsPDF para gerar PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-
   <style>
 /* Container da galeria mobile */
 .promo-container-mobile {
@@ -1657,12 +1655,25 @@ function getReadableDeviceDescription() {
 /**
  * Função principal que coleta todas as "pistas" do dispositivo.
  */
+/**
+ * NOVA VERSÃO - Coleta um "dossiê" do dispositivo com base em dados estáveis.
+ */
 async function getDeviceDossier() {
-    // Carrega a biblioteca de Fingerprint
-    const fp = await FingerprintJS.load();
-    const result = await fp.get();
-    
-    // Pega o IP público do usuário através de um serviço externo
+    // 1. Coleta os dados estáveis do navegador/dispositivo
+    const stableData = {
+        plataforma: navigator.platform || 'desconhecida',
+        resolucao: `${screen.width}x${screen.height}`,
+        idiomas: (navigator.languages || ['desconhecido']).join(','),
+        profundidadeCor: screen.colorDepth || 0,
+        fusoHorario: new Date().getTimezoneOffset() || 0,
+        nucleosCPU: navigator.hardwareConcurrency || 0,
+        memoriaRAM: navigator.deviceMemory || 0
+    };
+
+    // 2. Cria o identificador único e estável juntando os valores
+    const stableId = Object.values(stableData).join('|');
+
+    // 3. Coleta dados adicionais (IP e descrição) apenas para registro/log
     let ipAddress = 'IP não obtido';
     try {
         const ipResponse = await fetch('https://api.ipify.org?format=json');
@@ -1672,24 +1683,27 @@ async function getDeviceDossier() {
         console.error("Não foi possível obter o endereço de IP.", e);
     }
 
-    // Monta o "dossiê" completo
+    // 4. Monta o "dossiê" completo que será salvo
     const dossier = {
-        id: result.visitorId, // O ID único do Fingerprint
-        descricao: getReadableDeviceDescription(), // Ex: "Chrome no Windows"
-        ip: ipAddress, // O IP do usuário
-        resolucao: `${screen.width}x${screen.height}`, // A resolução da tela
-        plataforma: navigator.platform || 'desconhecida' // Ex: "Win32"
+        stableId: stableId, // <-- NOSSO NOVO ID ESTÁVEL!
+        descricao: getReadableDeviceDescription(), // Função que você já tem
+        ip: ipAddress,
+        // Incluímos os dados que formaram o ID para referência
+        ...stableData 
     };
 
-    console.log("Dossiê do Dispositivo Coletado:", dossier);
+    console.log("Dossiê do Dispositivo (versão estável):", dossier);
     return dossier;
 }
 
 /**
  * Função de Login FINAL, agora usando o Dossiê.
  */
+/**
+ * Função de Login FINAL, AGORA USANDO O DOSSIÊ COM ID ESTÁVEL.
+ */
 async function checkEmail() {
-    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO DOSSIÊ) ---");
+    console.log("--- INICIANDO VERIFICAÇÃO DE LOGIN (VERSÃO ID ESTÁVEL) ---");
     const emailInput = document.getElementById('email');
     const email = emailInput.value.trim().toLowerCase();
     const rememberEmailChecked = document.getElementById('rememberEmail').checked;
@@ -1700,10 +1714,10 @@ async function checkEmail() {
     if (!email) return alert('Digite um e-mail válido.');
 
     try {
-        // 1. Coleta o dossiê completo do dispositivo atual
+        // 1. Coleta o dossiê completo do dispositivo atual (com nosso novo ID estável)
         const deviceDossier = await getDeviceDossier();
 
-        // 2. Busca os dados do usuário no Supabase
+        // 2. Busca os dados do usuário no Supabase (nenhuma mudança aqui)
         const res = await fetch(
             `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
@@ -1717,7 +1731,7 @@ async function checkEmail() {
 
         const planoInfo = userData[0];
         
-        // 3. Lógica de data de expiração (sem alterações)
+        // 3. Lógica de data de expiração (nenhuma mudança aqui)
         const hoje = new Date();
         const dataExpiracao = new Date(planoInfo.data_expiracao + 'T23:59:59');
         if (hoje > dataExpiracao) {
@@ -1725,12 +1739,14 @@ async function checkEmail() {
             return;
         }
 
-        // 4. Lógica de verificação de dispositivos (AGORA USANDO O DOSSIÊ)
+        // 4. Lógica de verificação de dispositivos (AGORA USANDO O ID ESTÁVEL)
         const maxDevices = parseInt(planoInfo.max_devices, 10) || 1;
         const registeredDevices = Array.isArray(planoInfo.registered_devices) ? planoInfo.registered_devices : [];
         
-        // Verifica se algum dispositivo na lista salva tem o mesmo ID do dispositivo atual
-        const isDeviceAlreadyRegistered = registeredDevices.some(device => device.id === deviceDossier.id);
+        // ▼▼▼ ALTERAÇÃO PRINCIPAL AQUI ▼▼▼
+        // Comparamos o `stableId` em vez do antigo `id`
+        const isDeviceAlreadyRegistered = registeredDevices.some(device => device.stableId === deviceDossier.stableId);
+        // ▲▲▲ ALTERAÇÃO PRINCIPAL AQUI ▲▲▲
         
         if (isDeviceAlreadyRegistered) {
             console.log("Dispositivo já registrado. Acesso liberado.");
@@ -1738,7 +1754,7 @@ async function checkEmail() {
         } else {
             if (registeredDevices.length < maxDevices) {
                 console.log("Nova vaga de dispositivo sendo preenchida.");
-                // Adiciona o dossiê completo à lista
+                // Adiciona o dossiê completo (com o stableId) à lista
                 const updatedDevices = [...registeredDevices, deviceDossier];
                 
                 await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
