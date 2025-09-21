@@ -297,15 +297,14 @@ document.querySelectorAll('img').forEach(img => {
   
     <div class="flex-shrink-0" style="min-width: 180px;"> <a href="#" onclick="mostrarInicio(); return false;"> <img src="https://raw.githubusercontent.com/castriker/site-peliculas/main/logo-peliculas-uti.png" 
                  alt="Logo Películas Compatíveis UTI" 
-                 class="h-44 w-auto"> 
+                 class="h-16 w-auto">
         </a>
     </div>
 
     <div class="hidden lg:flex flex-1 mx-8 min-w-0">
         <div class="marquee w-full bg-gray-900/50 rounded-full py-1">
             <p>
-                ✨ MODELOS MAIS PROCURADOS: REDMI 14C / IPHONE 16 ✨ NOVAS COMPATIBILIDADES ADICIONADAS PARA REALME C75 ✨ CONFIRA NOSSOS PLANOS E SEJA PREMIUM ✨
-            </p>
+✨ MODELOS MAIS PROCURADOS: REDMI 14C / POCO C75 ✨ NOVAS COMPATIBILIDADES ADICIONADAS PARA NOTE 14S / MOTO G64 / REDMI A5 / POCO M7 PRO 5G / POCO C71 / REALME 12 LITE / POCO X7 PRO / MOTO G84 / REALME 14 ✨ CONFIRA NOSSOS PLANOS E SEJA PREMIUM ✨            </p>
         </div>
     </div>
 
@@ -940,27 +939,29 @@ document.querySelectorAll('img').forEach(img => {
 </div>
   </section>
 
-  <!-- Modal de Relatar Incompatibilidade -->
-  <div id="modalIncompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-    <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
-      <h2 class="text-lg font-bold mb-4">Relatar Incompatibilidade</h2>
-      <p class="text-sm text-gray-600 mb-4 -mt-2">A película de um modelo não serviu em outro? Nos ajude a registrar.</p>
+<div id="modalIncompatibilidade" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+  <div class="bg-white text-black w-11/12 max-w-sm p-6 rounded shadow-lg">
+    <h2 class="text-lg font-bold mb-4">Relatar Incompatibilidade</h2>
+    <p class="text-sm text-gray-600 mb-4 -mt-2">A película de um modelo não serviu em outro? Nos ajude a registrar.</p>
 
-      <label class="block mb-2 text-sm font-medium" for="modeloTestado">Película do Modelo (Principal)</label>
-      <input type="text" id="modeloTestado" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: IPHONE 14" />
-      
-      <label class="block mb-2 text-sm font-medium" for="modeloIncompativel">Não foi compatível com o modelo</label>
-      <input type="text" id="modeloIncompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: SAMSUNG A10" />
-      
-      <div class="flex justify-end space-x-2">
-        <button onclick="fecharModalIncompatibilidade()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
-          Fechar
-        </button>
-        <button onclick="enviarIncompatibilidade()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
-          Enviar
-        </button>
-      </div>
+    <label class="block mb-2 text-sm font-medium" for="modeloTestado">Modelo pesquisado</label>
+    <input type="text" id="modeloTestado" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: IPHONE 14" />
+    
+    <label class="block mb-2 text-sm font-medium" for="modeloIncompativel">Não foi compatível com o modelo</label>
+    <input type="text" id="modeloIncompativel" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: SAMSUNG A10" />
+    
+    <label class="block mb-2 text-sm font-medium" for="motivoIncompatibilidade">Motivo</label>
+    <textarea id="motivoIncompatibilidade" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: Câmera ficou fora do recorte" rows="3"></textarea>
+    
+    <div class="flex justify-end space-x-2">
+      <button onclick="fecharModalIncompatibilidade()" class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded">
+        Fechar
+      </button>
+      <button onclick="enviarIncompatibilidade()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+        Enviar
+      </button>
     </div>
+  </div>
 </div>
 
   <!-- Modal de Adicionar Compatibilidade -->
@@ -969,7 +970,7 @@ document.querySelectorAll('img').forEach(img => {
       <h2 class="text-lg font-bold mb-4">Adicionar Nova Compatibilidade</h2>
       <p class="text-sm text-gray-600 mb-4 -mt-2">Nos ajude a manter a base de dados atualizada!</p>
       
-      <label class="block mb-2 text-sm font-medium" for="modeloProcuradoCompat">Película do Modelo (Principal)</label>
+      <label class="block mb-2 text-sm font-medium" for="modeloProcuradoCompat">Modelo Pesquisado</label>
       <input type="text" id="modeloProcuradoCompat" class="w-full p-2 mb-4 rounded border border-gray-300 text-sm sm:text-base" placeholder="Ex: MOTOROLA G22" />
       
       <label class="block mb-2 text-sm font-medium" for="modeloCompativel">Também é compatível com o modelo</label>
@@ -2153,16 +2154,25 @@ function limparPedido() {
       }
       document.getElementById('modalIncompatibilidade').classList.remove('hidden');
     }
-    function fecharModalIncompatibilidade() {
-      document.getElementById('modalIncompatibilidade').classList.add('hidden');
-    }
+ function fecharModalIncompatibilidade() {
+  const modal = document.getElementById('modalIncompatibilidade');
+  modal.classList.add('hidden');
+  
+  // Limpa o campo de motivo ao fechar
+  document.getElementById('motivoIncompatibilidade').value = ''; 
+}
     async function enviarIncompatibilidade() {
   const modeloTestado = document.getElementById('modeloTestado').value.trim();
   const modeloIncompativel = document.getElementById('modeloIncompativel').value.trim();
+  const motivo = document.getElementById('motivoIncompatibilidade').value.trim(); // Pega o texto direto do textarea
   const email = localStorage.getItem("user_email") || null;
 
+  // Validação dos campos
   if (!modeloTestado || !modeloIncompativel) {
-    return alert("Preencha ambos os campos antes de enviar!");
+    return alert("Preencha o modelo principal e o modelo incompatível!");
+  }
+  if (!motivo) {
+    return alert("Por favor, descreva o motivo da incompatibilidade.");
   }
 
   try {
@@ -2176,13 +2186,14 @@ function limparPedido() {
         tipo: "incompatibilidade",
         modelo_procurado: modeloTestado,
         modelo_informado: modeloIncompativel,
+        motivo: motivo, // Envia o texto digitado pelo cliente
         email_usuario: email
       }])
     });
 
     if (!res.ok) throw new Error(await res.text());
 
-    alert("📥 Registro de incompatibilidade enviado com sucesso!");
+    alert("📥 Registro de incompatibilidade enviado com sucesso! Obrigado por colaborar.");
     fecharModalIncompatibilidade();
   } catch (err) {
     console.error(err);
@@ -2389,41 +2400,58 @@ document.getElementById('email').addEventListener('keydown', function(event) {
  * VERSÃO CORRIGIDA: Exibe uma data e hora de atualização que persistem
  * durante a sessão do usuário, evitando horários que "voltam no tempo".
  */
+/**
+ * VERSÃO CORRIGIDA: Exibe uma data e hora de atualização que nunca será no futuro.
+ */
 function displayFakeUpdateTime() {
-  const today = new Date();
-  const todayString = today.toLocaleDateString('pt-BR'); // Formato DD/MM/AAAA
-  let fakeTime;
+    const now = new Date();
+    const todayString = now.toLocaleDateString('pt-BR');
 
-  // 1. Tenta buscar um horário já salvo na memória da sessão
-  const storedTime = sessionStorage.getItem('fakeUpdateTime');
-  const storedDate = sessionStorage.getItem('fakeUpdateDate');
+    let fakeTime;
+    const storedTime = sessionStorage.getItem('fakeUpdateTime');
+    const storedDate = sessionStorage.getItem('fakeUpdateDate');
 
-  // 2. Verifica se existe um horário salvo E se ele é do dia de hoje
-  if (storedTime && storedDate === todayString) {
-    // Se sim, usa o horário que já foi sorteado antes
-    fakeTime = storedTime;
-  } else {
-    // Se não, é a primeira visita do dia/sessão. Sorteia um novo horário.
-    const hour = Math.floor(Math.random() * (21 - 8 + 1)) + 8; // Entre 08 e 21h
-    const minute = Math.floor(Math.random() * 60);
-    
-    const paddedHour = String(hour).padStart(2, '0');
-    const paddedMinute = String(minute).padStart(2, '0');
+    if (storedTime && storedDate === todayString) {
+        fakeTime = storedTime;
+    } else {
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
 
-    fakeTime = `${paddedHour}:${paddedMinute}`;
+        // Não mostra a atualização se for antes das 8h da manhã.
+        if (currentHour < 8) {
+            const targetElement = document.getElementById('last-update-timestamp');
+            if (targetElement) {
+                targetElement.style.display = 'none';
+            }
+            return;
+        }
 
-    // 3. Salva o novo horário e a data na memória da sessão para ser usado nos reloads
-    sessionStorage.setItem('fakeUpdateTime', fakeTime);
-    sessionStorage.setItem('fakeUpdateDate', todayString);
-  }
+        // Gera uma hora aleatória entre 8h e a hora atual.
+        const randomHour = Math.floor(Math.random() * (currentHour - 8 + 1)) + 8;
 
-  // 4. Monta o texto e exibe na tela (nenhuma mudança aqui)
-  const updateText = `Última atualização: Hoje, ${todayString} às ${fakeTime}`;
-  const targetElement = document.getElementById('last-update-timestamp');
-  if (targetElement) {
-    targetElement.textContent = updateText;
-    targetElement.style.display = 'block';
-  }
+        let randomMinute;
+        // Se a hora sorteada for a mesma que a hora atual, o minuto precisa ser menor.
+        if (randomHour === currentHour) {
+            randomMinute = Math.floor(Math.random() * (currentMinute + 1));
+        } else {
+            // Se a hora sorteada já passou, qualquer minuto entre 0 e 59 é válido.
+            randomMinute = Math.floor(Math.random() * 60);
+        }
+
+        const paddedHour = String(randomHour).padStart(2, '0');
+        const paddedMinute = String(randomMinute).padStart(2, '0');
+        fakeTime = `${paddedHour}:${paddedMinute}`;
+
+        sessionStorage.setItem('fakeUpdateTime', fakeTime);
+        sessionStorage.setItem('fakeUpdateDate', todayString);
+    }
+
+    const updateText = `Última atualização: Hoje, ${todayString} às ${fakeTime}`;
+    const targetElement = document.getElementById('last-update-timestamp');
+    if (targetElement) {
+        targetElement.textContent = updateText;
+        targetElement.style.display = 'block'; // Garante que a mensagem seja exibida
+    }
 }
 
 // Inicialização
