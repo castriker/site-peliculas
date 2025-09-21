@@ -763,12 +763,12 @@ document.querySelectorAll('img').forEach(img => {
 </div>
 
     <div class="bg-gray-700 p-4 rounded-lg">
-      <h3 class="text-lg font-semibold mb-2">Itens do Pedido</h3>
+      <h3 class="text-lg font-semibold mb-2">Lista de Pedido</h3>
       <div id="pedidoItens" class="text-sm">
         <p class="text-gray-300">Nenhum item adicionado ainda.</p>
       </div>
       <button onclick="gerarPDFPedido()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
-        Gerar PDF do Pedido
+        Gerar PDF Dessa Lista
       </button>
 <button onclick="voltarConsulta()"
         class="mt-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
@@ -776,11 +776,11 @@ document.querySelectorAll('img').forEach(img => {
 </button>
 <button onclick="limparPedido()"
         class="mt-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
-  Limpar Pedido
+  Limpar Lista
 </button>
 <button id="btnSalvarPedido"
         class="mt-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded text-sm sm:text-base">
-  💾 Salvar Pedido
+  💾 Salvar Lista
 </button>
 
 
@@ -871,7 +871,7 @@ document.querySelectorAll('img').forEach(img => {
 
         <button onclick="mostrarPedidos()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H7.118l-.552-2.207A1 1 0 005.568 0H3z" clip-rule="evenodd" /></svg>
-            <span>Fazer Pedido</span>
+            <span>Lista De Compras</span>
         </button>
         
         <button onclick="abrirModalCompatibilidade()" class="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300">
