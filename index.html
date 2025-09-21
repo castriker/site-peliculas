@@ -1730,8 +1730,7 @@ function getReadableDeviceDescription() {
  * VERSÃO FINAL CORRIGIDA - Coleta um "dossiê" focado no COMPUTADOR.
  */
 async function getDeviceDossier() {
-    // 1. Coleta os dados que identificam o COMPUTADOR (hardware + SO)
-    // ATUALIZADO: Agora usando apenas os 4 itens que você escolheu.
+    // 1. Coleta os 4 itens para a comparação
     const stableComputerData = {
         plataforma: navigator.platform || 'desconhecida',
         resolucao: `${screen.width}x${screen.height}`,
@@ -1739,10 +1738,10 @@ async function getDeviceDossier() {
         nucleosCPU: navigator.hardwareConcurrency || 0
     };
 
-    // 2. Cria o identificador único e estável juntando os dados acima
+    // 2. Cria o stableId
     const stableId = Object.values(stableComputerData).join('|');
 
-    // 3. Coleta dados adicionais (IP, descrição, etc.) apenas para registro/log
+    // 3. Coleta os dados que serão apenas salvos para registro
     let ipAddress = 'IP não obtido';
     try {
         const ipResponse = await fetch('https://api.ipify.org?format=json');
@@ -1751,24 +1750,18 @@ async function getDeviceDossier() {
     } catch (e) {
         console.error("Não foi possível obter o endereço de IP.", e);
     }
-    
-    // Mantém a coleta de memória e fuso para salvar no log, mas fora do stableId
-    const extraDataForLog = {
-        memoriaRAM: navigator.deviceMemory || 0,
-        fusoHorario: new Date().getTimezoneOffset() || 0,
-        idiomas: (navigator.languages || ['desconhecido']).join(',')
-    };
 
-    // 4. Monta o "dossiê" completo que será salvo
+    // 4. Monta o "dossiê" final que será salvo no banco de dados
+    //    (SEM incluir memoriaRAM e fusoHorario)
     const dossier = {
-        stableId: stableId, // <-- ID ESTÁVEL para COMPARAÇÃO
+        stableId: stableId,
         descricao: getReadableDeviceDescription(), 
         ip: ipAddress,
-        ...stableComputerData, // Inclui os dados que formaram o ID
-        ...extraDataForLog   // Inclui os dados que ficaram de fora do ID
+        idiomas: (navigator.languages || ['desconhecido']).join(','),
+        ...stableComputerData 
     };
 
-    console.log("Dossiê do Dispositivo (versão atualizada):", dossier);
+    console.log("Dossiê do Dispositivo (versão final):", dossier);
     return dossier;
 }
 
