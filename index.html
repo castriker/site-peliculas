@@ -767,21 +767,23 @@ document.querySelectorAll('img').forEach(img => {
       <div id="pedidoItens" class="text-sm">
         <p class="text-gray-300">Nenhum item adicionado ainda.</p>
       </div>
-      <button onclick="gerarPDFPedido()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
+      
+<button onclick="gerarPDFPedido()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base"
+              title="Cria um arquivo PDF com os itens da sua lista para enviar ao seu fornecedor.">
         Gerar PDF Dessa Lista
       </button>
-<button onclick="voltarConsulta()"
-        class="mt-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
-  ← Voltar à Consulta
-</button>
-<button onclick="limparPedido()"
-        class="mt-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base">
-  Limpar Lista
-</button>
-<button id="btnSalvarPedido"
-        class="mt-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded text-sm sm:text-base">
-  💾 Salvar Lista
-</button>
+      <button onclick="voltarConsulta()" class="mt-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base"
+              title="Retorna para a tela de busca de compatibilidades sem apagar os itens da sua lista atual.">
+        ← Voltar à Consulta
+      </button>
+      <button onclick="limparPedido()" class="mt-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base"
+              title="Apaga permanentemente todos os itens adicionados à sua lista de pedido.">
+        Limpar Lista
+      </button>
+      <button id="btnSalvarPedido" class="mt-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded text-sm sm:text-base"
+              title="Salva sua lista de pedido na nuvem para você continuar depois em qualquer um dos seus dispositivos.">
+        💾 Salvar Lista
+      </button>
 
 
     </div>
