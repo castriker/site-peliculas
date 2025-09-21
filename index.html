@@ -767,7 +767,7 @@ document.querySelectorAll('img').forEach(img => {
       <div id="pedidoItens" class="text-sm">
         <p class="text-gray-300">Nenhum item adicionado ainda.</p>
       </div>
-      
+
 <button onclick="gerarPDFPedido()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition text-sm sm:text-base"
               title="Cria um arquivo PDF com os itens da sua lista para enviar ao seu fornecedor.">
         Gerar PDF Dessa Lista
@@ -833,9 +833,12 @@ document.querySelectorAll('img').forEach(img => {
 
   <!-- Área de Busca (Compatibilidade) -->
   <section id="searchSection" class="hidden max-w-4xl mx-auto mt-10 p-4">
-    <div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
+<div class="mb-4 bg-gray-800 text-center p-4 rounded-lg">
       <strong id="welcomeMsg">Bem-vindo(a)!</strong>
+      <div id="contadorConsultas" class="text-sm text-gray-400 mt-1"></div>
+      <div id="tempoEconomizadoDisplay" class="text-sm text-green-400 mt-1 font-semibold hidden"></div>
     </div>
+
     <div id="important-notice-banner" class="relative mb-4 bg-red-600 text-white alert-avisos rounded-lg p-3">
     <div class="flex justify-between items-center">
         <strong class="block">Aviso Importante:</strong>
@@ -1092,6 +1095,8 @@ document.querySelectorAll('img').forEach(img => {
   </section>
 
   <script>
+    // Adicione esta linha no topo do seu script
+const TEMPO_MEDIO_ECONOMIZADO_POR_CONSULTA_MINUTOS = 4; // 4 minutos por consulta
 const supabaseUrl = "https://chjdjfycylqhxtfrbdxm.supabase.co";
   const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoamRqZnljeWxxaHh0ZnJiZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNTg0MTYsImV4cCI6MjA1NzczNDQxNn0.GvMeSnBDF0CS9-uampycS-C4qqfMgTzSsjYGqHrOFXU";
 
@@ -1255,6 +1260,7 @@ function setupNoticeState() {
 // >>>>> FIM DO BLOCO FALTANTE <<<<<
 /* 2) Variáveis e Estruturas (VERSÃO CORRIGIDA E COMPLETA) */
 let data = [];
+let contadorConsultasAtual = 0;
 let orderItems = [];
 let duplicateGroup = [];
 let duplicateIndex = -1;
@@ -1274,11 +1280,18 @@ data = jsonData.map(row => ({
         });
     }
 
- /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) */
 /* 4) PESQUISA NA ABA DE COMPATIBILIDADE (searchModel) - VERSÃO CORRIGIDA */
+// Variável para o nosso timer
+let debounceTimer;
+
 document.getElementById('searchModel').addEventListener('input', function() {
+    // Limpa o timer anterior sempre que uma nova tecla é digitada
+    clearTimeout(debounceTimer);
+
     const raw = this.value;
     const resultEl = document.getElementById('result');
+    
+    // A lógica de busca continua a mesma
     if (!raw.trim()) {
         resultEl.classList.add('hidden');
         return;
@@ -1295,32 +1308,42 @@ document.getElementById('searchModel').addEventListener('input', function() {
     if (!matches.length) {
         resultEl.textContent = 'MODELO NÃO ENCONTRADO';
         resultEl.classList.remove('hidden');
-        return;
-    }
+        // AQUI TAMBÉM PRECISAMOS GARANTIR QUE O TIMER SEJA CONFIGURADO
+    } else {
+        resultEl.innerHTML = matches.map(item => {
+            let proc = item.procurado.toUpperCase();
+            // Lógica de highlight mais segura
+            tokens.forEach(token => {
+                const upperToken = token.toUpperCase();
+                const parts = proc.split(upperToken);
+                proc = parts.join(`<span class="highlight animate-blink">${upperToken}</span>`);
+            });
 
-    resultEl.innerHTML = matches.map(item => {
-        let proc = item.procurado.toUpperCase();
-        // Lógica de highlight mais segura
-        tokens.forEach(token => {
-            const upperToken = token.toUpperCase();
-            const parts = proc.split(upperToken);
-            proc = parts.join(`<span class="highlight animate-blink">${upperToken}</span>`);
-        });
+            return `
+                <div class="bg-gray-800 text-gray-100 p-4 rounded-lg mb-3">
+                    <p class="mb-1">
+                        <span class="text-yellow-300 font-bold">MODELO PROCURADO:</span>
+                        ${proc}
+                    </p>
+                    <p>
+                        <span class="text-yellow-300 font-bold">MODELOS COMPATÍVEIS:</span>
+                        ${item.compatíveis.toUpperCase()}
+                    </p>
+                </div>
+            `;
+        }).join('');
+        resultEl.classList.remove('hidden');
+    } // A chave que estava aqui foi REMOVIDA
 
-        return `
-            <div class="bg-gray-800 text-gray-100 p-4 rounded-lg mb-3">
-                <p class="mb-1">
-                    <span class="text-yellow-300 font-bold">MODELO PROCURADO:</span>
-                    ${proc}
-                </p>
-                <p>
-                    <span class="text-yellow-300 font-bold">MODELOS COMPATÍVEIS:</span>
-                    ${item.compatíveis.toUpperCase()}
-                </p>
-            </div>
-        `;
-    }).join('');
-    resultEl.classList.remove('hidden');
+    // --- LÓGICA DO CONTADOR ---
+    // Inicia um novo timer. Se o usuário não digitar nada por 800ms,
+    // a função para incrementar o contador será chamada.
+    debounceTimer = setTimeout(() => {
+        // Só incrementa se houver texto na busca
+        if (raw.trim().length > 1) {
+            incrementarContadorConsulta();
+        }
+    }, 800); // Atraso de 800 milissegundos
 });
 
 // ao clicar em uma das opções, preenche o campo e esconde o result
@@ -1789,8 +1812,8 @@ async function checkEmail() {
         const deviceDossier = await getDeviceDossier();
 
         // 2. Busca os dados do usuário no Supabase (nenhuma mudança aqui)
-        const res = await fetch(
-            `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices&email=eq.${encodeURIComponent(email)}&limit=1`, {
+    const res = await fetch(
+            `${supabaseUrl}/rest/v1/sessoes?select=nome,plano,data_expiracao,max_devices,registered_devices,consultas_feitas&email=eq.${encodeURIComponent(email)}&limit=1`, {
                 headers: { 'apikey': supabaseKey, 'Accept': 'application/json' }
             }
         );
@@ -1873,6 +1896,12 @@ async function proceedWithLogin(email, registroPlano) {
     
     // Salva dados locais para o usuário
     localStorage.setItem('user_email', email);
+ // --- LÓGICA DO CONTADOR DE CONSULTAS ---
+    // Guarda o valor inicial que veio do Supabase
+    contadorConsultasAtual = registroPlano.consultas_feitas || 0;
+    // Chama a função para mostrar na tela
+    atualizarDisplayContador();
+    // --- FIM DA LÓGICA DO CONTADOR ---
 
     // Inicia o logout diário
     const todayForStorage = new Date().toISOString().split('T')[0];
@@ -1929,7 +1958,53 @@ setupNoticeState(); // Configura o estado do banner (minimizado ou expandido)
     handleExpirationAlert(registroPlano.data_expiracao);
 document.getElementById('promo-esquemas-card').classList.remove('hidden');
 }
+// >>> ADICIONE ESTA NOVA FUNÇÃO AUXILIAR JUNTO COM AS OUTRAS <<<
+function atualizarDisplayContador() {
+    const elContador = document.getElementById('contadorConsultas');
+    if (elContador) {
+        elContador.textContent = `Você já fez ${contadorConsultasAtual} consultas.`;
+    }
 
+    // --- LÓGICA DO TEMPO ECONOMIZADO ---
+    const elTempo = document.getElementById('tempoEconomizadoDisplay');
+    const totalMinutosEconomizados = contadorConsultasAtual * TEMPO_MEDIO_ECONOMIZADO_POR_CONSULTA_MINUTOS;
+    const tempoFormatado = formatarTempo(totalMinutosEconomizados);
+
+    if (elTempo && tempoFormatado) {
+        // Usamos innerHTML para poder usar a tag <strong> para dar destaque
+        elTempo.innerHTML = `⏱️ Tempo economizado: <strong>${tempoFormatado}</strong>`;
+        elTempo.classList.remove('hidden');
+    } else if (elTempo) {
+        elTempo.classList.add('hidden'); // Esconde se não houver tempo
+    }
+}
+
+// Função que efetivamente atualiza o contador no Supabase
+async function incrementarContadorConsulta() {
+    const email = localStorage.getItem("user_email");
+    if (!email) return;
+
+    // Incrementa o contador local primeiro para uma resposta visual rápida
+    contadorConsultasAtual++;
+    atualizarDisplayContador();
+
+    try {
+        await fetch(`${supabaseUrl}/rest/v1/sessoes?email=eq.${encodeURIComponent(email)}`, {
+            method: 'PATCH',
+            headers: {
+                'apikey': supabaseKey,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ consultas_feitas: contadorConsultasAtual })
+        });
+    } catch (err) {
+        console.error("Erro ao atualizar contador de consultas:", err);
+        // Se der erro, podemos decrementar localmente para manter a consistência
+        contadorConsultasAtual--;
+        atualizarDisplayContador();
+    }
+}
 
 // Função de logout
 // Função de logout (VERSÃO CORRIGIDA E SIMPLIFICADA)
@@ -2518,6 +2593,28 @@ function startImageCarousel() {
         }
     });
 }
+function formatarTempo(totalMinutos) {
+    if (isNaN(totalMinutos) || totalMinutos <= 0) {
+        return ""; // Não mostra nada se não houver tempo economizado
+    }
+
+    if (totalMinutos < 60) {
+        const plural = totalMinutos > 1 ? 's' : '';
+        return `${totalMinutos} minuto${plural}`;
+    } else {
+        const horas = Math.floor(totalMinutos / 60);
+        const minutos = totalMinutos % 60;
+        const pluralHoras = horas > 1 ? 's' : '';
+        const pluralMinutos = minutos > 1 ? 's' : '';
+
+        if (minutos === 0) {
+            return `${horas} hora${pluralHoras}`;
+        } else {
+            return `${horas} hora${pluralHoras} e ${minutos} minuto${pluralMinutos}`;
+        }
+    }
+}
+
   </script>
 </body>
 </html>
